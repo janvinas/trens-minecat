@@ -1,0 +1,14 @@
+name: TrensMinecat
+version: 1.0-SNAPSHOT
+author: janitus1234
+description: Gestor de trens de Minecat
+main: io.github.janvinas.trensminecat.TrensMinecat
+api-version: 1.13
+depend: [Train_Carts, BKCommonLib]
+commands:
+  trensminecat:
+    description: Comandament principal del plugin.
+    usage: /trensminecat <comandament>
+    aliases: tm
+    permission: trensminecat.x
+    permission-message: Necessites el permís trensminecat.x per executar aquest comandament.

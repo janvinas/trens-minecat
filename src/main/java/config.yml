@@ -1,0 +1,10 @@
+#Temps mínim (en segons) que es mostrarà a les pantalles. Si el temps fins al proper tren és menor que això es mostrarà
+#un missatge personalitzable a cada pantalla, com "ara" o "imminent"
+
+#plantilles per crear pantalles d'informació:
+pantalles:
+  exemple:
+    longitud: 5
+    linies:
+      - R2N|45 2/10 * * * *|Sant Celoni|2|Para a totes les estacions
+      - R2n|12 8/10 * * * *|Aeroport|2|Para a totes les estacions
