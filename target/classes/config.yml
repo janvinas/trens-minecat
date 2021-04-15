@@ -19,4 +19,4 @@ pantalles:
     longitud: 5
     linies:
       - R2N|45 2/10 * * * *|Sant Celoni|2|Para a totes les estacions
-      - R2n|12 8/10 * * * *|Aeroport|2|Para a totes les estacions
+      - R2N|12 8/10 * * * *|Aeroport|2|Para a totes les estacions
