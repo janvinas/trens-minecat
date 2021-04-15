@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class MapDisplays {
-    //TODO implementar variable amb directori base per millorar la portabilitat
+    static String imgDir = "io/github/janvinas/trensminecat/img/";
     //TODO canviar hora UTC per hora local (i/o fer-ho configurable)
     //TODO afegir cartell rodalies antic (leds vermells) i panell gran adif
     public static class DepartureBoard1 extends MapDisplay{
@@ -126,7 +126,7 @@ public class MapDisplays {
         @Override
         public void onAttached() {
             getLayer(2).clear();
-            getLayer(2).draw(loadTexture("io/github/janvinas/trensminecat/img/DepartureBoard2.png"), 0, 0);
+            getLayer(2).draw(loadTexture(imgDir + "DepartureBoard2.png"), 0, 0);
             getLayer(0).clear();
             getLayer(0).fillRectangle(0, 30, 128, 67, MapColorPalette.getColor(0, 0, 0));
 
@@ -190,7 +190,7 @@ public class MapDisplays {
             getLayer(1).clear();
             getLayer(1).fillRectangle(5, 14, 118, 28, MapColorPalette.getColor(40, 40, 40));
             getLayer(3).clear();
-            getLayer(3).draw(loadTexture("io/github/janvinas/trensminecat/img/DepartureBoard3.png"), 0, 0);
+            getLayer(3).draw(loadTexture(imgDir + "DepartureBoard3.png"), 0, 0);
 
             Integer taskId = getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(getPlugin(), () -> {
 
@@ -206,7 +206,7 @@ public class MapDisplays {
 
                 if(untilDeparture.minusSeconds(secondsToDisplayOnBoard).isNegative()){
                     //imprimeix el nom del tren gran
-                    getLayer(4).draw(loadTexture("io/github/janvinas/trensminecat/img/28px/" +
+                    getLayer(4).draw(loadTexture(imgDir + "28px/" +
                             departureBoardTrains.get(departureTime).name + ".png"), 5, 14);
                     getLayer(4).setAlignment(MapFont.Alignment.MIDDLE);
                     getLayer(4).draw(MapFont.MINECRAFT, 74, 23,
@@ -215,32 +215,25 @@ public class MapDisplays {
 
                 }else if(untilDeparture.minusMinutes(5).isNegative()){
                     //imprimeix informació
-                    getLayer(4).draw(loadTexture("io/github/janvinas/trensminecat/img/28px/" +
+                    getLayer(4).draw(loadTexture(imgDir + "28px/" +
                             departureBoardTrains.get(departureTime).name + ".png"), 5, 14);
-                    getLayer(4).draw(MapFont.TINY, 34, 15,
-                            MapColorPalette.getColor(255, 255, 255),
-                            "dest.");
                     getLayer(4).draw(MapFont.TINY, 97, 15,
                             MapColorPalette.getColor(255, 255, 255),
-                            "time");
-                    //TODO la línia hauria de ser del color del logo
-                    getLayer(4).drawLine(95, 14, 95, 41, MapColorPalette.getColor(0, 162, 232));
-
+                            "min");
+                    getLayer(4).drawLine(95, 14, 95, 41, getLayer(4).readPixel(5, 14));
                     getLayer(4).setAlignment(MapFont.Alignment.MIDDLE);
-                    getLayer(4).draw(MapFont.MINECRAFT, 63, 25,
+                    getLayer(4).draw(MapFont.MINECRAFT, 63, 24,
                             MapColorPalette.getColor(255, 255, 255),
                             departureBoardTrains.get(departureTime).destination);
-                    getLayer(4).draw(MapFont.MINECRAFT, 108, 25,
+                    getLayer(4).draw(MapFont.MINECRAFT, 108, 24,
                             MapColorPalette.getColor(255, 255, 255),
-                            untilDeparture.getSeconds()/60 + "min");
+                            String.valueOf(untilDeparture.getSeconds()/60));
                 }else{
                     //imprimeix logo i hora
-                    getLayer(4).draw(loadTexture("io/github/janvinas/trensminecat/img/28px/JT.png"), 5, 14);
+                    getLayer(4).draw(loadTexture(imgDir + "28px/rodalies.png"), 5, 14);
                     getLayer(4).setAlignment(MapFont.Alignment.RIGHT);
-                    getLayer(4).draw(MapFont.MINECRAFT, 121, 16, MapColorPalette.COLOR_WHITE,
-                            now.format(DateTimeFormatter.ofPattern("HH:mm")) + " UTC");
-                    getLayer(4).draw(MapFont.MINECRAFT, 121, 30, MapColorPalette.COLOR_WHITE,
-                            now.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                    getLayer(4).draw(MapFont.MINECRAFT, 119, 24, MapColorPalette.COLOR_WHITE,
+                            now.format(DateTimeFormatter.ofPattern("HH:mm")));
                 }
 
             },0, 100);

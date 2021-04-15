@@ -1,7 +1,10 @@
 package io.github.janvinas.trensminecat;
 
+import com.bergerkiller.bukkit.common.BlockLocation;
 import com.bergerkiller.bukkit.common.map.MapDisplay;
 import com.bergerkiller.bukkit.common.utils.ItemUtil;
+import com.bergerkiller.bukkit.tc.signactions.spawner.SpawnSign;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -27,7 +30,11 @@ public class TrensMinecat extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         //TODO feedback dels comandaments
-        if(command.getName().equalsIgnoreCase("trensminecat")){
+        if(args.length == 5 && args[0].equalsIgnoreCase("spawn")){
+            Location location = new Location(getServer().getWorld(args[1]), Double.parseDouble(args[2]), Double.parseDouble(args[3]), Double.parseDouble(args[4]));
+            new SpawnSign(new BlockLocation(location)).spawn();
+            return true;
+        }else if(command.getName().equalsIgnoreCase("trensminecat")){
             if(args[0].equalsIgnoreCase("crear")){
                 if(args[1].equalsIgnoreCase("pantalla")){
                     if(args[2].equalsIgnoreCase("1")){
