@@ -1,7 +1,19 @@
 #Temps mínim (en segons) que es mostrarà a les pantalles. Si el temps fins al proper tren és menor que això es mostrarà
 #un missatge personalitzable a cada pantalla, com "ara" o "imminent"
+temps-minim-en-pantalla: 20
 
-#plantilles per crear pantalles d'informació:
+#pantalles d'informació que es poden utilitzar. El nom de la pantalla és el que s'utilitzarà en el comandament per
+#generar-la.
+#
+#Format de les pantalles:
+#  <nom>:
+#    longitud: <longitud>
+#    línies:
+#      - <nom>|<expressió cron>|<destinació>|<via>|<observacions>
+#
+# [tots els camps són obligatoris, encara que no s'hagin d'utilitzar]
+# [no es pot afegir un espai al voltant de '|', ja que s'estaria afegint al camp corresponent]
+
 pantalles:
   exemple:
     longitud: 5
