@@ -5,5 +5,6 @@ io\github\janvinas\trensminecat\MapDisplays$DepartureBoard1.class
 io\github\janvinas\trensminecat\TrainLine.class
 io\github\janvinas\trensminecat\MapDisplays$DepartureBoard3.class
 io\github\janvinas\trensminecat\MapDisplays.class
+io\github\janvinas\trensminecat\MapDisplays$DepartureBoard4.class
 io\github\janvinas\trensminecat\DepartureBoardTemplate.class
 io\github\janvinas\trensminecat\BoardUtils.class

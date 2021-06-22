@@ -250,4 +250,81 @@ public class MapDisplays {
         }
     }
 
+    public static class DepartureBoard4 extends MapDisplay{
+        public HashMap<UUID, Integer> taskList = new HashMap<>();
+
+        @Override
+        public void onAttached() {
+
+            Integer taskId = getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(getPlugin(), () -> {
+
+                int secondsToDisplayOnBoard = TrensMinecat.secondsToDisplayOnBoard;
+                DepartureBoardTemplate template = TrensMinecat.departureBoards.get(properties.get("template", String.class));
+                LocalDateTime now = LocalDateTime.now();
+                TreeMap<LocalDateTime, Departure> departureBoardTrains = BoardUtils.fillDepartureBoard(now, template.trainLines, template.length, true);
+
+                getLayer(0).draw(loadTexture(imgDir + "DepartureBoard4.png"), 0, 0);
+
+                //print train lines on screen
+                getLayer(1).clear();
+                getLayer(1).setAlignment(MapFont.Alignment.LEFT);
+                int i = 0;
+                for(LocalDateTime departureTime : departureBoardTrains.keySet()){
+                    Duration untilDeparture = Duration.between(now, departureTime);
+                    if(untilDeparture.minusSeconds(secondsToDisplayOnBoard).isNegative()) {
+                        getLayer(1).draw(MapFont.MINECRAFT, 113, 34 + i * 14,
+                                MapColorPalette.getColor(255, 0, 0), "imminent");
+                    }else if(untilDeparture.minusMinutes(5).isNegative()){
+                        getLayer(1).draw(MapFont.MINECRAFT, 113, 34 + i * 14,
+                                MapColorPalette.getColor(0, 128, 0),
+                                untilDeparture.getSeconds()/60 + "min");
+                    }else{
+                        getLayer(1).draw(MapFont.MINECRAFT, 113, 34 + i*14,
+                                MapColorPalette.getColor(0, 0, 0),
+                                departureTime.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                    }
+                    getLayer(1).draw(loadTexture(imgDir + "9px/" +
+                            departureBoardTrains.get(departureTime).name + ".png"), 2, 34 + i*14);
+
+                    String destination = departureBoardTrains.get(departureTime).destination;
+                    if(!destination.equals("_")) getLayer(1).draw(MapFont.MINECRAFT, 21, 34 + i*14,
+                            MapColorPalette.getColor(0, 0, 0),
+                            departureBoardTrains.get(departureTime).destination);
+                    String platform = departureBoardTrains.get(departureTime).platform;
+                    if(!platform.equals("_")) getLayer(1).draw(MapFont.MINECRAFT, 99, 34 + i*14,
+                            MapColorPalette.getColor(0, 0, 0),
+                            departureBoardTrains.get(departureTime).platform);
+                    String information = departureBoardTrains.get(departureTime).information;
+                    if(!information.equals("_")){
+                        getLayer(1).draw(MapFont.MINECRAFT, 162, 34 + i*14,
+                                MapColorPalette.getColor(0, 0, 0),
+                                departureBoardTrains.get(departureTime).information);
+                    }
+
+                    i++;
+                }
+
+            }, 0, 100);
+
+            taskList.put(properties.getUniqueId(), taskId);
+            super.onAttached();
+        }
+
+        @Override
+        public void onTick() {
+            getLayer(2).clear();
+            getLayer(2).setAlignment(MapFont.Alignment.MIDDLE);
+            LocalDateTime now = LocalDateTime.now();
+            getLayer(2).draw(MapFont.MINECRAFT, 227, 7, MapColorPalette.COLOR_BLACK,
+                    now.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+            super.onTick();
+        }
+
+        @Override
+        public void onDetached() {
+            getPlugin().getServer().getScheduler().cancelTask(taskList.get(properties.getUniqueId()));
+            taskList.remove(info.getUniqueId());
+            super.onDetached();
+        }
+    }
 }

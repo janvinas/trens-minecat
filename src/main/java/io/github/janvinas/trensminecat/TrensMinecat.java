@@ -3,8 +3,11 @@ package io.github.janvinas.trensminecat;
 import com.bergerkiller.bukkit.common.BlockLocation;
 import com.bergerkiller.bukkit.common.map.MapDisplay;
 import com.bergerkiller.bukkit.common.utils.ItemUtil;
+import com.bergerkiller.bukkit.tc.controller.MinecartGroup;
+import com.bergerkiller.bukkit.tc.controller.MinecartGroupStore;
 import com.bergerkiller.bukkit.tc.signactions.spawner.SpawnSign;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -12,6 +15,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.StringTokenizer;
@@ -21,10 +26,37 @@ public class TrensMinecat extends JavaPlugin {
     static HashMap<String, DepartureBoardTemplate> departureBoards = new HashMap<>();
     static Integer secondsToDisplayOnBoard;
 
+    int trainDestroyDelay;
+    String dontDestroyTag;
+    HashMap<String, Block> trainList = new HashMap<>();
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
         loadMainConfiguration();
+
+        if(trainDestroyDelay != 0){
+            getServer().getScheduler().scheduleSyncRepeatingTask(this,() ->{
+                for(String train : trainList.keySet()){
+                    Collection<MinecartGroup> trainMatches = MinecartGroupStore.matchAll(train);
+                    for(MinecartGroup matchingTrain : trainMatches){
+                        if( (!matchingTrain.isUnloaded()) && (trainList.get(train).equals(matchingTrain.get(0).getBlock())) ){
+
+                            if(!matchingTrain.getProperties().matchTag(dontDestroyTag)){
+                                BlockLocation loc = matchingTrain.getProperties().getLocation();
+                                matchingTrain.destroy();
+                                getLogger().info("El tren " + train + " a " + loc.x + "," + loc.y + "," + loc.z + " ha estat destruït");
+                            }
+                        }
+                    }
+                }
+
+                trainList.clear();
+                for(MinecartGroup train : MinecartGroupStore.getGroups()){
+                    trainList.put(train.getProperties().getTrainName(), train.get(0).getBlock());
+                }
+            } , 0, trainDestroyDelay);
+        }
     }
 
     @Override
@@ -53,6 +85,13 @@ public class TrensMinecat extends JavaPlugin {
 
                     }else if(args[2].equalsIgnoreCase("3")){
                         ItemStack display = MapDisplay.createMapItem(MapDisplays.DepartureBoard3.class);
+                        ItemUtil.getMetaTag(display).putValue("template", args[3]);
+                        ItemUtil.getMetaTag(display).putValue("name", args[4]);
+                        ((Player) sender).getInventory().addItem(display);
+                        return true;
+
+                    }else if(args[2].equalsIgnoreCase("4")){
+                        ItemStack display = MapDisplay.createMapItem(MapDisplays.DepartureBoard4.class);
                         ItemUtil.getMetaTag(display).putValue("template", args[3]);
                         ItemUtil.getMetaTag(display).putValue("name", args[4]);
                         ((Player) sender).getInventory().addItem(display);
@@ -106,6 +145,8 @@ public class TrensMinecat extends JavaPlugin {
         }
 
         secondsToDisplayOnBoard = getConfig().getInt("temps-minim-en-pantalla");
+        trainDestroyDelay = getConfig().getInt("destruir-trens-en");
+        dontDestroyTag = getConfig().getString("no-destrueixis");
     }
 
 }
