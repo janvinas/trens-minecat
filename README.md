@@ -34,7 +34,7 @@ displaymanual
 ```
 La pantalla s'actualitzarà quan s'activi el cartell o un tren passi per sobre i el cartell estigui activat.
 
-Per generar una pantalla, caldrà utilitzar el comandament `/tm crear pantallamanual <model> <nom>`, on el nom ha de coincidir amb el del cartell Traincarts.
+Per generar una pantalla, caldrà utilitzar el comandament `/tm crear displaymanual <model> <nom>`, on el nom ha de coincidir amb el del cartell Traincarts.
 
 Per reiniciar la informació de la pantalla i tornar-la al seu estat normal, es pot utilitzar el cartell:
 ```
@@ -54,7 +54,7 @@ _És exactament igual visualment que el model 3 de pantalla normal, però no mos
 
 `/tm crear pantalla <model> <plantilla> <nom>` Veure [Pantalles](#Pantalles).
 
-`/tm crear pantallamanual <model> <nom>` Veure [Pantalles Manuals](#Pantalles-Manuals).
+`/tm crear displaymanual <model> <nom>` Veure [Pantalles Manuals](#Pantalles-Manuals).
 
 `/tm recarregar` Recarregar la configuració.
 
