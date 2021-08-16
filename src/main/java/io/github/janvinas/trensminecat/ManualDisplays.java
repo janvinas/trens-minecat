@@ -57,6 +57,7 @@ public class ManualDisplays {
             getLayer(3).draw(loadTexture(imgDir + "DepartureBoard3.png"), 0, 0);
             getLayer(4).clear();
             getLayer(4).draw(loadTexture(imgDir + "28px/rodalies.png"), 5, 14);
+            properties.set("t", false);
 
         }
 
