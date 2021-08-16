@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class MapDisplays {
+public class MapDisplays{
     static String imgDir = "io/github/janvinas/trensminecat/img/";
     //TODO canviar hora UTC per hora local (i/o fer-ho configurable)
     //TODO afegir cartell rodalies antic (leds vermells) i panell gran adif

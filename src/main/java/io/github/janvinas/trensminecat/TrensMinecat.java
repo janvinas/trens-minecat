@@ -5,7 +5,9 @@ import com.bergerkiller.bukkit.common.map.MapDisplay;
 import com.bergerkiller.bukkit.common.utils.ItemUtil;
 import com.bergerkiller.bukkit.tc.controller.MinecartGroup;
 import com.bergerkiller.bukkit.tc.controller.MinecartGroupStore;
+import com.bergerkiller.bukkit.tc.signactions.SignAction;
 import com.bergerkiller.bukkit.tc.signactions.spawner.SpawnSign;
+import io.github.janvinas.trensminecat.signactions.*;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -57,6 +59,9 @@ public class TrensMinecat extends JavaPlugin {
                 }
             } , 0, trainDestroyDelay);
         }
+
+        SignAction.register(new SignActionDisplayManual());
+        SignAction.register(new SignActionClearDisplay());
     }
 
     @Override
@@ -97,6 +102,13 @@ public class TrensMinecat extends JavaPlugin {
                         ((Player) sender).getInventory().addItem(display);
                         return true;
 
+                    }
+                }else if(args[1].equalsIgnoreCase("displaymanual")){
+                    if(args[2].equalsIgnoreCase("1")){
+                        ItemStack display = MapDisplay.createMapItem(ManualDisplays.ManualDisplay1.class);
+                        ItemUtil.getMetaTag(display).putValue("ID", args[3]);
+                        ((Player) sender).getInventory().addItem(display);
+                        return true;
                     }
                 }
             }else if(args.length == 1 && args[0].equalsIgnoreCase("recarregar")){
