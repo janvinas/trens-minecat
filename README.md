@@ -43,6 +43,13 @@ reiniciardisplay
 <nom de la pantalla>
 ```
 
+Si passa un tren sense parada, es pot utilitzar el següent cartell:
+```
+[train]
+noparadisplay
+<nom de la pantalla>
+```
+
 #### Models disponibles:
 
 ###### 1:

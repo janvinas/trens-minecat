@@ -3,6 +3,7 @@ package io.github.janvinas.trensminecat;
 import com.bergerkiller.bukkit.common.map.MapColorPalette;
 import com.bergerkiller.bukkit.common.map.MapDisplay;
 import com.bergerkiller.bukkit.common.map.MapFont;
+import com.bergerkiller.bukkit.common.map.MapTexture;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,16 +15,27 @@ public class ManualDisplays {
         public boolean updateInformation(String DisplayID, String displayName, String destination){
             if(! properties.get("ID", String.class).equals(DisplayID)) return false;
 
-            String trainLine = destination.substring(0, destination.indexOf(' '));
-            String dest = destination;
-            if(destination.contains(" → "))
-                dest = destination.substring(destination.indexOf('→') + 2);
-            dest = dest.toUpperCase();
+            String trainLine;
+            String dest;
+            if(destination.equals("nopara")){
+                trainLine = "info";
+                dest = "sense parada";
+            }else{
+                trainLine = destination.substring(0, destination.indexOf(' '));
+                dest = destination;
+                if(destination.contains(" → "))
+                    dest = destination.substring(destination.indexOf('→') + 2);
+                dest = dest.toUpperCase();
+            }
 
             getLayer(5).clear();
             getLayer(4).clear();
-            getLayer(4).draw(loadTexture(imgDir + "28px/" +
-                    trainLine + ".png"), 5, 14);
+            MapTexture lineIcon = loadTexture(imgDir + "28px/" + trainLine + ".png");
+            if(!(lineIcon.getHeight() > 1)){
+                dest = displayName;
+                lineIcon = loadTexture(imgDir + "28px/what.png");
+            }
+            getLayer(4).draw(lineIcon, 5, 14);
             getLayer(4).setAlignment(MapFont.Alignment.MIDDLE);
             getLayer(4).draw(MapFont.MINECRAFT, 74, 23,
                     MapColorPalette.getColor(255, 255, 255),

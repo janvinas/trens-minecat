@@ -62,6 +62,7 @@ public class TrensMinecat extends JavaPlugin {
 
         SignAction.register(new SignActionDisplayManual());
         SignAction.register(new SignActionClearDisplay());
+        SignAction.register(new SignActionSenseParada());
     }
 
     @Override

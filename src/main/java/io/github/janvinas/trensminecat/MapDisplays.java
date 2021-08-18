@@ -12,7 +12,7 @@ import java.util.*;
 public class MapDisplays{
     static String imgDir = "io/github/janvinas/trensminecat/img/";
     //TODO canviar hora UTC per hora local (i/o fer-ho configurable)
-    //TODO afegir cartell rodalies antic (leds vermells) i panell gran adif
+    //TODO afegir cartell rodalies antic (leds vermells)
     public static class DepartureBoard1 extends MapDisplay{
         public HashMap<UUID, Integer> taskList = new HashMap<>();
 
@@ -22,7 +22,8 @@ public class MapDisplays{
             getLayer().fillRectangle(0, 10, 256, 1, MapColorPalette.getColor(0, 0, 0));
             getLayer().draw(MapFont.MINECRAFT, 1, 1, MapColorPalette.getColor(255, 255, 255), "Departures:");
             getLayer().setAlignment(MapFont.Alignment.RIGHT);
-            getLayer().draw(MapFont.MINECRAFT, 254, 1, MapColorPalette.getColor(255, 255, 255), properties.get("name", String.class).replace('_', ' '));
+            getLayer().draw(MapFont.MINECRAFT, 254, 1, MapColorPalette.getColor(255, 255, 255),
+                    properties.get("name", String.class).replace('_', ' '));
             //draw background strips
             getLayer().fillRectangle(0, 11, 256, 10, MapColorPalette.getColor(255, 255, 255));
             getLayer().fillRectangle(0, 21, 256, 10, MapColorPalette.getColor(200, 200, 200));
