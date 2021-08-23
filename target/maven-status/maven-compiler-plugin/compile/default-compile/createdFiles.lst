@@ -9,6 +9,7 @@ io\github\janvinas\trensminecat\MapDisplays$DepartureBoard3.class
 io\github\janvinas\trensminecat\BoardUtils.class
 io\github\janvinas\trensminecat\signactions\SignActionClearDisplay.class
 io\github\janvinas\trensminecat\MapDisplays$DepartureBoard1.class
+io\github\janvinas\trensminecat\signactions\SignActionSenseParada.class
 io\github\janvinas\trensminecat\MapDisplays.class
 io\github\janvinas\trensminecat\MapDisplays$DepartureBoard4.class
 io\github\janvinas\trensminecat\DepartureBoardTemplate.class

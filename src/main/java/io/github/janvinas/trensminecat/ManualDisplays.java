@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 public class ManualDisplays {
     public static class ManualDisplay1 extends MapDisplay {
         static String imgDir = "io/github/janvinas/trensminecat/img/";
+        boolean updateTime = true;
 
         public boolean updateInformation(String DisplayID, String displayName, String destination){
             if(! properties.get("ID", String.class).equals(DisplayID)) return false;
@@ -41,7 +42,7 @@ public class ManualDisplays {
                     MapColorPalette.getColor(255, 255, 255),
                     dest);
 
-            properties.set("t", true);
+            updateTime = false;
             return true;
         }
 
@@ -56,7 +57,7 @@ public class ManualDisplays {
             LocalDateTime now = LocalDateTime.now();
             getLayer(5).draw(MapFont.MINECRAFT, 119, 24, MapColorPalette.COLOR_WHITE,
                     now.format(DateTimeFormatter.ofPattern("HH:mm")));
-            properties.set("t", false);
+            updateTime = true;
             return true;
         }
 
@@ -69,14 +70,13 @@ public class ManualDisplays {
             getLayer(3).draw(loadTexture(imgDir + "DepartureBoard3.png"), 0, 0);
             getLayer(4).clear();
             getLayer(4).draw(loadTexture(imgDir + "28px/rodalies.png"), 5, 14);
-            properties.set("t", false);
 
         }
 
         @Override
         public void onTick() {
             super.onTick();
-            if(!properties.get("t", boolean.class)){
+            if(updateTime){
                 getLayer(5).clear();
                 getLayer(5).setAlignment(MapFont.Alignment.RIGHT);
                 LocalDateTime now = LocalDateTime.now();

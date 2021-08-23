@@ -11,10 +11,11 @@ import java.util.*;
 
 public class MapDisplays{
     static String imgDir = "io/github/janvinas/trensminecat/img/";
+    static int updateTime = 100; //time in ticks between sign updates
     //TODO canviar hora UTC per hora local (i/o fer-ho configurable)
     //TODO afegir cartell rodalies antic (leds vermells)
     public static class DepartureBoard1 extends MapDisplay{
-        public HashMap<UUID, Integer> taskList = new HashMap<>();
+        int tickCount = 0;
 
         @Override
         public void onAttached() {
@@ -47,13 +48,23 @@ public class MapDisplays{
             getLayer().fillRectangle(0, 111, 256, 18, MapColorPalette.getColor(0, 0, 0));
             getLayer().fillRectangle(0, 112, 256, 10, MapColorPalette.getColor(72, 129, 183));
 
-            //schedule task that will update the train list every 5 seconds
-            BukkitScheduler scheduler = getPlugin().getServer().getScheduler();
-            int taskId = scheduler.scheduleSyncRepeatingTask(getPlugin(), () ->{
+            super.onAttached();
+        }
+
+        @Override
+        public void onTick() {
+            LocalDateTime now = LocalDateTime.now();
+
+            getLayer(3).clear();
+            getLayer(3).setAlignment(MapFont.Alignment.LEFT);
+            getLayer(3).draw(MapFont.MINECRAFT, 1, 113, MapColorPalette.getColor(0, 0, 0), now.format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " UTC");
+            getLayer(3).setAlignment(MapFont.Alignment.RIGHT);
+            getLayer(3).draw(MapFont.MINECRAFT, 254, 113, MapColorPalette.getColor(0, 0, 0), now.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+
+            if( (tickCount % updateTime) == 0){
 
                 int secondsToDisplayOnBoard = TrensMinecat.secondsToDisplayOnBoard;
                 DepartureBoardTemplate template = TrensMinecat.departureBoards.get(properties.get("template", String.class));
-                LocalDateTime now = LocalDateTime.now();
                 TreeMap<LocalDateTime, Departure> departureBoardTrains = BoardUtils.fillDepartureBoard(now, template.trainLines, template.length, true);
 
                 //print train lines on screen
@@ -96,33 +107,16 @@ public class MapDisplays{
                     i++;
                 }
 
-            }, 0, 100);
+            }
 
-            taskList.put(properties.getUniqueId(), taskId);
-            super.onAttached();
-        }
-
-        @Override
-        public void onDetached() {
-            getPlugin().getServer().getScheduler().cancelTask(taskList.get(properties.getUniqueId()));
-            taskList.remove(info.getUniqueId());
-            super.onDetached();
-        }
-
-        @Override
-        public void onTick() {
-            getLayer(3).clear();
-            getLayer(3).setAlignment(MapFont.Alignment.LEFT);
-            LocalDateTime now = LocalDateTime.now();
-            getLayer(3).draw(MapFont.MINECRAFT, 1, 113, MapColorPalette.getColor(0, 0, 0), now.format(DateTimeFormatter.ofPattern("HH:mm:ss")) + " UTC");
-            getLayer(3).setAlignment(MapFont.Alignment.RIGHT);
-            getLayer(3).draw(MapFont.MINECRAFT, 254, 113, MapColorPalette.getColor(0, 0, 0), now.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            tickCount++;
             super.onTick();
         }
+
     }
 
     public static class DepartureBoard2 extends MapDisplay{
-        public HashMap<UUID, Integer> taskList = new HashMap<>();
+        int tickCount = 0;
 
         @Override
         public void onAttached() {
@@ -131,7 +125,13 @@ public class MapDisplays{
             getLayer(0).clear();
             getLayer(0).fillRectangle(0, 30, 128, 67, MapColorPalette.getColor(0, 0, 0));
 
-            Integer taskId = getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(getPlugin(), () -> {
+            super.onAttached();
+        }
+
+        @Override
+        public void onTick() {
+            if( (tickCount % updateTime) == 0){
+
                 getLayer(1).clear();
                 getLayer(1).setAlignment(MapFont.Alignment.LEFT);
 
@@ -168,23 +168,16 @@ public class MapDisplays{
                 if(!information.equals("_")) getLayer(1).draw(MapFont.MINECRAFT, 5, 86,
                         MapColorPalette.getColor(255, 201, 14),
                         departureBoardTrains.get(departureTime).information);
+            }
 
-
-            }, 0, 100);
-            taskList.put(properties.getUniqueId(), taskId);
-            super.onAttached();
-        }
-
-        @Override
-        public void onDetached() {
-            getPlugin().getServer().getScheduler().cancelTask(taskList.get(properties.getUniqueId()));
-            taskList.remove(info.getUniqueId());
-            super.onDetached();
+            tickCount++;
+            super.onTick();
         }
     }
 
     public static class DepartureBoard3 extends MapDisplay{
-        public HashMap<UUID, Integer> taskList = new HashMap<>();
+        int tickCount = 0;
+
         @Override
         public void onAttached() {
 
@@ -193,7 +186,13 @@ public class MapDisplays{
             getLayer(3).clear();
             getLayer(3).draw(loadTexture(imgDir + "DepartureBoard3.png"), 0, 0);
 
-            Integer taskId = getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(getPlugin(), () -> {
+            super.onAttached();
+        }
+
+        @Override
+        public void onTick() {
+
+            if( (tickCount % updateTime) == 0){
 
                 int secondsToDisplayOnBoard = TrensMinecat.secondsToDisplayOnBoard;
                 DepartureBoardTemplate template = TrensMinecat.departureBoards.get(properties.get("template", String.class));
@@ -236,35 +235,36 @@ public class MapDisplays{
                     getLayer(4).draw(MapFont.MINECRAFT, 119, 24, MapColorPalette.COLOR_WHITE,
                             now.format(DateTimeFormatter.ofPattern("HH:mm")));
                 }
+            }
 
-            },0, 100);
-
-            taskList.put(properties.getUniqueId(), taskId);
-            super.onAttached();
-        }
-
-        @Override
-        public void onDetached() {
-            getPlugin().getServer().getScheduler().cancelTask(taskList.get(properties.getUniqueId()));
-            taskList.remove(info.getUniqueId());
-            super.onDetached();
+            tickCount++;
+            super.onTick();
         }
     }
 
     public static class DepartureBoard4 extends MapDisplay{
-        public HashMap<UUID, Integer> taskList = new HashMap<>();
+        int tickCount = 0;
 
         @Override
         public void onAttached() {
 
-            Integer taskId = getPlugin().getServer().getScheduler().scheduleSyncRepeatingTask(getPlugin(), () -> {
+            getLayer(0).draw(loadTexture(imgDir + "DepartureBoard4.png"), 0, 0);
+            super.onAttached();
+        }
 
+        @Override
+        public void onTick() {
+
+            LocalDateTime now = LocalDateTime.now();
+            getLayer(2).clear();
+            getLayer(2).setAlignment(MapFont.Alignment.MIDDLE);
+            getLayer(2).draw(MapFont.MINECRAFT, 227, 7, MapColorPalette.COLOR_BLACK,
+                    now.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+
+            if( (tickCount % updateTime) == 0){
                 int secondsToDisplayOnBoard = TrensMinecat.secondsToDisplayOnBoard;
                 DepartureBoardTemplate template = TrensMinecat.departureBoards.get(properties.get("template", String.class));
-                LocalDateTime now = LocalDateTime.now();
                 TreeMap<LocalDateTime, Departure> departureBoardTrains = BoardUtils.fillDepartureBoard(now, template.trainLines, template.length, true);
-
-                getLayer(0).draw(loadTexture(imgDir + "DepartureBoard4.png"), 0, 0);
 
                 //print train lines on screen
                 getLayer(1).clear();
@@ -304,28 +304,11 @@ public class MapDisplays{
 
                     i++;
                 }
+            }
 
-            }, 0, 100);
-
-            taskList.put(properties.getUniqueId(), taskId);
-            super.onAttached();
-        }
-
-        @Override
-        public void onTick() {
-            getLayer(2).clear();
-            getLayer(2).setAlignment(MapFont.Alignment.MIDDLE);
-            LocalDateTime now = LocalDateTime.now();
-            getLayer(2).draw(MapFont.MINECRAFT, 227, 7, MapColorPalette.COLOR_BLACK,
-                    now.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+            tickCount++;
             super.onTick();
         }
 
-        @Override
-        public void onDetached() {
-            getPlugin().getServer().getScheduler().cancelTask(taskList.get(properties.getUniqueId()));
-            taskList.remove(info.getUniqueId());
-            super.onDetached();
-        }
     }
 }
