@@ -67,6 +67,8 @@ _És exactament igual visualment que el model 3 de pantalla normal, però no mos
 
 `/tm spawn <món> <x> <y> <z>` Genera un tren a les coordenades especificades. Aquestes coordenades han de ser les d'un cartell `spawner`, i no les de la via on ha d'aparèixer un tren.
 
+`/tm horn` Fa sonar el so definit a les propietats del tren com a `horn_nom.del.so`. També es pot executar amb un cartell `[train] horn`.
+
 ## Configuració
 
 A la configuració es defineixen certes variables globals i les plantilles disponibles amb línies de tren per utilitzar. La configuració d'exemple és la següent:

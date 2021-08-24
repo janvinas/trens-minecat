@@ -8,6 +8,7 @@ io\github\janvinas\trensminecat\signactions\SignActionDisplayManual.class
 io\github\janvinas\trensminecat\MapDisplays$DepartureBoard3.class
 io\github\janvinas\trensminecat\BoardUtils.class
 io\github\janvinas\trensminecat\signactions\SignActionClearDisplay.class
+io\github\janvinas\trensminecat\signactions\SignActionHorn.class
 io\github\janvinas\trensminecat\MapDisplays$DepartureBoard1.class
 io\github\janvinas\trensminecat\signactions\SignActionSenseParada.class
 io\github\janvinas\trensminecat\MapDisplays.class

@@ -5,6 +5,7 @@ import com.bergerkiller.bukkit.common.map.MapDisplay;
 import com.bergerkiller.bukkit.common.utils.ItemUtil;
 import com.bergerkiller.bukkit.tc.controller.MinecartGroup;
 import com.bergerkiller.bukkit.tc.controller.MinecartGroupStore;
+import com.bergerkiller.bukkit.tc.properties.CartProperties;
 import com.bergerkiller.bukkit.tc.signactions.SignAction;
 import com.bergerkiller.bukkit.tc.signactions.spawner.SpawnSign;
 import io.github.janvinas.trensminecat.signactions.*;
@@ -63,6 +64,7 @@ public class TrensMinecat extends JavaPlugin {
         SignAction.register(new SignActionDisplayManual());
         SignAction.register(new SignActionClearDisplay());
         SignAction.register(new SignActionSenseParada());
+        SignAction.register(new SignActionHorn());
     }
 
     @Override
@@ -120,6 +122,14 @@ public class TrensMinecat extends JavaPlugin {
                     sender.sendMessage(departureBoards.toString());
                     return true;
                 }
+            }else if(args.length == 1 && args[0].equalsIgnoreCase("horn")){
+                MinecartGroup group = CartProperties.getEditing( (Player) sender).getGroup();
+                if(group == null){
+                    sender.sendMessage("No estàs editant cap tren!");
+                    return false;
+                }
+                SignActionHorn.playSound(group);
+                return true;
             }
         }
         return false;

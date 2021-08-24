@@ -3,7 +3,6 @@ package io.github.janvinas.trensminecat;
 import com.bergerkiller.bukkit.common.map.MapColorPalette;
 import com.bergerkiller.bukkit.common.map.MapDisplay;
 import com.bergerkiller.bukkit.common.map.MapFont;
-import org.bukkit.scheduler.BukkitScheduler;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -284,8 +283,8 @@ public class MapDisplays{
                                 MapColorPalette.getColor(0, 0, 0),
                                 departureTime.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
                     }
-                    getLayer(1).draw(loadTexture(imgDir + "9px/" +
-                            departureBoardTrains.get(departureTime).name + ".png"), 2, 34 + i*14);
+                    getLayer(1).draw(loadTexture(imgDir + "11px/" +
+                            departureBoardTrains.get(departureTime).name + ".png"), 1, 33 + i*14);
 
                     String destination = departureBoardTrains.get(departureTime).destination;
                     if(!destination.equals("_")) getLayer(1).draw(MapFont.MINECRAFT, 21, 34 + i*14,
