@@ -186,11 +186,14 @@ public class ManualDisplays {
         static int updateTime = MapDisplays.updateTime;
 
         static Font helvetica;
+        static Font minecraftia;
 
         static {
             try {
                 InputStream helveticaStream = TrensMinecat.class.getResourceAsStream("/fonts/Helvetica.ttf");
                 helvetica = Font.createFont(Font.TRUETYPE_FONT, helveticaStream);
+                InputStream minecraftiaStream = TrensMinecat.class.getResourceAsStream("/fonts/Minecraftia-Regular.ttf");
+                minecraftia = Font.createFont(Font.TRUETYPE_FONT, minecraftiaStream);
             } catch (FontFormatException | IOException e) {
                 e.printStackTrace();
             }
@@ -207,9 +210,15 @@ public class ManualDisplays {
         public void onTick() {
             super.onTick();
 
+            //layer0: permament background (never updated)
+            //layer1: time (updated every tick)
+            //layer2: circumstancial background (updated from signs)
+            //layer3: text and icons (updated every updateTime seconds)
+
             getLayer(1).clear();
             LocalDateTime now = LocalDateTime.now();
-            getLayer(1).draw(MapFont.fromJavaFont(helvetica.deriveFont(12F)), 24, 11, MapColorPalette.COLOR_WHITE,
+            getLayer(1).setAlignment(MapFont.Alignment.MIDDLE);
+            getLayer(1).draw(MapFont.fromJavaFont(helvetica.deriveFont(12F)), 38, 11, MapColorPalette.COLOR_WHITE,
                     now.format(DateTimeFormatter.ofPattern("HH:mm")));
         }
     }
