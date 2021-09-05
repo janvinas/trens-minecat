@@ -2,6 +2,7 @@ package io.github.janvinas.trensminecat;
 
 import com.bergerkiller.bukkit.common.BlockLocation;
 import com.bergerkiller.bukkit.common.map.MapDisplay;
+import com.bergerkiller.bukkit.common.map.MapFont;
 import com.bergerkiller.bukkit.common.utils.ItemUtil;
 import com.bergerkiller.bukkit.tc.controller.MinecartGroup;
 import com.bergerkiller.bukkit.tc.controller.MinecartGroupStore;
@@ -19,10 +20,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.StringTokenizer;
+import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 public class TrensMinecat extends JavaPlugin {
 
@@ -106,9 +107,14 @@ public class TrensMinecat extends JavaPlugin {
                         return true;
 
                     }
-                }else if(args[1].equalsIgnoreCase("displaymanual")){
+                }else if(args[1].equalsIgnoreCase("displaymanual") && args.length == 4){
                     if(args[2].equalsIgnoreCase("1")){
                         ItemStack display = MapDisplay.createMapItem(ManualDisplays.ManualDisplay1.class);
+                        ItemUtil.getMetaTag(display).putValue("ID", args[3]);
+                        ((Player) sender).getInventory().addItem(display);
+                        return true;
+                    }else if(args[2].equalsIgnoreCase("3")){
+                        ItemStack display = MapDisplay.createMapItem(ManualDisplays.ManualDisplay3.class);
                         ItemUtil.getMetaTag(display).putValue("ID", args[3]);
                         ((Player) sender).getInventory().addItem(display);
                         return true;
@@ -130,6 +136,11 @@ public class TrensMinecat extends JavaPlugin {
                 }
                 SignActionHorn.playSound(group);
                 return true;
+            }else if(args[0].equalsIgnoreCase("configurar") && args.length >= 2){
+                if(args[1].equalsIgnoreCase("displaymanual")){
+                    return true;
+                }
+
             }
         }
         return false;

@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class MapDisplays{
-    static String imgDir = "io/github/janvinas/trensminecat/img/";
+    static String imgDir = "img/";
     static int updateTime = 100; //time in ticks between sign updates
     //TODO canviar hora UTC per hora local (i/o fer-ho configurable)
     //TODO afegir cartell rodalies antic (leds vermells)

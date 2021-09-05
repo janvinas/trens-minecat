@@ -58,9 +58,8 @@
                 <directory>src/main/java</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>plugin.yml</include>
                     <include>config.yml</include>
-                    <include>**/*.png</include>
+                    <include>plugin.yml</include>
                 </includes>
             </resource>
         </resources>
@@ -95,5 +94,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
