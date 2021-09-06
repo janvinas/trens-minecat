@@ -57,6 +57,12 @@ _És exactament igual visualment que el model 3 de pantalla normal, però no mos
 
 ![imatge](/imatges/3a.png)
 
+###### 2:
+_Pròximament_
+
+###### 3;
+![imatge](/imatges/manual/3.png)
+
 ## Comandaments
 
 `/tm crear pantalla <model> <plantilla> <nom>` Veure [Pantalles](#Pantalles).

@@ -47,8 +47,12 @@ public class SignActionClearDisplay extends SignAction {
     }
 
     private void clearDisplay(String displayId){
-        Collection<ManualDisplays.ManualDisplay1> displays = MapDisplay.getAllDisplays(ManualDisplays.ManualDisplay1.class);
-        displays.forEach(display -> {
+        Collection<ManualDisplays.ManualDisplay1> displays1 = MapDisplay.getAllDisplays(ManualDisplays.ManualDisplay1.class);
+        displays1.forEach(display -> {
+            display.clearInformation(displayId);
+        });
+        Collection<ManualDisplays.ManualDisplay3> displays3 = MapDisplay.getAllDisplays(ManualDisplays.ManualDisplay3.class);
+        displays3.forEach(display -> {
             display.clearInformation(displayId);
         });
     }

@@ -6,10 +6,13 @@ import com.bergerkiller.bukkit.common.map.MapFont;
 import com.bergerkiller.bukkit.common.map.MapTexture;
 
 import java.awt.*;
+import java.awt.font.TextAttribute;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class ManualDisplays {
@@ -183,17 +186,22 @@ public class ManualDisplays {
 
     public static class ManualDisplay3 extends MapDisplay{
         static String imgDir = MapDisplays.imgDir;
-        static int updateTime = MapDisplays.updateTime;
 
         static Font helvetica;
+        static Font minecraftiaWide;
         static Font minecraftia;
 
         static {
             try {
                 InputStream helveticaStream = TrensMinecat.class.getResourceAsStream("/fonts/Helvetica.ttf");
                 helvetica = Font.createFont(Font.TRUETYPE_FONT, helveticaStream);
+
                 InputStream minecraftiaStream = TrensMinecat.class.getResourceAsStream("/fonts/Minecraftia-Regular.ttf");
-                minecraftia = Font.createFont(Font.TRUETYPE_FONT, minecraftiaStream);
+                minecraftiaWide = Font.createFont(Font.TRUETYPE_FONT, minecraftiaStream);
+
+                Map<TextAttribute, Object> attributes = new HashMap<>();
+                attributes.put(TextAttribute.TRACKING, -0.15);
+                minecraftia = minecraftiaWide.deriveFont(attributes);
             } catch (FontFormatException | IOException e) {
                 e.printStackTrace();
             }
@@ -210,16 +218,56 @@ public class ManualDisplays {
         public void onTick() {
             super.onTick();
 
-            //layer0: permament background (never updated)
-            //layer1: time (updated every tick)
+            //layer0: permanent background (never updated)
+            //layer1: --
             //layer2: circumstancial background (updated from signs)
             //layer3: text and icons (updated every updateTime seconds)
+            //layer4: time (updated every tick)
 
-            getLayer(1).clear();
+            getLayer(4).clear();
             LocalDateTime now = LocalDateTime.now();
-            getLayer(1).setAlignment(MapFont.Alignment.MIDDLE);
-            getLayer(1).draw(MapFont.fromJavaFont(helvetica.deriveFont(12F)), 38, 11, MapColorPalette.COLOR_WHITE,
+            getLayer(4).setAlignment(MapFont.Alignment.MIDDLE);
+            getLayer(4).draw(MapFont.fromJavaFont(minecraftia.deriveFont(8F)), 38, 10, MapColorPalette.COLOR_WHITE,
                     now.format(DateTimeFormatter.ofPattern("HH:mm")));
+        }
+
+        public boolean updateInformation(String displayID, String displayName, String destination){
+            if(! properties.get("ID", String.class).equals(displayID)) return false;
+
+            getLayer(2).clear();
+            getLayer(3).clear();
+
+            getLayer(2).draw(MapFont.fromJavaFont(minecraftia.deriveFont(8F)), 58, 11, MapColorPalette.getColor(0x2B, 0x3D, 0x3F), "Tren Actual");
+            getLayer(2).fillRectangle(22, 30, 212, 16, MapColorPalette.getColor(200, 200, 200));
+
+            getLayer(2).draw(MapFont.fromJavaFont(minecraftia.deriveFont(8F)), 24, 34, MapColorPalette.getColor(0x2B, 0x3D, 0x3F), "Destinació");
+            //getLayer(2).draw(MapFont.fromJavaFont(minecraftia.deriveFont(8F)), 138, 34, MapColorPalette.getColor(0x2B, 0x3D, 0x3F), "Via");
+            getLayer(2).draw(MapFont.fromJavaFont(minecraftia.deriveFont(8F)), 162, 34, MapColorPalette.getColor(0x2B, 0x3D, 0x3F), "Observacions");
+
+            String trainLine;
+            String dest;
+            if(destination.equals("nopara")){
+                trainLine = "info";
+                dest = "Sense parada";
+            }else{
+                trainLine = destination.substring(0, destination.indexOf(' '));
+                dest = destination;
+                if(destination.contains(" → "))
+                    dest = destination.substring(destination.indexOf('→') + 2);
+            }
+
+            getLayer(3).draw(MapFont.fromJavaFont(minecraftia.deriveFont(8F)), 51, 49, MapColorPalette.COLOR_BLACK, dest);
+            getLayer(3).draw(loadTexture(imgDir + "11px/" + trainLine + ".png"), 22, 49);
+
+            return true;
+        }
+
+        public boolean clearInformation(String displayID){
+            if(! properties.get("ID", String.class).equals(displayID)) return false;
+
+            getLayer(2).clear();
+            getLayer(3).clear();
+            return true;
         }
     }
 }

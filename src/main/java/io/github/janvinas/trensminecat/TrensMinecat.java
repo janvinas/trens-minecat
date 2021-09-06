@@ -2,7 +2,6 @@ package io.github.janvinas.trensminecat;
 
 import com.bergerkiller.bukkit.common.BlockLocation;
 import com.bergerkiller.bukkit.common.map.MapDisplay;
-import com.bergerkiller.bukkit.common.map.MapFont;
 import com.bergerkiller.bukkit.common.utils.ItemUtil;
 import com.bergerkiller.bukkit.tc.controller.MinecartGroup;
 import com.bergerkiller.bukkit.tc.controller.MinecartGroupStore;
@@ -11,6 +10,7 @@ import com.bergerkiller.bukkit.tc.signactions.SignAction;
 import com.bergerkiller.bukkit.tc.signactions.spawner.SpawnSign;
 import io.github.janvinas.trensminecat.signactions.*;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -20,9 +20,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 public class TrensMinecat extends JavaPlugin {
@@ -137,7 +134,20 @@ public class TrensMinecat extends JavaPlugin {
                 SignActionHorn.playSound(group);
                 return true;
             }else if(args[0].equalsIgnoreCase("configurar") && args.length >= 2){
+                ItemStack heldItem = ((Player) sender).getInventory().getItemInMainHand();
                 if(args[1].equalsIgnoreCase("displaymanual")){
+                    if(!heldItem.getType().equals(Material.FILLED_MAP)){
+                        sender.sendMessage("Agafa el mapa amb la mà dreta per configurar-lo");
+                        return false;
+                    }
+
+                    if(args.length == 5 && args[2].equalsIgnoreCase("andana")){
+                        String destination = args[3].replaceAll("_", " ");
+                        Integer platformNumber = Integer.parseInt(args[4]);
+                        Object platformNumbers = ItemUtil.getMetaTag(heldItem).getValue("platformNumbers", HashMap.class);
+
+
+                    }
                     return true;
                 }
 

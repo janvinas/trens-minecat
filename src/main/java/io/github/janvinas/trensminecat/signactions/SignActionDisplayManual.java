@@ -37,8 +37,13 @@ public class SignActionDisplayManual extends SignAction {
     }
 
     private boolean updateDisplay(String displayId, String trainDisplayName, String destination){
-        Collection<ManualDisplays.ManualDisplay1> displays = MapDisplay.getAllDisplays(ManualDisplays.ManualDisplay1.class);
-        displays.forEach(display -> {
+        Collection<ManualDisplays.ManualDisplay1> displays1 = MapDisplay.getAllDisplays(ManualDisplays.ManualDisplay1.class);
+        displays1.forEach(display -> {
+            display.updateInformation(displayId, trainDisplayName, destination);
+
+        });
+        Collection<ManualDisplays.ManualDisplay3> displays3 = MapDisplay.getAllDisplays(ManualDisplays.ManualDisplay3.class);
+        displays3.forEach(display -> {
             display.updateInformation(displayId, trainDisplayName, destination);
 
         });
