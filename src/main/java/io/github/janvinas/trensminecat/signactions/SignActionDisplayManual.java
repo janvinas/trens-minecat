@@ -7,7 +7,9 @@ import com.bergerkiller.bukkit.tc.signactions.SignAction;
 import com.bergerkiller.bukkit.tc.signactions.SignActionType;
 import com.bergerkiller.bukkit.tc.utils.SignBuildOptions;
 import io.github.janvinas.trensminecat.ManualDisplays;
+import io.github.janvinas.trensminecat.ManualDisplay;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 public class SignActionDisplayManual extends SignAction {
@@ -37,16 +39,20 @@ public class SignActionDisplayManual extends SignAction {
     }
 
     private boolean updateDisplay(String displayId, String trainDisplayName, String destination){
-        Collection<ManualDisplays.ManualDisplay1> displays1 = MapDisplay.getAllDisplays(ManualDisplays.ManualDisplay1.class);
-        displays1.forEach(display -> {
-            display.updateInformation(displayId, trainDisplayName, destination);
 
-        });
-        Collection<ManualDisplays.ManualDisplay3> displays3 = MapDisplay.getAllDisplays(ManualDisplays.ManualDisplay3.class);
-        displays3.forEach(display -> {
-            display.updateInformation(displayId, trainDisplayName, destination);
+        Class<?>[] classes = ManualDisplays.class.getDeclaredClasses();
 
-        });
+        for (Class<?> c : classes) {
+            @SuppressWarnings("unchecked")
+            Collection<? extends ManualDisplay> displays = MapDisplay.getAllDisplays( (Class<ManualDisplay>) c);
+
+            displays.forEach(display -> {
+                display.updateInformation(displayId, trainDisplayName, destination);
+
+            });
+
+        }
+
         return true;
     }
 

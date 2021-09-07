@@ -1,5 +1,6 @@
 package io.github.janvinas.trensminecat;
 
+import com.bergerkiller.bukkit.common.map.MapDisplay;
 import net.intelie.omnicron.Cron;
 import java.time.LocalDateTime;
 import java.util.List;

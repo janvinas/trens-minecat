@@ -6,6 +6,7 @@ import com.bergerkiller.bukkit.tc.events.SignChangeActionEvent;
 import com.bergerkiller.bukkit.tc.signactions.SignAction;
 import com.bergerkiller.bukkit.tc.signactions.SignActionType;
 import com.bergerkiller.bukkit.tc.utils.SignBuildOptions;
+import io.github.janvinas.trensminecat.ManualDisplay;
 import io.github.janvinas.trensminecat.ManualDisplays;
 
 import java.util.Collection;
@@ -47,13 +48,16 @@ public class SignActionClearDisplay extends SignAction {
     }
 
     private void clearDisplay(String displayId){
-        Collection<ManualDisplays.ManualDisplay1> displays1 = MapDisplay.getAllDisplays(ManualDisplays.ManualDisplay1.class);
-        displays1.forEach(display -> {
-            display.clearInformation(displayId);
-        });
-        Collection<ManualDisplays.ManualDisplay3> displays3 = MapDisplay.getAllDisplays(ManualDisplays.ManualDisplay3.class);
-        displays3.forEach(display -> {
-            display.clearInformation(displayId);
-        });
+
+        Class<?>[] classes = ManualDisplays.class.getDeclaredClasses();
+        for (Class<?> c : classes) {
+            @SuppressWarnings("unchecked")
+            Collection<? extends ManualDisplay> displays = MapDisplay.getAllDisplays( (Class<ManualDisplay>) c);
+
+            displays.forEach(display -> {
+                display.clearInformation(displayId);
+
+            });
+        }
     }
 }

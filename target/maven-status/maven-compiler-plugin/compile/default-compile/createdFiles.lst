@@ -1,5 +1,6 @@
 io\github\janvinas\trensminecat\Departure.class
 io\github\janvinas\trensminecat\TrensMinecat.class
+io\github\janvinas\trensminecat\ManualDisplay.class
 io\github\janvinas\trensminecat\TrainLine.class
 io\github\janvinas\trensminecat\MapDisplays$DepartureBoard3.class
 io\github\janvinas\trensminecat\signactions\SignActionHorn.class

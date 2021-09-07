@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class ManualDisplays {
 
-    public static class ManualDisplay1 extends MapDisplay {
+    public static class ManualDisplay1 extends ManualDisplay {
         static String imgDir = "img/";
         boolean updateTime = true;
 
@@ -184,7 +184,7 @@ public class ManualDisplays {
     }
     */
 
-    public static class ManualDisplay3 extends MapDisplay{
+    public static class ManualDisplay3 extends ManualDisplay{
         static String imgDir = MapDisplays.imgDir;
 
         static Font helvetica;
