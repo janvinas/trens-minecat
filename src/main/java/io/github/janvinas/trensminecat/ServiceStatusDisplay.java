@@ -30,13 +30,13 @@ public class ServiceStatusDisplay extends MapDisplay {
         for(int i = 0; i < lines.length; i++){
             for(int j = 0; j < lines[i].length; j++){
                 getLayer(2).draw(
-                        loadTexture("/img/11px/" + lines[i][j] + ".png"),
+                        loadTexture("img/11px/" + lines[i][j] + ".png"),
                         8 + i * 164,
                         31 + j * 15);
 
                 getLayer(2).draw(
                         MapFont.MINECRAFT,
-                        22 + i * 164,
+                        37 + i * 164,
                         33 + j * 15,
                         MapColorPalette.COLOR_BLACK,
                         Variables.get("status" + lines[i][j]).getDefault());
