@@ -75,6 +75,10 @@ _Pròximament_
 
 `/tm horn` Fa sonar el so definit a les propietats del tren com a `horn_nom.del.so`. També es pot executar amb un cartell `[train] horn`.
 
+`/tm crear estatdelservei` Crea una pantalla gran amb totes les línies. Es pot posar un text personalitzat amb `/var edit <nom> set <valor>`
+
+`/tm actualitzarestat` Actualitza l'estat del servei quan s'ha modificat una variable.
+
 ## Configuració
 
 A la configuració es defineixen certes variables globals i les plantilles disponibles amb línies de tren per utilitzar. La configuració d'exemple és la següent:
@@ -109,10 +113,3 @@ pantalles:
       - R2N|45 2/10 * * * *|Sant Celoni|2|Para a totes les estacions
       - R2N|12 8/10 * * * *|Aeroport|2|Para a totes les estacions
 ```
-
-## TODO
-
-- [x] Afegir comandament `spawn`
-- [x] Arreglar pantalles per ser més similars a les de rodalies.
-- [ ] Afegir panell de sortides adif gran.
-- [x] Secció de configuració

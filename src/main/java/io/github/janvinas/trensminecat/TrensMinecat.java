@@ -116,6 +116,11 @@ public class TrensMinecat extends JavaPlugin {
                         ((Player) sender).getInventory().addItem(display);
                         return true;
                     }
+                }else if(args[1].equalsIgnoreCase("estatdelservei") && args.length == 2){
+                    ItemStack display = MapDisplay.createMapItem(ServiceStatusDisplay.class);
+                    ((Player) sender).getInventory().addItem(display);
+
+                    return true;
                 }
             }else if(args.length == 1 && args[0].equalsIgnoreCase("recarregar")){
                 loadMainConfiguration();
@@ -151,6 +156,10 @@ public class TrensMinecat extends JavaPlugin {
                     return true;
                 }
 
+            }else if(args.length == 1 && args[0].equalsIgnoreCase("actualitzarestat")){
+                MapDisplay.getAllDisplays(ServiceStatusDisplay.class).forEach(ServiceStatusDisplay::updateDisplay);
+
+                return true;
             }
         }
         return false;

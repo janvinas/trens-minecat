@@ -1,7 +1,6 @@
 package io.github.janvinas.trensminecat;
 
 import com.bergerkiller.bukkit.common.map.MapColorPalette;
-import com.bergerkiller.bukkit.common.map.MapDisplay;
 import com.bergerkiller.bukkit.common.map.MapFont;
 import com.bergerkiller.bukkit.common.map.MapTexture;
 
@@ -189,7 +188,7 @@ public class ManualDisplays {
 
         static Font helvetica;
         static Font minecraftiaWide;
-        static Font minecraftia;
+        static MapFont<Character> minecraftia;
 
         static {
             try {
@@ -201,8 +200,11 @@ public class ManualDisplays {
 
                 Map<TextAttribute, Object> attributes = new HashMap<>();
                 attributes.put(TextAttribute.TRACKING, -0.15);
-                minecraftia = minecraftiaWide.deriveFont(attributes);
+                minecraftia = MapFont.fromJavaFont(minecraftiaWide.deriveFont(attributes).deriveFont(8F));
+
             } catch (FontFormatException | IOException e) {
+                minecraftia = MapFont.MINECRAFT;
+                System.out.println("Using minecraftia fallback font");
                 e.printStackTrace();
             }
         }
@@ -227,7 +229,7 @@ public class ManualDisplays {
             getLayer(4).clear();
             LocalDateTime now = LocalDateTime.now();
             getLayer(4).setAlignment(MapFont.Alignment.MIDDLE);
-            getLayer(4).draw(MapFont.fromJavaFont(minecraftia.deriveFont(8F)), 38, 10, MapColorPalette.COLOR_WHITE,
+            getLayer(4).draw(minecraftia, 38, 10, MapColorPalette.COLOR_WHITE,
                     now.format(DateTimeFormatter.ofPattern("HH:mm")));
         }
 
@@ -237,12 +239,12 @@ public class ManualDisplays {
             getLayer(2).clear();
             getLayer(3).clear();
 
-            getLayer(2).draw(MapFont.fromJavaFont(minecraftia.deriveFont(8F)), 58, 11, MapColorPalette.getColor(0x2B, 0x3D, 0x3F), "Tren Actual");
+            getLayer(2).draw(minecraftia, 58, 11, MapColorPalette.getColor(0x2B, 0x3D, 0x3F), "Tren Actual");
             getLayer(2).fillRectangle(22, 30, 212, 16, MapColorPalette.getColor(200, 200, 200));
 
-            getLayer(2).draw(MapFont.fromJavaFont(minecraftia.deriveFont(8F)), 24, 34, MapColorPalette.getColor(0x2B, 0x3D, 0x3F), "Destinació");
-            //getLayer(2).draw(MapFont.fromJavaFont(minecraftia.deriveFont(8F)), 138, 34, MapColorPalette.getColor(0x2B, 0x3D, 0x3F), "Via");
-            getLayer(2).draw(MapFont.fromJavaFont(minecraftia.deriveFont(8F)), 162, 34, MapColorPalette.getColor(0x2B, 0x3D, 0x3F), "Observacions");
+            getLayer(2).draw(minecraftia, 24, 34, MapColorPalette.getColor(0x2B, 0x3D, 0x3F), "Destinació");
+            //getLayer(2).draw(minecraftia), 138, 34, MapColorPalette.getColor(0x2B, 0x3D, 0x3F), "Via");
+            getLayer(2).draw(minecraftia, 162, 34, MapColorPalette.getColor(0x2B, 0x3D, 0x3F), "Observacions");
 
             String trainLine;
             String dest;
@@ -256,7 +258,7 @@ public class ManualDisplays {
                     dest = destination.substring(destination.indexOf('→') + 2);
             }
 
-            getLayer(3).draw(MapFont.fromJavaFont(minecraftia.deriveFont(8F)), 51, 49, MapColorPalette.COLOR_BLACK, dest);
+            getLayer(3).draw(minecraftia, 51, 49, MapColorPalette.COLOR_BLACK, dest);
             getLayer(3).draw(loadTexture(imgDir + "11px/" + trainLine + ".png"), 22, 49);
 
             return true;
