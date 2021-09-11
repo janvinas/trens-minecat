@@ -37,14 +37,14 @@ public class TrensMinecat extends JavaPlugin {
     static Font minecraftiaJavaFont;
     static Font helvetica46JavaFont;
 
-    static{
+    {
         try {
-            InputStream stream = TrensMinecat.class.getResourceAsStream("/fonts/Minecraftia-Regular.ttf");
-            minecraftiaJavaFont = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(Font.PLAIN, 8);
-            stream = TrensMinecat.class.getResourceAsStream("/fonts/Helvetica.ttf");
-            helvetica46JavaFont = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(Font.PLAIN, 46);
+            InputStream stream = getResource("fonts/Minecraftia-Regular.ttf");
+            minecraftiaJavaFont = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(stream)).deriveFont(Font.PLAIN, 8);
+            stream = getResource("fonts/Helvetica.ttf");
+            helvetica46JavaFont = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(stream)).deriveFont(Font.PLAIN, 46);
 
-        } catch (FontFormatException | IOException e) {
+        } catch (FontFormatException | IOException | NullPointerException e) {
             minecraftiaJavaFont = new Font(Font.SANS_SERIF, Font.PLAIN, 8);
             helvetica46JavaFont = new Font(Font.SANS_SERIF, Font.PLAIN, 43);
             e.printStackTrace();

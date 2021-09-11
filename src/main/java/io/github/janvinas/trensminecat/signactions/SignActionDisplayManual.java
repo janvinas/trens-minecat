@@ -25,15 +25,14 @@ public class SignActionDisplayManual extends SignAction {
 
     @Override
     public void execute(SignActionEvent info) {
-        String displayName = info.getGroup().getProperties().getDisplayName();
-        String destination = info.getGroup().getProperties().getDestination();
-
         String displayId = info.getLine(2);
 
         if(displayId == null) return;
 
         if (info.isTrainSign() && info.isAction(SignActionType.GROUP_ENTER)) {
             if (!info.isPowered()) return;
+            String displayName = info.getGroup().getProperties().getDisplayName();
+            String destination = info.getGroup().getProperties().getDestination();
             updateDisplay(displayId, displayName, destination);
         }
     }

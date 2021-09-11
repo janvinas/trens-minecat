@@ -36,13 +36,13 @@ public class SignActionSenseParada extends SignAction {
 
     @Override
     public void execute(SignActionEvent info) {
-        String displayName = info.getGroup().getProperties().getDisplayName();
         String displayId = info.getLine(2);
 
         if(displayId == null) return;
 
         if (info.isTrainSign() && info.isAction(SignActionType.GROUP_ENTER, SignActionType.REDSTONE_ON)) {
             if (!info.isPowered()) return;
+            String displayName = info.getGroup().getProperties().getDisplayName();
             noStopDisplay(displayId, displayName);
         }
     }

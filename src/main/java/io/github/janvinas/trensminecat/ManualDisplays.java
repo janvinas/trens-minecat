@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class ManualDisplays {
@@ -194,15 +195,14 @@ public class ManualDisplays {
 
         static {
             try {
-
-                InputStream minecraftiaStream = TrensMinecat.class.getResourceAsStream("/fonts/Minecraftia-Regular.ttf");
-                minecraftiaWide = Font.createFont(Font.TRUETYPE_FONT, minecraftiaStream);
+                InputStream minecraftiaStream = TrensMinecat.getPlugin(TrensMinecat.class).getResource("fonts/Minecraftia-Regular.ttf");
+                minecraftiaWide = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(minecraftiaStream));
 
                 Map<TextAttribute, Object> attributes = new HashMap<>();
                 attributes.put(TextAttribute.TRACKING, -0.125);
                 minecraftia = MapFont.fromJavaFont(minecraftiaWide.deriveFont(attributes).deriveFont(8F));
 
-            } catch (FontFormatException | IOException e) {
+            } catch (FontFormatException | IOException | NullPointerException e) {
                 minecraftia = MapFont.MINECRAFT;
                 System.out.println("Using minecraftia fallback font");
                 e.printStackTrace();
