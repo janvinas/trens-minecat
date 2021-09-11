@@ -60,8 +60,14 @@ _És exactament igual visualment que el model 3 de pantalla normal, però no mos
 ###### 2:
 _Pròximament_
 
-###### 3;
+###### 3:
 ![imatge](/imatges/manual/3.png)
+
+###### 4:
+
+![imatge](/imatges/manual/4.png)
+
+Atenció! Per utilitzar aquest display cal configurar el número d'andana. Per fer-ho, agafa l'ítem del mapa amb la mà dreta i executa el comandament `/tm configurar displaymanual andana <número d'andana>`.
 
 ## Comandaments
 

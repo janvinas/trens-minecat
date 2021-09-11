@@ -1,11 +1,14 @@
 package io.github.janvinas.trensminecat;
 
 import com.bergerkiller.bukkit.common.map.MapColorPalette;
+import com.bergerkiller.bukkit.common.map.MapDisplay;
 import com.bergerkiller.bukkit.common.map.MapFont;
 import com.bergerkiller.bukkit.common.map.MapTexture;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.awt.*;
 import java.awt.font.TextAttribute;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
@@ -186,20 +189,17 @@ public class ManualDisplays {
     public static class ManualDisplay3 extends ManualDisplay{
         static String imgDir = MapDisplays.imgDir;
 
-        static Font helvetica;
         static Font minecraftiaWide;
         static MapFont<Character> minecraftia;
 
         static {
             try {
-                InputStream helveticaStream = TrensMinecat.class.getResourceAsStream("/fonts/Helvetica.ttf");
-                helvetica = Font.createFont(Font.TRUETYPE_FONT, helveticaStream);
 
                 InputStream minecraftiaStream = TrensMinecat.class.getResourceAsStream("/fonts/Minecraftia-Regular.ttf");
                 minecraftiaWide = Font.createFont(Font.TRUETYPE_FONT, minecraftiaStream);
 
                 Map<TextAttribute, Object> attributes = new HashMap<>();
-                attributes.put(TextAttribute.TRACKING, -0.15);
+                attributes.put(TextAttribute.TRACKING, -0.125);
                 minecraftia = MapFont.fromJavaFont(minecraftiaWide.deriveFont(attributes).deriveFont(8F));
 
             } catch (FontFormatException | IOException e) {
@@ -270,6 +270,129 @@ public class ManualDisplays {
             getLayer(2).clear();
             getLayer(3).clear();
             return true;
+        }
+    }
+
+    public static class ManualDisplay4 extends ManualDisplay{  //pantalla ADIF pròxima sortida. 2*1 blocs.
+
+        int tickCount = 0;
+        boolean sortidaImmediata = false;
+        static MapTexture background = MapTexture.loadPluginResource(JavaPlugin.getPlugin(TrensMinecat.class), "img/ManualDisplay4.png");
+
+        //layer1: black background (onAttached)
+        //layer2: image (onAttached)
+        //layer3: dynamic text (every tick)
+        //layer4: text  (every updateTime ticks)
+        //layer5: clock handles (onTick)
+
+        @Override
+        public void onAttached() {
+
+            getLayer(1).fillRectangle(0, 10, 256, 85, MapColorPalette.getColor(0x2E, 0x2E, 0X2E));
+            getLayer(2).draw(background, 0, 0);
+            super.onAttached();
+        }
+
+        @Override
+        public void onTick() {
+            super.onTick();
+
+            LocalDateTime now = LocalDateTime.now();
+            getLayer(5).clear();
+
+            getLayer(5).drawLine(222, 52,
+                    222 + getX(now.getSecond(), 60, 20),
+                    52 + getY(now.getSecond(), 60, 20),
+                    MapColorPalette.getColor(0x76, 0x76, 0x76)
+            );
+            getLayer(5).drawLine(222, 52,
+                    222 + getX(now.getMinute(), 60, 18),
+                    52 + getY(now.getMinute(), 60, 18),
+                    MapColorPalette.getColor(0x3b, 0x3b, 0x3b)
+            );
+            getLayer(5).drawLine(222, 52,
+                    222 + getX(now.getHour() + now.getMinute() / 60F, 12, 12),
+                    52 + getY(now.getHour() + now.getMinute() / 60F, 12, 12),
+                    MapColorPalette.getColor(0, 0, 0)
+            );
+
+            if(sortidaImmediata){
+
+                int n = tickCount % 20;
+                Color c = new Color(255, 242, 0);
+
+                if(n ==0) c = new Color(255, 242, 49);
+                if(n == 10) c = new Color(255, 0, 0);
+
+                if(n == 0 || n == 10){
+                    getLayer(3).clear();
+                    BufferedImage layer3 = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+                    Graphics2D g = layer3.createGraphics();
+                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                    g.setColor(c);
+                    g.setFont(TrensMinecat.minecraftiaJavaFont);
+                    g.drawString("SORTIDA IMMEDIATA", 6, 88);
+                    g.dispose();
+                    getLayer(3).draw(MapTexture.fromImage(layer3),0 , 5);
+                }
+
+            }
+
+            tickCount++;
+        }
+
+        public boolean updateInformation(String displayID, String displayName, String destination) {
+            if(! properties.get("ID", String.class).equals(displayID)) return false;
+
+            String trainLine;
+            String dest;
+            if(destination.equals("nopara")){
+                trainLine = "info";
+                dest = "sense parada";
+            }else{
+                trainLine = destination.substring(0, destination.indexOf(' '));
+                dest = destination;
+                if(destination.contains(" → "))
+                    dest = destination.substring(destination.indexOf('→') + 2);
+                dest = dest.toUpperCase();
+            }
+
+            getLayer(4).clear();
+            BufferedImage layer4 = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = layer4.createGraphics();
+
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+            g.setColor(new Color(255, 242, 0));
+            g.setFont(TrensMinecat.minecraftiaJavaFont);
+            g.drawString(trainLine, 6, 41); //tren
+            g.drawString(displayName, 78, 41); //servei
+            g.drawString(dest, 6, 73); //destinació
+            sortidaImmediata = true;
+
+            g.setColor(new Color(255, 255, 255));
+            g.setFont(TrensMinecat.helvetica46JavaFont);
+            g.drawString(properties.get("platform", String.class), 159, 80); //platform number
+            g.dispose();
+
+            getLayer(4).draw(MapTexture.fromImage(layer4), 0, 5); //global offset because the text is off (idk why)
+            return true;
+
+        }
+
+        public boolean clearInformation(String displayID) {
+            if(! properties.get("ID", String.class).equals(displayID)) return false;
+            getLayer(4).clear();
+            getLayer(3).clear();
+            sortidaImmediata = false;
+            return true;
+        }
+
+        private int getX(float angle, float divideBy, float length){
+            return (int) Math.round(Math.sin(angle * 2 * Math.PI / divideBy) * length);
+        }
+
+        private int getY(float angle, int divideBy, float length){
+            return - (int) Math.round(Math.cos(angle * 2 * Math.PI / divideBy) * length);
         }
     }
 }

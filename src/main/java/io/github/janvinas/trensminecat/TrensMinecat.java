@@ -20,6 +20,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 public class TrensMinecat extends JavaPlugin {
@@ -30,6 +33,23 @@ public class TrensMinecat extends JavaPlugin {
     int trainDestroyDelay;
     String dontDestroyTag;
     HashMap<String, Block> trainList = new HashMap<>();
+
+    static Font minecraftiaJavaFont;
+    static Font helvetica46JavaFont;
+
+    static{
+        try {
+            InputStream stream = TrensMinecat.class.getResourceAsStream("/fonts/Minecraftia-Regular.ttf");
+            minecraftiaJavaFont = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(Font.PLAIN, 8);
+            stream = TrensMinecat.class.getResourceAsStream("/fonts/Helvetica.ttf");
+            helvetica46JavaFont = Font.createFont(Font.TRUETYPE_FONT, stream).deriveFont(Font.PLAIN, 46);
+
+        } catch (FontFormatException | IOException e) {
+            minecraftiaJavaFont = new Font(Font.SANS_SERIF, Font.PLAIN, 8);
+            helvetica46JavaFont = new Font(Font.SANS_SERIF, Font.PLAIN, 43);
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void onEnable() {
@@ -116,6 +136,13 @@ public class TrensMinecat extends JavaPlugin {
                         ((Player) sender).getInventory().addItem(display);
                         return true;
                     }
+                    else if(args[2].equalsIgnoreCase("4")){
+                        ItemStack display = MapDisplay.createMapItem(ManualDisplays.ManualDisplay4.class);
+                        ItemUtil.getMetaTag(display).putValue("ID", args[3]);
+                        ItemUtil.getMetaTag(display).putValue("platform", "0");
+                        ((Player) sender).getInventory().addItem(display);
+                        return true;
+                    }
                 }else if(args[1].equalsIgnoreCase("estatdelservei") && args.length == 2){
                     ItemStack display = MapDisplay.createMapItem(ServiceStatusDisplay.class);
                     ((Player) sender).getInventory().addItem(display);
@@ -141,19 +168,16 @@ public class TrensMinecat extends JavaPlugin {
             }else if(args[0].equalsIgnoreCase("configurar") && args.length >= 2){
                 ItemStack heldItem = ((Player) sender).getInventory().getItemInMainHand();
                 if(args[1].equalsIgnoreCase("displaymanual")){
+
                     if(!heldItem.getType().equals(Material.FILLED_MAP)){
                         sender.sendMessage("Agafa el mapa amb la mà dreta per configurar-lo");
                         return false;
                     }
 
-                    if(args.length == 5 && args[2].equalsIgnoreCase("andana")){
-                        String destination = args[3].replaceAll("_", " ");
-                        Integer platformNumber = Integer.parseInt(args[4]);
-                        Object platformNumbers = ItemUtil.getMetaTag(heldItem).getValue("platformNumbers", HashMap.class);
-
-
+                    if(args.length == 4 && args[2].equalsIgnoreCase("andana")){
+                        ItemUtil.getMetaTag(heldItem).putValue("platform", args[3]);
+                        return true;
                     }
-                    return true;
                 }
 
             }else if(args.length == 1 && args[0].equalsIgnoreCase("actualitzarestat")){
