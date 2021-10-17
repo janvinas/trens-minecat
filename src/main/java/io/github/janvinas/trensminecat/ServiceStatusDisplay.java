@@ -10,9 +10,10 @@ public class ServiceStatusDisplay extends MapDisplay {
     //màximes columnes: 3
     //el que rebasi aquests nombres qedarà fora del cartell.
     static String[][] lines = {
-            {"R1", "R2", "R3", "R4", "R7", "R8", "R11", "R12", "R13", "R14", "R15", "R16","R17", "R18",},
+            {"R1", "R2", "R2N", "R2S", "R3", "R4", "R7", "R8", "R11", "R12", "R13", "R14", "R15", "Ca6"},
+            {"R16", "R17", "Ca5", "RL1", "RL2", "RL3", "RL4", "RL5", "RL6", "RT1", "RT2", "RG1"},
             {"L7", "L8", "R5", "R50", "R6", "R60", "S1", "S2", "S6", "S7"},
-            {"RL1", "RL2", "RL3", "RL4", "RL5", "RL6", "RT1", "RT2", "RG1"}
+
     };
 
 

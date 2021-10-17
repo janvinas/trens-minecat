@@ -190,23 +190,13 @@ public class ManualDisplays {
     public static class ManualDisplay3 extends ManualDisplay{
         static String imgDir = MapDisplays.imgDir;
 
-        static Font minecraftiaWide;
+        static Font minecraftiaWide = TrensMinecat.minecraftiaJavaFont;
         static MapFont<Character> minecraftia;
 
         static {
-            try {
-                InputStream minecraftiaStream = TrensMinecat.getPlugin(TrensMinecat.class).getResource("fonts/Minecraftia-Regular.ttf");
-                minecraftiaWide = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(minecraftiaStream));
-
-                Map<TextAttribute, Object> attributes = new HashMap<>();
-                attributes.put(TextAttribute.TRACKING, -0.125);
-                minecraftia = MapFont.fromJavaFont(minecraftiaWide.deriveFont(attributes).deriveFont(8F));
-
-            } catch (FontFormatException | IOException | NullPointerException e) {
-                minecraftia = MapFont.MINECRAFT;
-                System.out.println("Using minecraftia fallback font");
-                e.printStackTrace();
-            }
+            Map<TextAttribute, Object> attributes = new HashMap<>();
+            attributes.put(TextAttribute.TRACKING, -0.125);
+            minecraftia = MapFont.fromJavaFont(minecraftiaWide.deriveFont(attributes).deriveFont(8F));
         }
 
         @Override
@@ -290,7 +280,18 @@ public class ManualDisplays {
 
             getLayer(1).fillRectangle(0, 10, 256, 85, MapColorPalette.getColor(0x2E, 0x2E, 0X2E));
             getLayer(2).draw(background, 0, 0);
+            updatePlatformNumber();
+
             super.onAttached();
+        }
+        private void updatePlatformNumber(){
+            BufferedImage platformNumber = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = platformNumber.createGraphics();
+            g.setColor(new Color(255, 255, 255));
+            g.setFont(TrensMinecat.helvetica46JavaFont);
+            g.drawString(properties.get("platform", String.class), 159, 80); //platform number
+            g.dispose();
+            getLayer(4).draw(MapTexture.fromImage(platformNumber), 0, 0);
         }
 
         @Override
@@ -368,11 +369,9 @@ public class ManualDisplays {
             g.drawString(displayName, 78, 41); //servei
             g.drawString(dest, 6, 73); //destinació
             sortidaImmediata = true;
-
-            g.setColor(new Color(255, 255, 255));
-            g.setFont(TrensMinecat.helvetica46JavaFont);
-            g.drawString(properties.get("platform", String.class), 159, 80); //platform number
             g.dispose();
+
+            updatePlatformNumber();
 
             getLayer(4).draw(MapTexture.fromImage(layer4), 0, 5); //global offset because the text is off (idk why)
             return true;
@@ -394,5 +393,43 @@ public class ManualDisplays {
         private int getY(float angle, int divideBy, float length){
             return - (int) Math.round(Math.cos(angle * 2 * Math.PI / divideBy) * length);
         }
+    }
+
+
+    public static class ManualDisplay5 extends ManualDisplay{
+
+        static MapTexture background = MapTexture.loadPluginResource(JavaPlugin.getPlugin(TrensMinecat.class), "img/ManualDisplay5.png");
+
+        @Override
+        public boolean updateInformation(String displayID, String displayName, String destination) {
+            if(! properties.get("ID", String.class).equals(displayID)) return false;
+
+            getLayer(1).clear();
+            BufferedImage layer1 = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = layer1.createGraphics();
+            g.setColor(new Color(255, 242, 0));
+            g.setFont(TrensMinecat.helvetica46JavaFont.deriveFont(10F));
+            g.drawString(destination, 22, 71);
+            g.drawString(displayName, 22, 94);
+            g.dispose();
+            getLayer(1).draw(MapTexture.fromImage(layer1),0 , 0);
+            return true;
+        }
+
+        @Override
+        public boolean clearInformation(String displayID) {
+            if(! properties.get("ID", String.class).equals(displayID)) return false;
+
+            getLayer(1).clear();
+            return true;
+        }
+
+        @Override
+        public void onAttached() {
+            super.onAttached();
+            getLayer(0).clear();
+            getLayer(0).draw(background, 0, 0);
+        }
+
     }
 }

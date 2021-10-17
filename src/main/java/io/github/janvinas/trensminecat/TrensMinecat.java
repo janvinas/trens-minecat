@@ -19,11 +19,14 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.List;
 
 public class TrensMinecat extends JavaPlugin {
 
@@ -36,20 +39,6 @@ public class TrensMinecat extends JavaPlugin {
 
     static Font minecraftiaJavaFont;
     static Font helvetica46JavaFont;
-
-    {
-        try {
-            InputStream stream = getResource("fonts/Minecraftia-Regular.ttf");
-            minecraftiaJavaFont = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(stream)).deriveFont(Font.PLAIN, 8);
-            stream = getResource("fonts/Helvetica.ttf");
-            helvetica46JavaFont = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(stream)).deriveFont(Font.PLAIN, 46);
-
-        } catch (FontFormatException | IOException | NullPointerException e) {
-            minecraftiaJavaFont = new Font(Font.SANS_SERIF, Font.PLAIN, 8);
-            helvetica46JavaFont = new Font(Font.SANS_SERIF, Font.PLAIN, 43);
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void onEnable() {
@@ -83,6 +72,25 @@ public class TrensMinecat extends JavaPlugin {
         SignAction.register(new SignActionClearDisplay());
         SignAction.register(new SignActionSenseParada());
         SignAction.register(new SignActionHorn());
+
+        /*
+        try {
+            //InputStream stream = getResource("fonts/Minecraftia-Regular.ttf");
+            InputStream stream = this.getResource("fonts/Minecraftia-Regular.ttf");
+            minecraftiaJavaFont = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(stream)).deriveFont(Font.PLAIN, 8);
+            //stream = getResource("fonts/Helvetica.ttf");
+            stream = this.getResource("fonts/Helvetica.ttf");
+            helvetica46JavaFont = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(stream)).deriveFont(Font.PLAIN, 46);
+
+        } catch (FontFormatException | IOException | NullPointerException e) {
+            minecraftiaJavaFont = new Font(Font.SANS_SERIF, Font.PLAIN, 8);
+            helvetica46JavaFont = new Font(Font.SANS_SERIF, Font.PLAIN, 43);
+            e.printStackTrace();
+        }
+        */
+        minecraftiaJavaFont = new Font("minecraftia", Font.PLAIN, 8);
+        helvetica46JavaFont = new Font("helvetica", Font.PLAIN, 46);
+
     }
 
     @Override
@@ -92,7 +100,7 @@ public class TrensMinecat extends JavaPlugin {
             Location location = new Location(getServer().getWorld(args[1]), Double.parseDouble(args[2]), Double.parseDouble(args[3]), Double.parseDouble(args[4]));
             new SpawnSign(new BlockLocation(location)).spawn();
             return true;
-        }else if(command.getName().equalsIgnoreCase("trensminecat")){
+        }else if(args.length >=1 && command.getName().equalsIgnoreCase("trensminecat")){
             if(args[0].equalsIgnoreCase("crear")){
                 if(args[1].equalsIgnoreCase("pantalla")){
                     if(args[2].equalsIgnoreCase("1")){
@@ -135,9 +143,14 @@ public class TrensMinecat extends JavaPlugin {
                         ItemUtil.getMetaTag(display).putValue("ID", args[3]);
                         ((Player) sender).getInventory().addItem(display);
                         return true;
-                    }
-                    else if(args[2].equalsIgnoreCase("4")){
+                    }else if(args[2].equalsIgnoreCase("4")){
                         ItemStack display = MapDisplay.createMapItem(ManualDisplays.ManualDisplay4.class);
+                        ItemUtil.getMetaTag(display).putValue("ID", args[3]);
+                        ItemUtil.getMetaTag(display).putValue("platform", "0");
+                        ((Player) sender).getInventory().addItem(display);
+                        return true;
+                    }else if(args[2].equalsIgnoreCase("5")){
+                        ItemStack display = MapDisplay.createMapItem(ManualDisplays.ManualDisplay5.class);
                         ItemUtil.getMetaTag(display).putValue("ID", args[3]);
                         ItemUtil.getMetaTag(display).putValue("platform", "0");
                         ((Player) sender).getInventory().addItem(display);
@@ -187,6 +200,26 @@ public class TrensMinecat extends JavaPlugin {
             }
         }
         return false;
+    }
+
+    @Nullable
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+        if(command.getName().equalsIgnoreCase("trensminecat")){
+            if(args.length == 0){
+                return Arrays.asList("crear", "configurar", "actualitzarestat", "horn");
+            }else if(args.length == 1){
+                List<String> options = new ArrayList<>();
+                if("crear".startsWith(args[0])) options.add("crear <display|displaymanual|estatdelservei> [tipus] [ID]");
+                if("configurar".startsWith(args[0])) options.add("configurar displaymanual andana <número>");
+                if("actualitzarestat".startsWith(args[0])) options.add("actualitzarestat");
+                if("horn".startsWith(args[0])) options.add("horn");
+                return options;
+            }
+        }
+
+
+        return super.onTabComplete(sender, command, alias, args);
     }
 
     @Override

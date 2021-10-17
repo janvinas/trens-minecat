@@ -1,5 +1,6 @@
 io\github\janvinas\trensminecat\ServiceStatusDisplay.class
 io\github\janvinas\trensminecat\Departure.class
+io\github\janvinas\trensminecat\ManualDisplays$ManualDisplay5.class
 io\github\janvinas\trensminecat\TrensMinecat.class
 io\github\janvinas\trensminecat\ManualDisplay.class
 io\github\janvinas\trensminecat\TrainLine.class
