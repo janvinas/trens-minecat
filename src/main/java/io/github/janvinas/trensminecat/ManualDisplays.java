@@ -269,16 +269,17 @@ public class ManualDisplays {
         boolean sortidaImmediata = false;
         static MapTexture background = MapTexture.loadPluginResource(JavaPlugin.getPlugin(TrensMinecat.class), "img/ManualDisplay4.png");
 
-        //layer1: black background (onAttached)
+        //layer0: black background (onAttached)
+        //layer1: static text
         //layer2: image (onAttached)
         //layer3: dynamic text (every tick)
-        //layer4: text  (every updateTime ticks)
+        //layer4: platform number
         //layer5: clock handles (onTick)
 
         @Override
         public void onAttached() {
 
-            getLayer(1).fillRectangle(0, 10, 256, 85, MapColorPalette.getColor(0x2E, 0x2E, 0X2E));
+            getLayer(0).fillRectangle(0, 10, 256, 85, MapColorPalette.getColor(0x2E, 0x2E, 0X2E));
             getLayer(2).draw(background, 0, 0);
             updatePlatformNumber();
 
@@ -358,9 +359,9 @@ public class ManualDisplays {
                 dest = dest.toUpperCase();
             }
 
-            getLayer(4).clear();
-            BufferedImage layer4 = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g = layer4.createGraphics();
+            getLayer(1).clear();
+            BufferedImage layer1 = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = layer1.createGraphics();
 
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
             g.setColor(new Color(255, 242, 0));
@@ -373,7 +374,7 @@ public class ManualDisplays {
 
             updatePlatformNumber();
 
-            getLayer(4).draw(MapTexture.fromImage(layer4), 0, 5); //global offset because the text is off (idk why)
+            getLayer(1).draw(MapTexture.fromImage(layer1), 0, 5); //global offset because the text is off (idk why)
             return true;
 
         }
@@ -381,6 +382,7 @@ public class ManualDisplays {
         public boolean clearInformation(String displayID) {
             if(! properties.get("ID", String.class).equals(displayID)) return false;
             getLayer(4).clear();
+            updatePlatformNumber();
             getLayer(3).clear();
             sortidaImmediata = false;
             return true;

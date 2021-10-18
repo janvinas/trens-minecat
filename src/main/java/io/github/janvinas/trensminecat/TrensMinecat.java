@@ -23,8 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 import java.util.List;
 
@@ -72,6 +70,7 @@ public class TrensMinecat extends JavaPlugin {
         SignAction.register(new SignActionClearDisplay());
         SignAction.register(new SignActionSenseParada());
         SignAction.register(new SignActionHorn());
+        SignAction.register(new SignActionAudio());
 
         /*
         try {

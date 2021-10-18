@@ -15,6 +15,7 @@ io\github\janvinas\trensminecat\signactions\SignActionDisplayManual.class
 io\github\janvinas\trensminecat\BoardUtils.class
 io\github\janvinas\trensminecat\ManualDisplays$ManualDisplay4.class
 io\github\janvinas\trensminecat\ManualDisplays$ManualDisplay3.class
+io\github\janvinas\trensminecat\signactions\SignActionAudio.class
 io\github\janvinas\trensminecat\signactions\SignActionClearDisplay.class
 io\github\janvinas\trensminecat\signactions\SignActionSenseParada.class
 io\github\janvinas\trensminecat\MapDisplays$DepartureBoard4.class
