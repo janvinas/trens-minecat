@@ -381,6 +381,7 @@ public class ManualDisplays {
 
         public boolean clearInformation(String displayID) {
             if(! properties.get("ID", String.class).equals(displayID)) return false;
+            getLayer(1).clear();
             getLayer(4).clear();
             updatePlatformNumber();
             getLayer(3).clear();
@@ -410,7 +411,7 @@ public class ManualDisplays {
             BufferedImage layer1 = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g = layer1.createGraphics();
             g.setColor(new Color(255, 242, 0));
-            g.setFont(TrensMinecat.helvetica46JavaFont.deriveFont(10F));
+            g.setFont(TrensMinecat.minecraftiaJavaFont);
             g.drawString(destination, 22, 71);
             g.drawString(displayName, 22, 94);
             g.dispose();

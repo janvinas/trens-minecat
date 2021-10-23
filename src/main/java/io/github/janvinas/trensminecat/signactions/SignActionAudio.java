@@ -45,13 +45,13 @@ public class SignActionAudio extends SignAction {
 
     public static void playAudio(MinecartGroup group, SignActionEvent info){
         String audioName = info.getLine(2);
-        for(String tag : group.getProperties().getTags()){
-            if(tag.startsWith("audio_") && tag.matches("/.*_.*_.*/")){
-                StringTokenizer t = new StringTokenizer("_");
+        for(String tag : group.getProperties().getTags()) {
+            if (tag.startsWith("audio_") && tag.matches(".*_.*_.*")) {
+                StringTokenizer t = new StringTokenizer(tag, "_");
                 t.nextToken();
                 String alias = t.nextToken();
                 String name = t.nextToken();
-                if(alias.equals(audioName)) audioName = name;
+                if (alias.equals(audioName)) audioName = name;
             }
         }
         group.getWorld().playSound(group.get(0).getBlock().getLocation(), audioName, 1.0F, 1.0F);
