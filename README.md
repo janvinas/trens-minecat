@@ -85,6 +85,16 @@ Atenció! Per utilitzar aquest display cal configurar el número d'andana. Per f
 
 `/tm actualitzarestat` Actualitza l'estat del servei quan s'ha modificat una variable.
 
+##Cartells Traincarts
+
+####tagaudio
+```
+[train]
+tagsound
+<nom>
+```
+Reprodueix un so quan el tren passa per sobre el cartell. `<nom>` pot ser el nom de so o un àlias que es pot relacionar amb un tag al tren amb la sintaxi `tagaudio|alias|nom.del.so.real`
+
 ## Configuració
 
 A la configuració es defineixen certes variables globals i les plantilles disponibles amb línies de tren per utilitzar. La configuració d'exemple és la següent:

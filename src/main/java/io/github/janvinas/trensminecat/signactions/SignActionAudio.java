@@ -12,7 +12,7 @@ import java.util.StringTokenizer;
 public class SignActionAudio extends SignAction {
     @Override
     public boolean match(SignActionEvent info) {
-        return info.isType("audio");
+        return info.isType("tagaudio");
     }
 
     @Override
@@ -22,12 +22,12 @@ public class SignActionAudio extends SignAction {
 
     @Override
     public boolean build(SignChangeActionEvent event) {
-        if (!event.isType("audio")) {
+        if (!event.isType("tagaudio")) {
             return false;
         }
 
         return SignBuildOptions.create()
-                .setName("audio")
+                .setName("tagaudio")
                 .setDescription("play an audio. The third line must match a name of a minecraft audio file in format name.of.audio or an alias defined in the train tags as audio_alias_real.audio.name")
                 .handle(event.getPlayer());
     }
@@ -46,7 +46,7 @@ public class SignActionAudio extends SignAction {
     public static void playAudio(MinecartGroup group, SignActionEvent info){
         String audioName = info.getLine(2);
         for(String tag : group.getProperties().getTags()) {
-            if (tag.startsWith("audio_") && tag.matches(".*_.*_.*")) {
+            if (tag.startsWith("tagaudio_") && tag.matches(".*[|].*[|].*")) {
                 StringTokenizer t = new StringTokenizer(tag, "_");
                 t.nextToken();
                 String alias = t.nextToken();
