@@ -3,11 +3,15 @@ package io.github.janvinas.trensminecat;
 import com.bergerkiller.bukkit.common.BlockLocation;
 import com.bergerkiller.bukkit.common.map.MapDisplay;
 import com.bergerkiller.bukkit.common.utils.ItemUtil;
+import com.bergerkiller.bukkit.tc.TrainCarts;
 import com.bergerkiller.bukkit.tc.controller.MinecartGroup;
 import com.bergerkiller.bukkit.tc.controller.MinecartGroupStore;
 import com.bergerkiller.bukkit.tc.properties.CartProperties;
 import com.bergerkiller.bukkit.tc.signactions.SignAction;
+import com.bergerkiller.bukkit.tc.signactions.SignActionEject;
+import com.bergerkiller.bukkit.tc.signactions.SignActionSpawn;
 import com.bergerkiller.bukkit.tc.signactions.spawner.SpawnSign;
+import com.bergerkiller.bukkit.tc.signactions.spawner.SpawnSignManager;
 import io.github.janvinas.trensminecat.signactions.*;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -96,8 +100,15 @@ public class TrensMinecat extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         //TODO feedback dels comandaments
         if(args.length == 5 && args[0].equalsIgnoreCase("spawn")){
-            Location location = new Location(getServer().getWorld(args[1]), Double.parseDouble(args[2]), Double.parseDouble(args[3]), Double.parseDouble(args[4]));
-            new SpawnSign(new BlockLocation(location)).spawn();
+            List<SpawnSign> signs = TrainCarts.plugin.getSpawnSignManager().getSigns();
+            for (SpawnSign sign : signs){
+                if(sign.getWorld().getName().equals(args[1]) &&
+                        sign.getLocation().getX() == Integer.parseInt(args[2]) &&
+                        sign.getLocation().getY() == Integer.parseInt(args[3]) &&
+                        sign.getLocation().getZ() == Integer.parseInt(args[4])){
+                    sign.spawn();
+                }
+            }
             return true;
         }else if(args.length >=1 && command.getName().equalsIgnoreCase("trensminecat")){
             if(args[0].equalsIgnoreCase("crear")){
