@@ -24,7 +24,7 @@ public class ManualDisplays {
         static String imgDir = "img/";
         boolean updateTime = true;
 
-        public boolean updateInformation(String displayID, String displayName, String destination){
+        public boolean updateInformation(String displayID, String displayName, String destination, int clearIn){
             if(! properties.get("ID", String.class).equals(displayID)) return false;
 
             String trainLine;
@@ -54,6 +54,13 @@ public class ManualDisplays {
                     dest);
 
             updateTime = false;
+
+            if(clearIn != 0){
+                getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
+                    this.clearInformation(properties.get("ID", String.class));
+                }, clearIn * 20L);
+            }
+
             return true;
         }
 
@@ -223,7 +230,7 @@ public class ManualDisplays {
                     now.format(DateTimeFormatter.ofPattern("HH:mm")));
         }
 
-        public boolean updateInformation(String displayID, String displayName, String destination){
+        public boolean updateInformation(String displayID, String displayName, String destination, int clearIn){
             if(! properties.get("ID", String.class).equals(displayID)) return false;
 
             getLayer(2).clear();
@@ -250,6 +257,12 @@ public class ManualDisplays {
 
             getLayer(3).draw(minecraftia, 51, 49, MapColorPalette.COLOR_BLACK, dest);
             getLayer(3).draw(loadTexture(imgDir + "11px/" + trainLine + ".png"), 22, 49);
+
+            if(clearIn != 0){
+                getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
+                    this.clearInformation(properties.get("ID", String.class));
+                }, clearIn * 20L);
+            }
 
             return true;
         }
@@ -343,7 +356,7 @@ public class ManualDisplays {
             tickCount++;
         }
 
-        public boolean updateInformation(String displayID, String displayName, String destination) {
+        public boolean updateInformation(String displayID, String displayName, String destination, int clearIn) {
             if(! properties.get("ID", String.class).equals(displayID)) return false;
 
             String trainLine;
@@ -375,6 +388,13 @@ public class ManualDisplays {
             updatePlatformNumber();
 
             getLayer(1).draw(MapTexture.fromImage(layer1), 0, 5); //global offset because the text is off (idk why)
+
+            if(clearIn != 0){
+                getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
+                    this.clearInformation(properties.get("ID", String.class));
+                }, clearIn * 20L);
+            }
+
             return true;
 
         }
@@ -404,7 +424,7 @@ public class ManualDisplays {
         static MapTexture background = MapTexture.loadPluginResource(JavaPlugin.getPlugin(TrensMinecat.class), "img/ManualDisplay5.png");
 
         @Override
-        public boolean updateInformation(String displayID, String displayName, String destination) {
+        public boolean updateInformation(String displayID, String displayName, String destination, int clearIn) {
             if(! properties.get("ID", String.class).equals(displayID)) return false;
 
             getLayer(1).clear();
@@ -416,6 +436,13 @@ public class ManualDisplays {
             g.drawString(displayName, 22, 94);
             g.dispose();
             getLayer(1).draw(MapTexture.fromImage(layer1),0 , 0);
+
+            if(clearIn != 0){
+                getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
+                    this.clearInformation(properties.get("ID", String.class));
+                }, clearIn * 20L);
+            }
+
             return true;
         }
 

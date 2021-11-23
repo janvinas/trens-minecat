@@ -37,24 +37,30 @@ public class SignActionSenseParada extends SignAction {
     @Override
     public void execute(SignActionEvent info) {
         String displayId = info.getLine(2);
+        int clearIn;
+        if(info.getLine(3).length() > 0) {
+            clearIn = Integer.parseInt(info.getLine(3));
+        }else{
+            clearIn = 0;
+        }
 
         if(displayId == null) return;
 
         if (info.isTrainSign() && info.isAction(SignActionType.GROUP_ENTER, SignActionType.REDSTONE_ON)) {
             if (!info.isPowered()) return;
             String displayName = info.getGroup().getProperties().getDisplayName();
-            noStopDisplay(displayId, displayName);
+            noStopDisplay(displayId, displayName, clearIn);
         }
     }
 
-    private void noStopDisplay(String displayId, String displayName){
+    private void noStopDisplay(String displayId, String displayName, int clearIn){
         Class<?>[] classes = ManualDisplays.class.getDeclaredClasses();
         for (Class<?> c : classes) {
             @SuppressWarnings("unchecked")
             Collection<? extends ManualDisplay> displays = MapDisplay.getAllDisplays( (Class<ManualDisplay>) c);
 
             displays.forEach(display -> {
-                display.updateInformation(displayId, displayName, "nopara");
+                display.updateInformation(displayId, displayName, "nopara", clearIn);
 
             });
         }

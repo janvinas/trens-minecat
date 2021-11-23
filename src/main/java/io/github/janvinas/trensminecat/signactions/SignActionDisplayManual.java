@@ -26,6 +26,12 @@ public class SignActionDisplayManual extends SignAction {
     @Override
     public void execute(SignActionEvent info) {
         String displayId = info.getLine(2);
+        int clearIn;
+        if(info.getLine(3).length() > 0) {
+            clearIn = Integer.parseInt(info.getLine(3));
+        }else{
+            clearIn = 0;
+        }
 
         if(displayId == null) return;
 
@@ -33,11 +39,11 @@ public class SignActionDisplayManual extends SignAction {
             if (!info.isPowered()) return;
             String displayName = info.getGroup().getProperties().getDisplayName();
             String destination = info.getGroup().getProperties().getDestination();
-            updateDisplay(displayId, displayName, destination);
+            updateDisplay(displayId, displayName, destination, clearIn);
         }
     }
 
-    private boolean updateDisplay(String displayId, String trainDisplayName, String destination){
+    private boolean updateDisplay(String displayId, String trainDisplayName, String destination, int clearIn){
 
         Class<?>[] classes = ManualDisplays.class.getDeclaredClasses();
 
@@ -46,7 +52,7 @@ public class SignActionDisplayManual extends SignAction {
             Collection<? extends ManualDisplay> displays = MapDisplay.getAllDisplays( (Class<ManualDisplay>) c);
 
             displays.forEach(display -> {
-                display.updateInformation(displayId, trainDisplayName, destination);
+                display.updateInformation(displayId, trainDisplayName, destination, clearIn);
 
             });
 
