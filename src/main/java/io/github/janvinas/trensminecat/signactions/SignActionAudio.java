@@ -46,7 +46,7 @@ public class SignActionAudio extends SignAction {
     public static void playAudio(MinecartGroup group, SignActionEvent info){
         String audioName = info.getLine(2);
         for(String tag : group.getProperties().getTags()) {
-            if (tag.startsWith("tagaudio_") && tag.matches(".*[|].*[|].*")) {
+            if (tag.startsWith("tagaudio") && tag.matches(".*[|].*[|].*")) {
                 StringTokenizer t = new StringTokenizer(tag, "_");
                 t.nextToken();
                 String alias = t.nextToken();

@@ -33,11 +33,9 @@ public class ManualDisplays {
                 trainLine = "info";
                 dest = "sense parada";
             }else{
-                trainLine = destination.substring(0, destination.indexOf(' '));
-                dest = destination;
-                if(destination.contains(" → "))
-                    dest = destination.substring(destination.indexOf('→') + 2);
-                dest = dest.toUpperCase();
+
+                trainLine = displayName;
+                dest = destination.toUpperCase();
             }
 
             getLayer(5).clear();
@@ -249,10 +247,8 @@ public class ManualDisplays {
                 trainLine = "info";
                 dest = "Sense parada";
             }else{
-                trainLine = destination.substring(0, destination.indexOf(' '));
+                trainLine = displayName;
                 dest = destination;
-                if(destination.contains(" → "))
-                    dest = destination.substring(destination.indexOf('→') + 2);
             }
 
             getLayer(3).draw(minecraftia, 51, 49, MapColorPalette.COLOR_BLACK, dest);
@@ -365,11 +361,8 @@ public class ManualDisplays {
                 trainLine = "info";
                 dest = "sense parada";
             }else{
-                trainLine = destination.substring(0, destination.indexOf(' '));
-                dest = destination;
-                if(destination.contains(" → "))
-                    dest = destination.substring(destination.indexOf('→') + 2);
-                dest = dest.toUpperCase();
+                trainLine = displayName;
+                dest = destination.toUpperCase();
             }
 
             getLayer(1).clear();
