@@ -9,7 +9,7 @@ Gestió d'informació i funcionament de trens al servidor de Minecraft.
   - `nom` Nom de l'estació que es mostra a la pantalla. Només és visible en certs models.
 
 #### Models disponibles:
-_Els models 1 i 2 provenen de versions antigues i probablement desapareixeran en el futur, per la qual cosa no s'haurien d'utilitzar.
+_Els models 1 i 2 provenen de versions antigues i probablement desapareixeran en el futur, per la qual cosa no s'haurien d'utilitzar._
 ###### 1: 
 ![imatge](/imatges/1.png)
 
@@ -31,8 +31,9 @@ Per actualitzar la seva informació cal col·locar un cartell Traincarts amb la 
 [train]
 displaymanual
 <nom de la pantalla>
+<delay>
 ```
-La pantalla s'actualitzarà quan s'activi el cartell o un tren passi per sobre i el cartell estigui activat.
+La pantalla s'actualitzarà quan s'activi el cartell o un tren passi per sobre i el cartell estigui activat. La tercera línia es refereix al camp `<nom>` del comandament per aconseguir una pantalla i la quarta és un delay opcional (en segons), al cap del qual es reiniciarà la pantalla. (fins i tot sense un cartell `reiniciardisplay`)
 
 Per generar una pantalla, caldrà utilitzar el comandament `/tm crear displaymanual <model> <nom>`, on el nom ha de coincidir amb el del cartell Traincarts.
 
@@ -85,9 +86,9 @@ Atenció! Per utilitzar aquest display cal configurar el número d'andana. Per f
 
 `/tm actualitzarestat` Actualitza l'estat del servei quan s'ha modificat una variable.
 
-##Cartells Traincarts
+## Cartells Traincarts
 
-####tagaudio
+#### tagaudio
 ```
 [train]
 tagsound
