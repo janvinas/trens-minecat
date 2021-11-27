@@ -1,7 +1,6 @@
 package io.github.janvinas.trensminecat;
 
 import com.bergerkiller.bukkit.common.map.MapColorPalette;
-import com.bergerkiller.bukkit.common.map.MapDisplay;
 import com.bergerkiller.bukkit.common.map.MapFont;
 import com.bergerkiller.bukkit.common.map.MapTexture;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -9,13 +8,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.awt.*;
 import java.awt.font.TextAttribute;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 
 public class ManualDisplays {
@@ -251,8 +247,14 @@ public class ManualDisplays {
                 dest = destination;
             }
 
+            MapTexture lineIcon = loadTexture(imgDir + "11px/" + trainLine + ".png");
+            if(!(lineIcon.getHeight() > 1)){
+                dest = displayName;
+                lineIcon = loadTexture(imgDir + "11px/what.png");
+            }
+
             getLayer(3).draw(minecraftia, 51, 49, MapColorPalette.COLOR_BLACK, dest);
-            getLayer(3).draw(loadTexture(imgDir + "11px/" + trainLine + ".png"), 22, 49);
+            getLayer(3).draw(lineIcon, 22, 49);
 
             if(clearIn != 0){
                 getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
