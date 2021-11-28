@@ -207,6 +207,8 @@ public class TrensMinecat extends JavaPlugin {
                 MapDisplay.getAllDisplays(ServiceStatusDisplay.class).forEach(ServiceStatusDisplay::updateDisplay);
 
                 return true;
+            }else if(args.length == 1 && args[0].equalsIgnoreCase("info")){
+                sender.sendMessage("TrensMinecat versió " + getDescription().getVersion() + " programat per janitus1234 (janitus1234@gmail.com)");
             }
         }
         return false;
