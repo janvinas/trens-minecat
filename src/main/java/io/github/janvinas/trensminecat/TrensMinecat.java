@@ -8,12 +8,8 @@ import com.bergerkiller.bukkit.tc.controller.MinecartGroup;
 import com.bergerkiller.bukkit.tc.controller.MinecartGroupStore;
 import com.bergerkiller.bukkit.tc.properties.CartProperties;
 import com.bergerkiller.bukkit.tc.signactions.SignAction;
-import com.bergerkiller.bukkit.tc.signactions.SignActionEject;
-import com.bergerkiller.bukkit.tc.signactions.SignActionSpawn;
 import com.bergerkiller.bukkit.tc.signactions.spawner.SpawnSign;
-import com.bergerkiller.bukkit.tc.signactions.spawner.SpawnSignManager;
 import io.github.janvinas.trensminecat.signactions.*;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -97,7 +93,7 @@ public class TrensMinecat extends JavaPlugin {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         //TODO feedback dels comandaments
         if(args.length == 5 && args[0].equalsIgnoreCase("spawn")){
             List<SpawnSign> signs = TrainCarts.plugin.getSpawnSignManager().getSigns();

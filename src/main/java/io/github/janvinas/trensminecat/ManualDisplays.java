@@ -20,7 +20,7 @@ public class ManualDisplays {
         static String imgDir = "img/";
         boolean updateTime = true;
 
-        public boolean updateInformation(String displayID, String displayName, String destination, int clearIn){
+        public boolean updateInformation(String displayID, String name, String displayName, String destination, int clearIn){
             if(! properties.get("ID", String.class).equals(displayID)) return false;
 
             String trainLine;
@@ -30,7 +30,7 @@ public class ManualDisplays {
                 dest = "sense parada";
             }else{
 
-                trainLine = displayName;
+                trainLine = name.substring(0, name.indexOf('_'));
                 dest = destination.toUpperCase();
             }
 
@@ -224,7 +224,7 @@ public class ManualDisplays {
                     now.format(DateTimeFormatter.ofPattern("HH:mm")));
         }
 
-        public boolean updateInformation(String displayID, String displayName, String destination, int clearIn){
+        public boolean updateInformation(String displayID, String name, String displayName, String destination, int clearIn){
             if(! properties.get("ID", String.class).equals(displayID)) return false;
 
             getLayer(2).clear();
@@ -243,7 +243,7 @@ public class ManualDisplays {
                 trainLine = "info";
                 dest = "Sense parada";
             }else{
-                trainLine = displayName;
+                trainLine = name.substring(0, name.indexOf('_'));
                 dest = destination;
             }
 
@@ -354,16 +354,14 @@ public class ManualDisplays {
             tickCount++;
         }
 
-        public boolean updateInformation(String displayID, String displayName, String destination, int clearIn) {
+        public boolean updateInformation(String displayID, String name, String displayName, String destination, int clearIn) {
             if(! properties.get("ID", String.class).equals(displayID)) return false;
 
             String trainLine;
             String dest;
             if(destination.equals("nopara")){
-                trainLine = "info";
                 dest = "sense parada";
             }else{
-                trainLine = displayName;
                 dest = destination.toUpperCase();
             }
 
@@ -374,7 +372,7 @@ public class ManualDisplays {
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
             g.setColor(new Color(255, 242, 0));
             g.setFont(TrensMinecat.minecraftiaJavaFont);
-            g.drawString(trainLine, 6, 41); //tren
+            g.drawString(name, 6, 41); //tren
             g.drawString(displayName, 78, 41); //servei
             g.drawString(dest, 6, 73); //destinació
             sortidaImmediata = true;
@@ -419,7 +417,7 @@ public class ManualDisplays {
         static MapTexture background = MapTexture.loadPluginResource(JavaPlugin.getPlugin(TrensMinecat.class), "img/ManualDisplay5.png");
 
         @Override
-        public boolean updateInformation(String displayID, String displayName, String destination, int clearIn) {
+        public boolean updateInformation(String displayID, String name, String displayName, String destination, int clearIn) {
             if(! properties.get("ID", String.class).equals(displayID)) return false;
 
             getLayer(1).clear();
