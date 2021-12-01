@@ -72,21 +72,6 @@ public class TrensMinecat extends JavaPlugin {
         SignAction.register(new SignActionHorn());
         SignAction.register(new SignActionAudio());
 
-        /*
-        try {
-            //InputStream stream = getResource("fonts/Minecraftia-Regular.ttf");
-            InputStream stream = this.getResource("fonts/Minecraftia-Regular.ttf");
-            minecraftiaJavaFont = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(stream)).deriveFont(Font.PLAIN, 8);
-            //stream = getResource("fonts/Helvetica.ttf");
-            stream = this.getResource("fonts/Helvetica.ttf");
-            helvetica46JavaFont = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(stream)).deriveFont(Font.PLAIN, 46);
-
-        } catch (FontFormatException | IOException | NullPointerException e) {
-            minecraftiaJavaFont = new Font(Font.SANS_SERIF, Font.PLAIN, 8);
-            helvetica46JavaFont = new Font(Font.SANS_SERIF, Font.PLAIN, 43);
-            e.printStackTrace();
-        }
-        */
         minecraftiaJavaFont = new Font("minecraftia", Font.PLAIN, 8);
         helvetica46JavaFont = new Font("helvetica", Font.PLAIN, 46);
 

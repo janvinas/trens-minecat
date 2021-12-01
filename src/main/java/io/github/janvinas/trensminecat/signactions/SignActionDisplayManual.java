@@ -39,7 +39,7 @@ public class SignActionDisplayManual extends SignAction {
             if (!info.isPowered()) return;
             String displayName = info.getGroup().getProperties().getDisplayName();
             String destination = info.getGroup().getProperties().getDestination();
-            String name = "";
+            String name = info.getGroup().getProperties().getTrainName();
             updateDisplay(displayId, name, displayName, destination, clearIn);
         }
     }

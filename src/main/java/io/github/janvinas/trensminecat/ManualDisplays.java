@@ -30,7 +30,7 @@ public class ManualDisplays {
                 dest = "sense parada";
             }else{
 
-                trainLine = name.substring(0, name.indexOf('_'));
+                trainLine = BoardUtils.getTrainLine(name);
                 dest = destination.toUpperCase();
             }
 
@@ -243,7 +243,7 @@ public class ManualDisplays {
                 trainLine = "info";
                 dest = "Sense parada";
             }else{
-                trainLine = name.substring(0, name.indexOf('_'));
+                trainLine = BoardUtils.getTrainLine(name);
                 dest = destination;
             }
 
@@ -357,7 +357,6 @@ public class ManualDisplays {
         public boolean updateInformation(String displayID, String name, String displayName, String destination, int clearIn) {
             if(! properties.get("ID", String.class).equals(displayID)) return false;
 
-            String trainLine;
             String dest;
             if(destination.equals("nopara")){
                 dest = "sense parada";

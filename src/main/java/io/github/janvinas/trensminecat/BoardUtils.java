@@ -1,6 +1,5 @@
 package io.github.janvinas.trensminecat;
 
-import com.bergerkiller.bukkit.common.map.MapDisplay;
 import net.intelie.omnicron.Cron;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,5 +36,10 @@ public class BoardUtils {
             }
         }
         return departures;
+    }
+
+    public static String getTrainLine(String trainName){
+        if(trainName.matches(".*[_].*")) return trainName.substring(0, trainName.indexOf('_'));
+        return "unknownLine";
     }
 }
