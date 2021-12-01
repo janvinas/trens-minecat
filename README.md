@@ -58,6 +58,8 @@ _És exactament igual visualment que el model 3 de pantalla normal, però no mos
 
 ![imatge](/imatges/3a.png)
 
+Es pot configurar la imatge que es mostrarà quan no hi ha cap tren amb `/tm configurar displaymanual marca <nom>`. Opcions pel <nom> son `rodalies` o `renfe`.
+
 ###### 2:
 _Pròximament_
 

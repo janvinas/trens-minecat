@@ -19,9 +19,12 @@ public class ManualDisplays {
     public static class ManualDisplay1 extends ManualDisplay {
         static String imgDir = "img/";
         boolean updateTime = true;
+        String brand;
 
         public boolean updateInformation(String displayID, String name, String displayName, String destination, int clearIn){
             if(! properties.get("ID", String.class).equals(displayID)) return false;
+
+            brand = properties.get("brand", String.class, "rodalies"); //si no s'ha especificat una marca, retorna rodalies.
 
             String trainLine;
             String dest;
@@ -62,13 +65,9 @@ public class ManualDisplays {
             if(! properties.get("ID", String.class).equals(displayID)) return false;
 
             getLayer(4).clear();
-            getLayer(4).draw(loadTexture(imgDir + "28px/rodalies.png"), 5, 14);
-
+            getLayer(4).draw(loadTexture(imgDir + "28px/" + brand + ".png"), 5, 14);
             getLayer(5).clear();
-            getLayer(5).setAlignment(MapFont.Alignment.RIGHT);
-            LocalDateTime now = LocalDateTime.now();
-            getLayer(5).draw(MapFont.MINECRAFT, 119, 24, MapColorPalette.COLOR_WHITE,
-                    now.format(DateTimeFormatter.ofPattern("HH:mm")));
+
             updateTime = true;
             return true;
         }
@@ -76,12 +75,13 @@ public class ManualDisplays {
         @Override
         public void onAttached() {
             super.onAttached();
+            brand = properties.get("brand", String.class, "rodalies"); //si no s'ha especificat una marca, retorna rodalies.
             getLayer(1).clear();
             getLayer(1).fillRectangle(5, 14, 118, 28, MapColorPalette.getColor(40, 40, 40));
             getLayer(3).clear();
             getLayer(3).draw(loadTexture(imgDir + "DepartureBoard3.png"), 0, 0);
             getLayer(4).clear();
-            getLayer(4).draw(loadTexture(imgDir + "28px/rodalies.png"), 5, 14);
+            getLayer(4).draw(loadTexture(imgDir + "28px/" + brand + ".png"), 5, 14);
 
         }
 

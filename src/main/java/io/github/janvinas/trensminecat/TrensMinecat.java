@@ -181,15 +181,20 @@ public class TrensMinecat extends JavaPlugin {
                     if(args.length == 4 && args[2].equalsIgnoreCase("andana")){
                         ItemUtil.getMetaTag(heldItem).putValue("platform", args[3]);
                         return true;
+                    }else if(args.length == 4 && args[2].equalsIgnoreCase("marca")){
+                        ItemUtil.getMetaTag(heldItem).putValue("brand", args[3]);
+                    }else{
+                        sender.sendMessage("Propietat desconeguda o argument incorrecte");
                     }
                 }
 
             }else if(args.length == 1 && args[0].equalsIgnoreCase("actualitzarestat")){
                 MapDisplay.getAllDisplays(ServiceStatusDisplay.class).forEach(ServiceStatusDisplay::updateDisplay);
-
                 return true;
+
             }else if(args.length == 1 && args[0].equalsIgnoreCase("info")){
                 sender.sendMessage("TrensMinecat versió " + getDescription().getVersion() + " programat per janitus1234 (janitus1234@gmail.com)");
+                return true;
             }
         }
         return false;
