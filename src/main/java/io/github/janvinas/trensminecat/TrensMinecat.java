@@ -80,7 +80,7 @@ public class TrensMinecat extends JavaPlugin {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         //TODO feedback dels comandaments
-        if(args.length == 5 && args[0].equalsIgnoreCase("spawn")){
+        if(command.getName().equalsIgnoreCase("trensminecat") && args.length == 5 && args[0].equalsIgnoreCase("spawn")){
             List<SpawnSign> signs = TrainCarts.plugin.getSpawnSignManager().getSigns();
             for (SpawnSign sign : signs){
                 if(sign.getWorld().getName().equals(args[1]) &&
@@ -93,7 +93,7 @@ public class TrensMinecat extends JavaPlugin {
             return true;
         }else if(args.length >=1 && command.getName().equalsIgnoreCase("trensminecat")){
             if(args[0].equalsIgnoreCase("crear")){
-                if(args[1].equalsIgnoreCase("pantalla")){
+                if(args[1].equalsIgnoreCase("display")){
                     if(args[2].equalsIgnoreCase("1")){
                         ItemStack display = MapDisplay.createMapItem(MapDisplays.DepartureBoard1.class);
                         ItemUtil.getMetaTag(display).putValue("template", args[3]);
@@ -156,11 +156,6 @@ public class TrensMinecat extends JavaPlugin {
             }else if(args.length == 1 && args[0].equalsIgnoreCase("recarregar")){
                 loadMainConfiguration();
                 return true;
-            }else if(args[0].equalsIgnoreCase("debug")){
-                if(args.length == 2 && args[1].equalsIgnoreCase("templatelist")){
-                    sender.sendMessage(departureBoards.toString());
-                    return true;
-                }
             }else if(args.length == 1 && args[0].equalsIgnoreCase("horn")){
                 MinecartGroup group = CartProperties.getEditing( (Player) sender).getGroup();
                 if(group == null){
@@ -203,21 +198,55 @@ public class TrensMinecat extends JavaPlugin {
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+        List<String> options = new ArrayList<>();
         if(command.getName().equalsIgnoreCase("trensminecat")){
             if(args.length == 0){
-                return Arrays.asList("crear", "configurar", "actualitzarestat", "horn");
-            }else if(args.length == 1){
-                List<String> options = new ArrayList<>();
-                if("crear".startsWith(args[0])) options.add("crear <display|displaymanual|estatdelservei> [tipus] [ID]");
-                if("configurar".startsWith(args[0])) options.add("configurar displaymanual andana <número>");
-                if("actualitzarestat".startsWith(args[0])) options.add("actualitzarestat");
-                if("horn".startsWith(args[0])) options.add("horn");
-                return options;
+                options.add("crear"); options.add("configurar"); options.add("actualitzarestat");
+                options.add("horn"); options.add("recarregar"); options.add("info");
+            }else{
+                if("crear".startsWith(args[0])){
+                    if(args.length == 1) {
+                        options.add("crear");
+                    }else{
+                        if("display".startsWith(args[1])) options.add("display <tipus> <id>");
+                        if("displaymanual".startsWith(args[1])) options.add("displaymanual <tipus> <id>");
+                        if("estatdelservei".startsWith(args[1])) options.add("estatdelservei");
+                    }
+                }
+                if("configurar".startsWith(args[0])){
+                    if(args.length == 1){
+                        options.add("configurar");
+                    }else if("displaymanual".startsWith(args[1])){
+                        if(args.length == 2) {
+                            options.add("displaymanual");
+                        }else{
+                            if("andana".startsWith(args[2])) options.add("andana [número]");
+                            if("marca".startsWith(args[2])) options.add("marca [marca]");
+                        }
+
+                    }
+                }
+                if("spawn".startsWith(args[0])){
+                    options.add("spawn <world> <x> <y> <z>");
+                }
+                if("horn".startsWith(args[0]) && args.length == 1){
+                    options.add("horn");
+                }
+                if("recarregar".startsWith(args[0]) && args.length == 1){
+                    options.add("recarregar");
+                }
+                if("info".startsWith(args[0]) && args.length == 1){
+                    options.add("info");
+                }
+                if("actualitzarestat".startsWith(args[0]) && args.length == 1){
+                    options.add("actualitzarestat");
+                }
             }
+
+
         }
 
-
-        return super.onTabComplete(sender, command, alias, args);
+        return options;
     }
 
     @Override
