@@ -35,6 +35,7 @@ public class ManualDisplays {
 
                 trainLine = BoardUtils.getTrainLine(name);
                 dest = destination.toUpperCase();
+                if(dest.length() == 0) dest = "DEST. DESCONEG.";
             }
 
             getLayer(5).clear();
@@ -45,10 +46,41 @@ public class ManualDisplays {
                 lineIcon = loadTexture(imgDir + "28px/what.png");
             }
             getLayer(4).draw(lineIcon, 5, 14);
-            getLayer(4).setAlignment(MapFont.Alignment.MIDDLE);
-            getLayer(4).draw(MapFont.MINECRAFT, 74, 23,
-                    MapColorPalette.getColor(255, 255, 255),
-                    dest);
+
+            //print the destination, wrapping the lines and centering it vertically and horizontally.
+            /*BufferedImage destinationText = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = destinationText.createGraphics();
+            g.setColor(new Color(255, 255, 255));
+            g.setFont(TrensMinecat.minecraftiaJavaFont);
+
+            AttributedString attributedString = new AttributedString(dest);
+            LineBreakMeasurer lineBreakMeasurer = new LineBreakMeasurer(attributedString.getIterator(), g.getFontRenderContext());
+            int lineCount = 0;
+            final int lineSpacing = 11;
+            while(lineBreakMeasurer.getPosition() < attributedString.getIterator().getEndIndex()){
+                lineBreakMeasurer.nextLayout(100);
+                lineCount++;
+            }
+            //center at 72, 22
+            int i = 0;
+            while(lineBreakMeasurer.getPosition() < attributedString.getIterator().getRunLimit()){
+                TextLayout textLayout = lineBreakMeasurer.nextLayout(100);
+                double width = textLayout.getBounds().getWidth();
+                //textLayout.draw(g, (float) (72F - width/2F), 22 - lineSpacing*lineCount/2F + 11*i);
+                textLayout.draw(g, 30, 30);
+                i++;
+            }
+            g.dispose();
+            getLayer(4).draw(MapTexture.fromImage(destinationText), 0, 0);
+            */
+            BufferedImage destinationText = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = destinationText.createGraphics();
+            g.setColor(new Color(255, 255, 255));
+            g.setFont(TrensMinecat.minecraftiaJavaFont);
+            int offset = g.getFontMetrics().stringWidth(dest) / 2;
+            g.drawString(dest, 77 - offset, 37);
+            g.dispose();
+            getLayer(4).draw(MapTexture.fromImage(destinationText), 0, 0);
 
             updateTime = false;
 
@@ -188,7 +220,7 @@ public class ManualDisplays {
     }
     */
 
-    public static class ManualDisplay3 extends ManualDisplay{
+    public static class ManualDisplay3 extends ManualDisplay{ //pantalla fgc primer tren (2*1)
         static String imgDir = MapDisplays.imgDir;
 
         static Font minecraftiaWide = TrensMinecat.minecraftiaJavaFont;
@@ -230,11 +262,10 @@ public class ManualDisplays {
             getLayer(2).clear();
             getLayer(3).clear();
 
-            getLayer(2).draw(minecraftia, 58, 11, MapColorPalette.getColor(0x2B, 0x3D, 0x3F), "Tren Actual");
+            getLayer(2).draw(minecraftia, 58, 11, MapColorPalette.getColor(0x2B, 0x3D, 0x3F), "Primer Tren");
             getLayer(2).fillRectangle(22, 30, 212, 16, MapColorPalette.getColor(200, 200, 200));
 
             getLayer(2).draw(minecraftia, 24, 34, MapColorPalette.getColor(0x2B, 0x3D, 0x3F), "Destinació");
-            //getLayer(2).draw(minecraftia), 138, 34, MapColorPalette.getColor(0x2B, 0x3D, 0x3F), "Via");
             getLayer(2).draw(minecraftia, 162, 34, MapColorPalette.getColor(0x2B, 0x3D, 0x3F), "Observacions");
 
             String trainLine;

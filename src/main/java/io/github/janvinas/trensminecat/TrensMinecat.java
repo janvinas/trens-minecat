@@ -6,11 +6,14 @@ import com.bergerkiller.bukkit.common.utils.ItemUtil;
 import com.bergerkiller.bukkit.tc.TrainCarts;
 import com.bergerkiller.bukkit.tc.controller.MinecartGroup;
 import com.bergerkiller.bukkit.tc.controller.MinecartGroupStore;
+import com.bergerkiller.bukkit.tc.controller.spawnable.SpawnableGroup;
 import com.bergerkiller.bukkit.tc.properties.CartProperties;
 import com.bergerkiller.bukkit.tc.signactions.SignAction;
 import com.bergerkiller.bukkit.tc.signactions.spawner.SpawnSign;
 import io.github.janvinas.trensminecat.signactions.*;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -19,6 +22,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -190,6 +194,19 @@ public class TrensMinecat extends JavaPlugin {
             }else if(args.length == 1 && args[0].equalsIgnoreCase("info")){
                 sender.sendMessage("TrensMinecat versió " + getDescription().getVersion() + " programat per janitus1234 (janitus1234@gmail.com)");
                 return true;
+            }else if(args.length >= 6 && args[0].equalsIgnoreCase("spawntrain")){
+                SpawnableGroup spawnableGroup = SpawnableGroup.parse(args[1]);
+                SpawnableGroup.SpawnLocationList spawnLocationList = spawnableGroup.findSpawnLocations(
+                        new Location(getServer().getWorld(args[2]),
+                                Integer.parseInt(args[3]),
+                                Integer.parseInt(args[4]),
+                                Integer.parseInt(args[5])),
+                        new Vector(1, 0, 0),
+                        SpawnableGroup.SpawnMode.DEFAULT
+                        );
+                spawnLocationList.loadChunks();
+                MinecartGroup minecartGroup = spawnableGroup.spawn(spawnLocationList);
+                if(args.length >= 7){ minecartGroup.getProperties().setTrainName(args[6]); }
             }
         }
         return false;
@@ -227,7 +244,22 @@ public class TrensMinecat extends JavaPlugin {
                     }
                 }
                 if("spawn".startsWith(args[0])){
-                    options.add("spawn <world> <x> <y> <z>");
+                    if(args.length == 1) options.add("spawn <world> <x> <y> <z>");
+                    else if(args.length == 2) options.add ("<world>");
+                    else if(args.length == 3) options.add ("<x>");
+                    else if(args.length == 4) options.add ("<y>");
+                    else if(args.length == 5) options.add ("<z>");
+                }
+                if("spawntrain".startsWith(args[0])){
+                    if(args.length == 1) options.add("spawntrain <train> <world> <x> <y> <z> [train name]");
+                    if(args[0].equals("spawntrain")) {
+                        if (args.length == 2) options.add("<train>");
+                        else if (args.length == 3) options.add("<world>");
+                        else if (args.length == 4) options.add("<x>");
+                        else if (args.length == 5) options.add("<y>");
+                        else if (args.length == 6) options.add("<z>");
+                        else if (args.length == 7) options.add("[train name]");
+                    }
                 }
                 if("horn".startsWith(args[0]) && args.length == 1){
                     options.add("horn");
