@@ -11,9 +11,10 @@ import com.bergerkiller.bukkit.tc.properties.CartProperties;
 import com.bergerkiller.bukkit.tc.signactions.SignAction;
 import com.bergerkiller.bukkit.tc.signactions.spawner.SpawnSign;
 import io.github.janvinas.trensminecat.signactions.*;
+import io.github.janvinas.trensminecat.trainTracker.TrainTracker;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
+
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -41,6 +42,8 @@ public class TrensMinecat extends JavaPlugin {
 
     static Font minecraftiaJavaFont;
     static Font helvetica46JavaFont;
+
+    TrainTracker trainTracker = new TrainTracker();
 
     @Override
     public void onEnable() {
@@ -78,6 +81,8 @@ public class TrensMinecat extends JavaPlugin {
 
         minecraftiaJavaFont = new Font("minecraftia", Font.PLAIN, 8);
         helvetica46JavaFont = new Font("helvetica", Font.PLAIN, 46);
+
+        trainTracker.loadTrains();
 
     }
 
@@ -201,12 +206,21 @@ public class TrensMinecat extends JavaPlugin {
                                 Integer.parseInt(args[3]),
                                 Integer.parseInt(args[4]),
                                 Integer.parseInt(args[5])),
-                        new Vector(1, 0, 0),
+                        new Vector(1, 0, 0), //vector arbitrari. Intentarà spawnejar el tren en aquesta direcció.
                         SpawnableGroup.SpawnMode.DEFAULT
                         );
                 spawnLocationList.loadChunks();
                 MinecartGroup minecartGroup = spawnableGroup.spawn(spawnLocationList);
                 if(args.length >= 7){ minecartGroup.getProperties().setTrainName(args[6]); }
+                if(args.length >= 8){ minecartGroup.getProperties().setDestination(args[7]); }
+                if(args.length >= 9 && args[8].equalsIgnoreCase("register")){ trainTracker.registerTrain(minecartGroup); }
+                return true;
+            }else if(args.length == 1 && args[0].equalsIgnoreCase("gettrains")){
+                sender.sendMessage(trainTracker.getTrackedTrains().toString());
+                return true;
+            }else if(args.length == 1 && args[0].equalsIgnoreCase("cleartrainregister")){
+                trainTracker.clearTrainRegister();
+                return true;
             }
         }
         return false;
@@ -244,14 +258,14 @@ public class TrensMinecat extends JavaPlugin {
                     }
                 }
                 if("spawn".startsWith(args[0])){
-                    if(args.length == 1) options.add("spawn <world> <x> <y> <z>");
+                    if(args.length == 1) options.add("spawn");
                     else if(args.length == 2) options.add ("<world>");
                     else if(args.length == 3) options.add ("<x>");
                     else if(args.length == 4) options.add ("<y>");
                     else if(args.length == 5) options.add ("<z>");
                 }
                 if("spawntrain".startsWith(args[0])){
-                    if(args.length == 1) options.add("spawntrain <train> <world> <x> <y> <z> [train name]");
+                    if(args.length == 1) options.add("spawntrain");
                     if(args[0].equals("spawntrain")) {
                         if (args.length == 2) options.add("<train>");
                         else if (args.length == 3) options.add("<world>");
@@ -259,6 +273,8 @@ public class TrensMinecat extends JavaPlugin {
                         else if (args.length == 5) options.add("<y>");
                         else if (args.length == 6) options.add("<z>");
                         else if (args.length == 7) options.add("[train name]");
+                        else if (args.length == 8) options.add("[destination]");
+                        else if (args.length == 9) options.add("register");
                     }
                 }
                 if("horn".startsWith(args[0]) && args.length == 1){
@@ -283,7 +299,7 @@ public class TrensMinecat extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
+        trainTracker.saveTrains();
     }
 
     public void loadMainConfiguration(){
@@ -316,6 +332,8 @@ public class TrensMinecat extends JavaPlugin {
         secondsToDisplayOnBoard = getConfig().getInt("temps-minim-en-pantalla");
         trainDestroyDelay = getConfig().getInt("destruir-trens-en");
         dontDestroyTag = getConfig().getString("no-destrueixis");
+
+        trainTracker.registerAllStations();
     }
 
 }

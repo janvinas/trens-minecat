@@ -1,0 +1,19 @@
+# Station list
+# Syntax:
+#
+# Lines:
+#   <line name>|<spawning frequency>
+#     - <StationName>|<time elapsed from train spawn>
+#    ...
+#
+#   [all times in seconds]
+
+lines:
+  R2 Sant Celoni|600:
+    - Stn1|0
+    - Stn2|125
+    - Stn3|234
+  ExampleLine2|120:
+    - Stn1|10
+    - Stn2|54
+    - Stn3|138
