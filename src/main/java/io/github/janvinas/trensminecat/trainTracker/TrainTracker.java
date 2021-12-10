@@ -106,6 +106,17 @@ public class TrainTracker {
         String trainName = minecartGroup.getProperties().getTrainName();
         trackedTrains.add(new TrackedTrain(this, trainName, destination));
     }
+
+    public boolean removeTrain(MinecartGroup minecartGroup){
+        for(TrackedTrain train : trackedTrains) {
+            if (train.trainName.equals(minecartGroup.getProperties().getTrainName())) {
+                trackedTrains.remove(train);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void clearTrainRegister(){
         trackedTrains.clear();
     }

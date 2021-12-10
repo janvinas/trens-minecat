@@ -3,10 +3,13 @@ package io.github.janvinas.trensminecat;
 import com.bergerkiller.bukkit.common.BlockLocation;
 import com.bergerkiller.bukkit.common.map.MapDisplay;
 import com.bergerkiller.bukkit.common.utils.ItemUtil;
+import com.bergerkiller.bukkit.tc.TCListener;
 import com.bergerkiller.bukkit.tc.TrainCarts;
 import com.bergerkiller.bukkit.tc.controller.MinecartGroup;
 import com.bergerkiller.bukkit.tc.controller.MinecartGroupStore;
 import com.bergerkiller.bukkit.tc.controller.spawnable.SpawnableGroup;
+import com.bergerkiller.bukkit.tc.events.GroupRemoveEvent;
+import com.bergerkiller.bukkit.tc.events.TrainCartsListener;
 import com.bergerkiller.bukkit.tc.properties.CartProperties;
 import com.bergerkiller.bukkit.tc.signactions.SignAction;
 import com.bergerkiller.bukkit.tc.signactions.spawner.SpawnSign;
@@ -44,6 +47,7 @@ public class TrensMinecat extends JavaPlugin {
     static Font helvetica46JavaFont;
 
     TrainTracker trainTracker = new TrainTracker();
+
 
     @Override
     public void onEnable() {
@@ -83,7 +87,7 @@ public class TrensMinecat extends JavaPlugin {
         helvetica46JavaFont = new Font("helvetica", Font.PLAIN, 46);
 
         trainTracker.loadTrains();
-
+        getServer().getPluginManager().registerEvents(new EventListener(), this);
     }
 
     @Override
