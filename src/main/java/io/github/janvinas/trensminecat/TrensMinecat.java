@@ -31,6 +31,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 
@@ -215,7 +217,11 @@ public class TrensMinecat extends JavaPlugin {
                         );
                 spawnLocationList.loadChunks();
                 MinecartGroup minecartGroup = spawnableGroup.spawn(spawnLocationList);
-                if(args.length >= 7){ minecartGroup.getProperties().setTrainName(args[6]); }
+                if(args.length >= 7){
+                    LocalDateTime spawningTime = LocalDateTime.now();
+                    String formattedSpawnTime = spawningTime.format(DateTimeFormatter.ofPattern("HHmmss"));
+                    minecartGroup.getProperties().setTrainName(args[6] + "_" + formattedSpawnTime);
+                }
                 if(args.length >= 8){ minecartGroup.getProperties().setDestination(args[7]); }
                 if(args.length >= 9 && args[8].equalsIgnoreCase("register")){ trainTracker.registerTrain(minecartGroup); }
                 return true;
