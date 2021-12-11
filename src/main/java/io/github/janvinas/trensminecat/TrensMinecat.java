@@ -14,6 +14,7 @@ import com.bergerkiller.bukkit.tc.properties.CartProperties;
 import com.bergerkiller.bukkit.tc.signactions.SignAction;
 import com.bergerkiller.bukkit.tc.signactions.spawner.SpawnSign;
 import io.github.janvinas.trensminecat.signactions.*;
+import io.github.janvinas.trensminecat.trainTracker.TrackedStation;
 import io.github.janvinas.trensminecat.trainTracker.TrainTracker;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -48,7 +49,7 @@ public class TrensMinecat extends JavaPlugin {
     static Font minecraftiaJavaFont;
     static Font helvetica46JavaFont;
 
-    TrainTracker trainTracker = new TrainTracker();
+    public TrainTracker trainTracker = new TrainTracker();
 
 
     @Override
@@ -230,6 +231,14 @@ public class TrensMinecat extends JavaPlugin {
                 return true;
             }else if(args.length == 1 && args[0].equalsIgnoreCase("cleartrainregister")){
                 trainTracker.clearTrainRegister();
+                return true;
+            }else if(args.length == 1 && args[0].equalsIgnoreCase("getnextstations")){
+                TreeSet<TrackedStation> stations = trainTracker.searchTrain(CartProperties.getEditing((Player) sender).getGroup()).nextStations;
+                String message = "";
+                for(TrackedStation s : stations ){
+                    message = message.concat(s.stationCode + " ");
+                }
+                sender.sendMessage(message);
                 return true;
             }
         }

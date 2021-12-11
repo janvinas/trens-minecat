@@ -91,6 +91,7 @@ public class TrainTracker {
     public List<TrackedLine> getLines(){
         return lineList;
     }
+
     public TrackedLine getLineMatching(String linedest) {
         for(TrackedLine line : getLines()){
             if(line.lineName.equals(linedest)) return line;
@@ -119,5 +120,13 @@ public class TrainTracker {
 
     public void clearTrainRegister(){
         trackedTrains.clear();
+    }
+
+    public TrackedTrain searchTrain(MinecartGroup m){
+        String trainName = m.getProperties().getTrainName();
+        for(TrackedTrain t : trackedTrains){
+            if(t.trainName.equals(trainName)) return t;
+        }
+        return null;
     }
 }

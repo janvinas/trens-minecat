@@ -1,8 +1,5 @@
 package io.github.janvinas.trensminecat.trainTracker;
-
-import com.bergerkiller.bukkit.tc.controller.MinecartGroup;
 import io.github.janvinas.trensminecat.TrensMinecat;
-
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -14,7 +11,7 @@ public class TrackedTrain implements Serializable {
     String destination;
     String trainName;
     String linedest; //format "R2 Sant Celoni"
-    TreeSet<TrackedStation> nextStations = new TreeSet<>();
+    public TreeSet<TrackedStation> nextStations = new TreeSet<>();
     LocalDateTime departureTime;
     Duration delay;
 
@@ -36,5 +33,17 @@ public class TrackedTrain implements Serializable {
             nextStations = trackedLine.trackedStations;
         }
 
+    }
+
+    public boolean enterStation(String stationCode){
+        //check if station exists in station list. To prevent this method from deleting all stations, it will do nothing
+        //if the station queried is not in the nex stations list.
+        for(TrackedStation s : nextStations){
+            if(s.stationCode.equals(stationCode)){
+                nextStations = (TreeSet<TrackedStation>) nextStations.tailSet(s, false);
+                return true;
+            }
+        }
+        return false;
     }
 }

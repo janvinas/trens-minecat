@@ -1,6 +1,7 @@
 package io.github.janvinas.trensminecat.signactions;
 
 import com.bergerkiller.bukkit.common.map.MapDisplay;
+import com.bergerkiller.bukkit.tc.controller.MinecartGroup;
 import com.bergerkiller.bukkit.tc.events.SignActionEvent;
 import com.bergerkiller.bukkit.tc.events.SignChangeActionEvent;
 import com.bergerkiller.bukkit.tc.signactions.SignAction;
@@ -8,8 +9,9 @@ import com.bergerkiller.bukkit.tc.signactions.SignActionType;
 import com.bergerkiller.bukkit.tc.utils.SignBuildOptions;
 import io.github.janvinas.trensminecat.ManualDisplays;
 import io.github.janvinas.trensminecat.ManualDisplay;
+import io.github.janvinas.trensminecat.TrensMinecat;
+import io.github.janvinas.trensminecat.trainTracker.TrackedTrain;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 public class SignActionDisplayManual extends SignAction {
@@ -41,6 +43,7 @@ public class SignActionDisplayManual extends SignAction {
             String destination = info.getGroup().getProperties().getDestination();
             String name = info.getGroup().getProperties().getTrainName();
             updateDisplay(displayId, name, displayName, destination, clearIn);
+            updateTrackedTrain(info.getGroup(), displayId);
         }
     }
 
@@ -60,6 +63,15 @@ public class SignActionDisplayManual extends SignAction {
         }
 
         return true;
+    }
+
+    private boolean updateTrackedTrain(MinecartGroup m, String displayId){
+        TrackedTrain train = TrensMinecat.getPlugin(TrensMinecat.class).trainTracker.searchTrain(m);
+        if(train != null){
+            train.enterStation(displayId);
+            return true;
+        }
+        return false;
     }
 
     @Override

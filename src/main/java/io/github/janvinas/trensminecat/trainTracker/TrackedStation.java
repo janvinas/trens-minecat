@@ -5,8 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Duration;
 
 public class TrackedStation implements Comparable<TrackedStation> {
-    String stationCode;
-    Duration timeFromSpawn;
+    public String stationCode;
+    public Duration timeFromSpawn;
 
     public TrackedStation(String stationCode, Duration timeFromSpawn){
         this.stationCode = stationCode;
