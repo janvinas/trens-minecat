@@ -9,7 +9,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 
-import javax.print.DocFlavor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -76,7 +75,7 @@ public class TrainTracker {
     @SuppressWarnings("unchecked")
     public boolean loadTrains(){
         try {
-            BukkitObjectInputStream in = new BukkitObjectInputStream(new GZIPInputStream(new FileInputStream("registeredtrains")));
+            BukkitObjectInputStream in = new BukkitObjectInputStream(new GZIPInputStream(new FileInputStream("plugins/TrensMinecat/registeredtrains")));
             trackedTrains = (ArrayList<TrackedTrain>) in.readObject();
             in.close();
             return true;

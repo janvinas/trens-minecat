@@ -64,7 +64,7 @@ public class MapDisplays{
 
                 int secondsToDisplayOnBoard = TrensMinecat.secondsToDisplayOnBoard;
                 DepartureBoardTemplate template = TrensMinecat.departureBoards.get(properties.get("template", String.class));
-                TreeMap<LocalDateTime, Departure> departureBoardTrains = BoardUtils.fillDepartureBoard(now, template.trainLines, template.length, true);
+                TreeMap<LocalDateTime, Departure> departureBoardTrains = BoardUtils.fillDepartureBoard(now, template.trainLines, template.length, properties.get("name", String.class), true);
 
                 //print train lines on screen
                 getLayer(1).clear();
@@ -137,7 +137,7 @@ public class MapDisplays{
                 int secondsToDisplayOnBoard = TrensMinecat.secondsToDisplayOnBoard;
                 DepartureBoardTemplate template = TrensMinecat.departureBoards.get(properties.get("template", String.class));
                 LocalDateTime now = LocalDateTime.now();
-                TreeMap<LocalDateTime, Departure> departureBoardTrains = BoardUtils.fillDepartureBoard(now, template.trainLines, template.length, true);
+                TreeMap<LocalDateTime, Departure> departureBoardTrains = BoardUtils.fillDepartureBoard(now, template.trainLines, template.length, properties.get("name", String.class), true);
 
                 LocalDateTime departureTime = departureBoardTrains.firstKey();
                 Duration untilDeparture = Duration.between(now, departureTime);
@@ -196,7 +196,7 @@ public class MapDisplays{
                 int secondsToDisplayOnBoard = TrensMinecat.secondsToDisplayOnBoard;
                 DepartureBoardTemplate template = TrensMinecat.departureBoards.get(properties.get("template", String.class));
                 LocalDateTime now = LocalDateTime.now();
-                TreeMap<LocalDateTime, Departure> departureBoardTrains = BoardUtils.fillDepartureBoard(now, template.trainLines, template.length, true);
+                TreeMap<LocalDateTime, Departure> departureBoardTrains = BoardUtils.fillDepartureBoard(now, template.trainLines, template.length, properties.get("name", String.class), true);
                 LocalDateTime departureTime = departureBoardTrains.firstKey();
                 Duration untilDeparture = Duration.between(now, departureTime);
 
@@ -263,7 +263,7 @@ public class MapDisplays{
             if( (tickCount % updateTime) == 0){
                 int secondsToDisplayOnBoard = TrensMinecat.secondsToDisplayOnBoard;
                 DepartureBoardTemplate template = TrensMinecat.departureBoards.get(properties.get("template", String.class));
-                TreeMap<LocalDateTime, Departure> departureBoardTrains = BoardUtils.fillDepartureBoard(now, template.trainLines, template.length, true);
+                TreeMap<LocalDateTime, Departure> departureBoardTrains = BoardUtils.fillDepartureBoard(now, template.trainLines, template.length, properties.get("name", String.class), true);
 
                 //print train lines on screen
                 getLayer(1).clear();
