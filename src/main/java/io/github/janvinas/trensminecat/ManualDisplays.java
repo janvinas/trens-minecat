@@ -3,21 +3,27 @@ package io.github.janvinas.trensminecat;
 import com.bergerkiller.bukkit.common.map.MapColorPalette;
 import com.bergerkiller.bukkit.common.map.MapFont;
 import com.bergerkiller.bukkit.common.map.MapTexture;
+import io.github.janvinas.trensminecat.trainTracker.TrackedTrain;
+import io.github.janvinas.trensminecat.trainTracker.TrainTracker;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.awt.*;
 import java.awt.font.TextAttribute;
 import java.awt.image.BufferedImage;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 
 public class ManualDisplays {
 
+    static String imgDir = "img/";
+
     public static class ManualDisplay1 extends ManualDisplay {
-        static String imgDir = "img/";
         boolean updateTime = true;
         String brand;
 
@@ -221,7 +227,6 @@ public class ManualDisplays {
     */
 
     public static class ManualDisplay3 extends ManualDisplay{ //pantalla fgc primer tren (2*1)
-        static String imgDir = MapDisplays.imgDir;
 
         static Font minecraftiaWide = TrensMinecat.minecraftiaJavaFont;
         static MapFont<Character> minecraftia;
@@ -298,7 +303,6 @@ public class ManualDisplays {
 
         public boolean clearInformation(String displayID){
             if(! properties.get("ID", String.class).equals(displayID)) return false;
-
             getLayer(2).clear();
             getLayer(3).clear();
             return true;
@@ -310,6 +314,7 @@ public class ManualDisplays {
         int tickCount = 0;
         boolean sortidaImmediata = false;
         static MapTexture background = MapTexture.loadPluginResource(JavaPlugin.getPlugin(TrensMinecat.class), "img/ManualDisplay4.png");
+
 
         //layer0: black background (onAttached)
         //layer1: static text
@@ -485,4 +490,152 @@ public class ManualDisplays {
         }
 
     }
+
+    /*
+    public static class ManualDisplay6 extends ManualDisplay{ //pantalla ADIF-rodalies pròximes sortides (idèntica que DepartureBoard4 però actualitza els trens)
+
+        static MapTexture background = MapTexture.loadPluginResource(JavaPlugin.getPlugin(TrensMinecat.class), "img/DepartureBoard4.png");
+        TreeMap<LocalDateTime, Departure> departures = new TreeMap<>();
+        final int departureBoardLength = 6;
+        //maximum time to display untracked delayed trains. If the train doesn't enter the station in this time from scheduled departure it will be removed from display.
+        final int maxDisplayTime = 240; //time in seconds
+        final int updateTime = 100; //time in ticks between graphics update.
+        final Duration maxAllowedDelay = Duration.ofSeconds(20); //maximum allowed delay that won't show the red number
+        DepartureBoardTemplate template;
+
+        int tickCount = 0;
+
+        @Override
+        public boolean updateInformation(String displayID, String name, String displayName, String destination, int clearIn) {
+            if(! properties.get("ID", String.class).equals(displayID)) return false;
+            TrainTracker trainTracker = ((TrensMinecat) getPlugin()).trainTracker;
+
+            if(template == null){
+                return false;
+            }
+
+            //train that has arrived will be removed from display past the clearIn time:
+            TrackedTrain arrival = trainTracker.searchTrain(name);
+            if(arrival != null){
+                getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
+                    departures.remove(arrival.departureTime);
+                }, clearIn * 20L); //time in seconds, so it will be multiplied to be in ticks.
+            }
+
+            updateTrainList(template);
+
+            return true;
+        }
+
+        @Override
+        public boolean clearInformation(String displayID) {
+            return false;
+        }
+
+        @Override
+        public void onAttached() {
+            super.onAttached();
+            getLayer(0).draw(background , 0, 0);
+
+            String templateName = properties.get("template", String.class);
+            template = templateName.equals("") ? null : TrensMinecat.departureBoards.get(templateName);
+        }
+
+        @Override
+        public void onTick() {
+            super.onTick();
+
+            LocalDateTime now = LocalDateTime.now();
+            getLayer(2).clear();
+            getLayer(2).setAlignment(MapFont.Alignment.MIDDLE);
+            getLayer(2).draw(MapFont.MINECRAFT, 227, 7, MapColorPalette.COLOR_BLACK,
+                    now.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+
+            if( (tickCount % updateTime) == 0){
+                int secondsToDisplayOnBoard = TrensMinecat.secondsToDisplayOnBoard;
+
+                if(template != null) updateTrainList(template);
+
+                //print train lines on screen
+                getLayer(1).clear();
+                getLayer(1).setAlignment(MapFont.Alignment.LEFT);
+                int i = 0;
+                for(LocalDateTime departureTime : departures.keySet()){
+                    if (i > departureBoardLength) break;
+                    Departure departure = departures.get(departureTime);
+                    Duration untilDeparture = Duration.between(now, departureTime).plus(departure.delay);
+                    boolean late = maxAllowedDelay.minus(departure.delay).isNegative();
+
+                    if(untilDeparture.isNegative()){
+                        //don't do anything
+                    }else if(untilDeparture.minusSeconds(secondsToDisplayOnBoard).isNegative()) {
+                        getLayer(1).draw(MapFont.MINECRAFT, 113, 34 + i * 14,
+                                late ? MapColorPalette.getColor(255, 0, 0) : MapColorPalette.getColor(0, 128, 0),
+                                "imminent");
+                    }else if(untilDeparture.minusMinutes(5).isNegative()){
+                        getLayer(1).draw(MapFont.MINECRAFT, 113, 34 + i * 14,
+                                late ? MapColorPalette.getColor(255, 0, 0) : MapColorPalette.getColor(0, 128, 0),
+                                untilDeparture.getSeconds()/60 + "min");
+                    }else{
+                        getLayer(1).draw(MapFont.MINECRAFT, 113, 34 + i*14,
+                                late ? MapColorPalette.getColor(255, 0, 0) : MapColorPalette.getColor(0, 0, 0),
+                                departureTime.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                    }
+                    getLayer(1).draw(loadTexture(imgDir + "11px/" +
+                            departure.name + ".png"), 1, 33 + i*14);
+
+                    String destination = departure.destination;
+                    if(!destination.equals("_")) getLayer(1).draw(MapFont.MINECRAFT, 21, 34 + i*14,
+                            MapColorPalette.getColor(0, 0, 0),
+                            departure.destination);
+                    String platform = departure.platform;
+                    if(!platform.equals("_")) getLayer(1).draw(MapFont.MINECRAFT, 99, 34 + i*14,
+                            MapColorPalette.getColor(0, 0, 0),
+                            departure.platform);
+                    String information = departure.information;
+                    if(!information.equals("_")){
+                        getLayer(1).draw(MapFont.MINECRAFT, 162, 34 + i*14,
+                                MapColorPalette.getColor(0, 0, 0),
+                                departure.information);
+                    }
+
+                    i++;
+                }
+            }
+
+            tickCount++;
+        }
+
+        private void updateTrainList(DepartureBoardTemplate template){
+            LocalDateTime now = LocalDateTime.now();
+            TrainTracker trainTracker = ((TrensMinecat) getPlugin()).trainTracker;
+
+            //add next lines so that the panel is always full:
+            TreeMap<LocalDateTime, Departure> computedDepartures =
+                    BoardUtils.fillDepartureBoard(now, template.trainLines, departureBoardLength, true);
+            computedDepartures.forEach((time, departure) -> departures.put(time, departure));
+
+            ArrayList<LocalDateTime> departuresToRemove = new ArrayList<>();
+            //iterate over all departures:
+            departures.forEach((time, departure) -> {
+                //remove very old trains from the display:
+                if(Duration.between(now, time).plus(Duration.ofSeconds(maxDisplayTime)).isNegative()){
+                    departuresToRemove.add(time);
+                }
+
+                //try to update times with TrainTracker:
+                TrackedTrain trackedTrain = trainTracker.searchTrain(departure.name);
+                if(trackedTrain != null){
+                    departure.delay = trackedTrain.delay;
+                    getPlugin().getLogger().fine("Train " + departure.name + " is " + departure.delay.toSeconds() + " seconds late");
+                }
+
+            });
+
+            departuresToRemove.forEach((time) -> {
+                departures.remove(time);
+            });
+        }
+    }
+    */
 }

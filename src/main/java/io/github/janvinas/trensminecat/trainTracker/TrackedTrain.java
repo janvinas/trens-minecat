@@ -8,12 +8,12 @@ import java.util.logging.Level;
 
 public class TrackedTrain implements Serializable {
     private static final long serialVersionUID = 5550978909888616753L;
-    String destination;
-    String trainName;
-    String linedest; //format "R2 Sant Celoni"
+    public String destination;
+    public String trainName;
+    public String linedest; //format "R2 Sant Celoni"
     public TreeSet<TrackedStation> nextStations = new TreeSet<>();
-    LocalDateTime departureTime;
-    Duration delay;
+    public LocalDateTime departureTime;
+    public Duration delay;
 
     public TrackedTrain(TrainTracker trainTracker, String trainName, String destination){
         this.trainName = trainName;
@@ -40,9 +40,18 @@ public class TrackedTrain implements Serializable {
         //if the station queried is not in the nex stations list.
         for(TrackedStation s : nextStations){
             if(s.stationCode.equals(stationCode)){
+                LocalDateTime now = LocalDateTime.now();
+                delay = Duration.between(departureTime.plus(s.timeFromSpawn), now);
                 nextStations = (TreeSet<TrackedStation>) nextStations.tailSet(s, false);
                 return true;
             }
+        }
+        return false;
+    }
+
+    public boolean hasStation(String station){
+        for (TrackedStation trackedStation : nextStations) {
+            if(trackedStation.stationCode.equals(station)) return true;
         }
         return false;
     }

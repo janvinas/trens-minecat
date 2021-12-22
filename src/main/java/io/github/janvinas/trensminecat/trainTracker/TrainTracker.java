@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 
+import javax.print.DocFlavor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -60,7 +61,7 @@ public class TrainTracker {
 
     public boolean saveTrains(){
         try {
-            FileOutputStream fileOut = new FileOutputStream("registeredtrains");
+            FileOutputStream fileOut = new FileOutputStream("plugins/TrensMinecat/registeredtrains");
             GZIPOutputStream gzOut = new GZIPOutputStream(fileOut);
             BukkitObjectOutputStream out = new BukkitObjectOutputStream(gzOut);
             out.writeObject(trackedTrains);
@@ -124,9 +125,28 @@ public class TrainTracker {
 
     public TrackedTrain searchTrain(MinecartGroup m){
         String trainName = m.getProperties().getTrainName();
+        return searchTrain(trainName);
+    }
+
+    /**
+     * Searches for a tracked train with its name.
+     * @param trainName Name of train that is being searched.
+     * @return TrackedTrain if found, null if not.
+     */
+    public TrackedTrain searchTrain(String trainName){
         for(TrackedTrain t : trackedTrains){
             if(t.trainName.equals(trainName)) return t;
         }
         return null;
+    }
+
+    public List<TrackedTrain> getTrainsWithNextStation(String station){
+        ArrayList<TrackedTrain> trains = new ArrayList<>();
+        trackedTrains.forEach((trackedTrain) -> {
+            if(trackedTrain.hasStation(station)){
+                trains.add(trackedTrain);
+            }
+        });
+        return trains;
     }
 }
