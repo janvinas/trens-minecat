@@ -5,7 +5,7 @@ Gestió d'informació i funcionament de trens al servidor de Minecraft.
 
 `/tm crear pantalla <model> <pantalla> <nom>`
   - `model` Número de model de pantalla que es vol utilitzar.
-  - `pantalla` Plantilla de línies de tren que es vol utilitzar. Veure apartat [Configuració](https://github.com/janvinas/trens-minecat#Configuració) per a més informació. 
+  - `pantalla` Plantilla de línies de tren que es vol utilitzar. Veure apartat [Configuració](#Configuració) per a més informació. 
   - `nom` Nom de l'estació que es mostra a la pantalla. Només és visible en certs models.
 
 #### Models disponibles:
@@ -17,7 +17,7 @@ _Els models 1 i 2 provenen de versions antigues i probablement desapareixeran en
 ![imatge](/imatges/2.png)
 
 ###### 3:
-![imatge 1](/imatges/3a.png)
+![imatge](/imatges/3a.png)
 
 ###### 4:
 ![imatge](/imatges/4.png)
@@ -72,6 +72,33 @@ _Pròximament_
 
 Atenció! Per utilitzar aquest display cal configurar el número d'andana. Per fer-ho, agafa l'ítem del mapa amb la mà dreta i executa el comandament `/tm configurar displaymanual andana <número d'andana>`.
 
+#### Pantalles dinàmiques
+
+Des de la versió 1.4, les pantalles es poden actualitzar amb informació en temps real proporcionada pels cartells `displaymanual` (encara que la informació no es mostri a cap pantalla manual).
+
+Per fer-ho, cal prèviament registrar la línia a l'arxiu `stationList.yml`. La sintaxi per registrar una línia és la següent:
+```yaml
+lines:
+  <nom de la línia> <destinació>|<interval entre trens (en segons)>:
+    - <codi d'estació>|<temps des del spawn>
+    - <altre codi d'estació>|<temps des del spawn>
+```
+Exemple:
+```yaml
+lines:
+  R2 Aeroport|500:
+    - Sant_Celoni|30
+    - Palautordera|64
+  #  ...
+  R2 Sant_Celoni|500:
+    - Aeroport|0
+    - El_Prat|48
+  #  ...
+```
+
+També cal crear les plantilles per les pantalles que es volen utilitzar (igual que en les pantalles automàtiques normals). Es pot trobar tota la informació a l'arxiu configuració.
+
+Per registrar un tren, i que les pantalles actualitzin la seva hora d'arribada tenint en compte la seva posició, cal crear-lo amb el comandament [`/spawntrain`](#Comandaments).
 ## Comandaments
 
 `/tm crear pantalla <model> <plantilla> <nom>` Veure [Pantalles](#Pantalles).
@@ -87,6 +114,8 @@ Atenció! Per utilitzar aquest display cal configurar el número d'andana. Per f
 `/tm crear estatdelservei` Crea una pantalla gran amb totes les línies. Es pot posar un text personalitzat amb `/var edit <nom> set <valor>`
 
 `/tm actualitzarestat` Actualitza l'estat del servei quan s'ha modificat una variable.
+
+`/tm spawntrain <tren> <mon> <x> <y> <z> <nom> <destinacio> [register]` Spawneja un tren en un bloc de rail qualsevol. Per registrar-lo s'ha d'afegir obligatòriament nom i destinació i "register" al final del comandament.
 
 ## Cartells Traincarts
 
