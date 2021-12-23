@@ -9,25 +9,9 @@ import java.util.TreeMap;
 
 public class BoardUtils {
     public static TreeMap<LocalDateTime, Departure> fillDepartureBoard(LocalDateTime from, List<TrainLine> trainLines, Integer boardLength, String stationCode){
+
         TrainTracker tracker = TrensMinecat.getPlugin(TrensMinecat.class).trainTracker;
         TreeMap<LocalDateTime, Departure> departures = new TreeMap<>();
-        //TODO tracked trains that are about to enter this station should also be added.
-        List<TrackedTrain> trackedTrains = tracker.getTrainsWithNextStation(stationCode);
-        trackedTrains.forEach(trackedTrain -> {
-            Departure departure = new Departure();
-            departure.name = trackedTrain.linedest.substring(0, trackedTrain.linedest.indexOf(" "));
-            departure.destination = trackedTrain.destination;
-            departure.information = trackedTrain.trainName; //also add train name as destination TODO for debugging purposes
-            departure.delay = trackedTrain.delay;
-            departure.platform = " ";
-
-            trackedTrain.nextStations.forEach(trackedStation -> {
-                if(trackedStation.stationCode.equals(stationCode)){
-                    departures.put(trackedTrain.departureTime.plus(trackedStation.timeFromSpawn), departure);
-                }
-            });
-        });
-
         for(TrainLine trainLine : trainLines){
             Departure departure = new Departure();
 
@@ -45,6 +29,29 @@ public class BoardUtils {
                 departures.put(input, departure);
             }
         }
+
+        List<TrackedTrain> trackedTrains = tracker.getTrainsWithNextStation(stationCode);
+        trackedTrains.forEach(trackedTrain -> {
+            Departure departure = new Departure();
+            departure.name = trackedTrain.linedest.substring(0, trackedTrain.linedest.indexOf(" "));
+            departure.destination = trackedTrain.destination;
+            departure.information = "_";
+            departure.delay = trackedTrain.delay;
+            departure.platform = "_";
+
+            trackedTrain.nextStations.forEach(trackedStation -> {
+                if(trackedStation.stationCode.equals(stationCode)){
+                    LocalDateTime arrivalTime = trackedTrain.departureTime.plus(trackedStation.timeFromSpawn);
+                    //if a departure exists with the same arrival time (without nanos) and destination, remove nanos from departure (will override the scheduled departure)
+                    if(departures.containsKey(arrivalTime.withNano(0))) {
+                        if(departures.get(arrivalTime.withNano(0)).destination.equals(departure.destination)){
+                            arrivalTime = arrivalTime.withNano(0);
+                        }
+                    }
+                    departures.put(arrivalTime, departure);
+                }
+            });
+        });
         return departures;
     }
 
@@ -59,6 +66,7 @@ public class BoardUtils {
             departure.destination = trainLine.destination;
             departure.platform = trainLine.platform;
             departure.information = trainLine.information;
+
 
             Cron cron = new Cron(trainLine.cron);
 

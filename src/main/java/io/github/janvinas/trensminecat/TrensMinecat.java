@@ -216,8 +216,7 @@ public class TrensMinecat extends JavaPlugin {
                                 Integer.parseInt(args[3]),
                                 Integer.parseInt(args[4]),
                                 Integer.parseInt(args[5])),
-                        //TODO canviar vector arbitrari per un calculat. (incrementar les possibilats d'èxit)
-                        new Vector(1, 0, 0), //vector arbitrari. Intentarà spawnejar el tren en aquesta direcció.
+                        new Vector(0, 0, 0), //hauria de spawnejar el tren en qualsevol direcció random
                         SpawnableGroup.SpawnMode.DEFAULT
                         );
                 spawnLocationList.loadChunks();
@@ -236,14 +235,6 @@ public class TrensMinecat extends JavaPlugin {
             }else if(args.length == 1 && args[0].equalsIgnoreCase("cleartrainregister")){
                 trainTracker.clearTrainRegister();
                 return true;
-            }else if(args.length == 1 && args[0].equalsIgnoreCase("getnextstations")){
-                TreeSet<TrackedStation> stations = trainTracker.searchTrain(CartProperties.getEditing((Player) sender).getGroup()).nextStations;
-                String message = "";
-                for(TrackedStation s : stations ){
-                    message = message.concat(s.stationCode + " ");
-                }
-                sender.sendMessage(message);
-                return true;
             }else if(args.length == 1 && args[0].equalsIgnoreCase("traininfo")){
                 MinecartGroup group = CartProperties.getEditing( (Player) sender).getGroup();
                 if(group == null){
@@ -261,7 +252,7 @@ public class TrensMinecat extends JavaPlugin {
                 sender.sendMessage(ChatColor.AQUA + "Hora de sortida: " + trackedTrain.departureTime);
                 sender.sendMessage(ChatColor.AQUA + "Línia i destinació " + trackedTrain.linedest);
                 sender.sendMessage(ChatColor.AQUA + "Retard: " + trackedTrain.delay.toSeconds() + " segons");
-                sender.sendMessage(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "Pròximes estacions " + ChatColor.RESET + "" + "ChatColor.AQUA" + "(Nom, hora d'arribada programada, hora d'arribada prevista)");
+                sender.sendMessage(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "Pròximes estacions " + ChatColor.RESET + "" + ChatColor.AQUA + "(Nom, hora d'arribada programada, hora d'arribada prevista)");
                 for (TrackedStation station : trackedTrain.nextStations) {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
                     LocalDateTime arrivalTime = trackedTrain.departureTime.plus(station.timeFromSpawn);
@@ -288,7 +279,7 @@ public class TrensMinecat extends JavaPlugin {
                     if(args.length == 1) {
                         options.add("crear");
                     }else{
-                        if("display".startsWith(args[1])) options.add("display <tipus> <id>");
+                        if("display".startsWith(args[1])) options.add("display <tipus> <plantilla> <nom>");
                         if("displaymanual".startsWith(args[1])) options.add("displaymanual <tipus> <id>");
                         if("estatdelservei".startsWith(args[1])) options.add("estatdelservei");
                     }
@@ -340,6 +331,9 @@ public class TrensMinecat extends JavaPlugin {
                 }
                 if("cleartrainregister".startsWith(args[0]) && args.length == 1){
                     options.add("cleartrainregister");
+                }
+                if("traininfo".startsWith(args[0]) && args.length == 1){
+                    options.add("traininfo");
                 }
             }
 
