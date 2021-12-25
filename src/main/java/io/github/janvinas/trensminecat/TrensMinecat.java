@@ -108,36 +108,28 @@ public class TrensMinecat extends JavaPlugin {
             return true;
         }else if(args.length >=1 && command.getName().equalsIgnoreCase("trensminecat")){
             if(args[0].equalsIgnoreCase("crear")){
-                if(args[1].equalsIgnoreCase("display")){
+                if(args[1].equalsIgnoreCase("display") && args.length == 5){
+                    String template = args[3].replaceAll("_", " ");
+                    String name = args[4].replaceAll("_", " ");
+                    ItemStack display;
+
                     if(args[2].equalsIgnoreCase("1")){
-                        ItemStack display = MapDisplay.createMapItem(MapDisplays.DepartureBoard1.class);
-                        ItemUtil.getMetaTag(display).putValue("template", args[3]);
-                        ItemUtil.getMetaTag(display).putValue("name", args[4]);
-                        ((Player) sender).getInventory().addItem(display);
-                        return true;
-
+                        display = MapDisplay.createMapItem(MapDisplays.DepartureBoard1.class);
                     }else if(args[2].equalsIgnoreCase("2")){
-                        ItemStack display = MapDisplay.createMapItem(MapDisplays.DepartureBoard2.class);
-                        ItemUtil.getMetaTag(display).putValue("template", args[3]);
-                        ItemUtil.getMetaTag(display).putValue("name", args[4]);
-                        ((Player) sender).getInventory().addItem(display);
-                        return true;
-
+                        display = MapDisplay.createMapItem(MapDisplays.DepartureBoard2.class);
                     }else if(args[2].equalsIgnoreCase("3")){
-                        ItemStack display = MapDisplay.createMapItem(MapDisplays.DepartureBoard3.class);
-                        ItemUtil.getMetaTag(display).putValue("template", args[3]);
-                        ItemUtil.getMetaTag(display).putValue("name", args[4]);
-                        ((Player) sender).getInventory().addItem(display);
-                        return true;
-
+                        display = MapDisplay.createMapItem(MapDisplays.DepartureBoard3.class);
                     }else if(args[2].equalsIgnoreCase("4")){
-                        ItemStack display = MapDisplay.createMapItem(MapDisplays.DepartureBoard4.class);
-                        ItemUtil.getMetaTag(display).putValue("template", args[3]);
-                        ItemUtil.getMetaTag(display).putValue("name", args[4]);
-                        ((Player) sender).getInventory().addItem(display);
-                        return true;
-
+                        display = MapDisplay.createMapItem(MapDisplays.DepartureBoard4.class);
+                    }else{
+                        sender.sendMessage("The display with ID " + args[2] + " does not exist");
+                        return false;
                     }
+                    ItemUtil.getMetaTag(display).putValue("template", template);
+                    ItemUtil.getMetaTag(display).putValue("name", name);
+                    ((Player) sender).getInventory().addItem(display);
+                    return true;
+
                 }else if(args[1].equalsIgnoreCase("displaymanual") && args.length == 4){
                     if(args[2].equalsIgnoreCase("1")){
                         ItemStack display = MapDisplay.createMapItem(ManualDisplays.ManualDisplay1.class);
@@ -195,7 +187,7 @@ public class TrensMinecat extends JavaPlugin {
                         ItemUtil.getMetaTag(heldItem).putValue("brand", args[3]);
                         return true;
                     }else if(args.length == 4 && args[2].equalsIgnoreCase("plantilla")) {
-                        ItemUtil.getMetaTag(heldItem).putValue("template", args[3]);
+                        ItemUtil.getMetaTag(heldItem).putValue("template", args[3].replaceAll("_", " "));
                         return true;
                     }else{
                         sender.sendMessage("Propietat desconeguda o argument incorrecte");
@@ -226,7 +218,7 @@ public class TrensMinecat extends JavaPlugin {
                     String formattedSpawnTime = spawningTime.format(DateTimeFormatter.ofPattern("HHmmss"));
                     minecartGroup.getProperties().setTrainName(args[6] + "_" + formattedSpawnTime);
                 }
-                if(args.length >= 8){ minecartGroup.getProperties().setDestination(args[7]); }
+                if(args.length >= 8){ minecartGroup.getProperties().setDestination(args[7].replaceAll("_", " ")); }
                 if(args.length >= 9 && args[8].equalsIgnoreCase("register")){ trainTracker.registerTrain(minecartGroup); }
                 return true;
             }else if(args.length == 1 && args[0].equalsIgnoreCase("gettrains")){
