@@ -50,7 +50,9 @@ public class TrainTracker {
                 StringTokenizer tokenizer2 = new StringTokenizer(station, "|");
                 String stationName = tokenizer2.nextToken();
                 Duration timeFromSpawn = Duration.ofSeconds(Long.parseLong(tokenizer2.nextToken()));
-                line.trackedStations.add(new TrackedStation(stationName, timeFromSpawn));
+                String platform = "_";
+                if(tokenizer2.hasMoreTokens()) platform = tokenizer2.nextToken();
+                line.trackedStations.add(new TrackedStation(stationName, timeFromSpawn, platform));
             }
 
             lineList.add(line);

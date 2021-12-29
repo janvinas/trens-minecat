@@ -264,13 +264,20 @@ public class MapDisplays{
             if( (tickCount % updateTime) == 0){
                 int secondsToDisplayOnBoard = TrensMinecat.secondsToDisplayOnBoard;
                 DepartureBoardTemplate template = TrensMinecat.departureBoards.get(properties.get("template", String.class));
-                TreeMap<LocalDateTime, Departure> departureBoardTrains = BoardUtils.fillDepartureBoard(now, template.trainLines, template.length, properties.get("template", String.class), true);
+                String andana = properties.get("platform", String.class, "");
+                TreeMap<LocalDateTime, Departure> departureBoardTrains = BoardUtils.fillDepartureBoard(now, template.trainLines, template.length, properties.get("template", String.class), false);
+                if(!andana.equals("")){
+                    departureBoardTrains.forEach( (time, departure) ->{
+                        if(!departure.platform.equals(andana)) departureBoardTrains.remove(time);
+                    });
+                }
 
                 //print train lines on screen
                 getLayer(1).clear();
                 getLayer(1).setAlignment(MapFont.Alignment.LEFT);
                 int i = 0;
                 for(LocalDateTime departureTime : departureBoardTrains.keySet()){
+                    if(i > template.length) break;
                     Duration untilDeparture = Duration.between(now, departureTime);
                     Departure departure = departureBoardTrains.get(departureTime);
                     boolean isDelayed = !departure.delay.minusSeconds(maxAcceptableDelay).isNegative();

@@ -127,6 +127,7 @@ public class TrensMinecat extends JavaPlugin {
                     }
                     ItemUtil.getMetaTag(display).putValue("template", template);
                     ItemUtil.getMetaTag(display).putValue("name", name);
+                    ItemUtil.getMetaTag(display).putValue("platform", "");
                     ((Player) sender).getInventory().addItem(display);
                     return true;
 

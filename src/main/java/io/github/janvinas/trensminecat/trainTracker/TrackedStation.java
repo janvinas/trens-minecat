@@ -7,10 +7,13 @@ import java.time.Duration;
 public class TrackedStation implements Comparable<TrackedStation> {
     public String stationCode;
     public Duration timeFromSpawn;
+    public String platform;
 
-    public TrackedStation(String stationCode, Duration timeFromSpawn){
+    public TrackedStation(String stationCode, Duration timeFromSpawn, String platform){
         this.stationCode = stationCode;
         this.timeFromSpawn = timeFromSpawn;
+        this.platform = platform;
+
     }
 
     @Override

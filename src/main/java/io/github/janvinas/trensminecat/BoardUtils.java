@@ -37,11 +37,11 @@ public class BoardUtils {
             departure.destination = trackedTrain.destination;
             departure.information = "_";
             departure.delay = trackedTrain.delay;
-            departure.platform = "_";
 
             trackedTrain.nextStations.forEach(trackedStation -> {
                 if(trackedStation.stationCode.equals(stationCode)){
                     LocalDateTime arrivalTime = trackedTrain.departureTime.plus(trackedStation.timeFromSpawn);
+                    departure.platform = trackedStation.platform;
                     //if a departure exists with the same arrival time (without nanos) and destination, remove nanos from departure (will override the scheduled departure)
                     if(departures.containsKey(arrivalTime.withNano(0))) {
                         if(departures.get(arrivalTime.withNano(0)).destination.equals(departure.destination)){
