@@ -10,6 +10,9 @@ import com.bergerkiller.bukkit.tc.controller.spawnable.SpawnableGroup;
 import com.bergerkiller.bukkit.tc.properties.CartProperties;
 import com.bergerkiller.bukkit.tc.signactions.SignAction;
 import com.bergerkiller.bukkit.tc.signactions.spawner.SpawnSign;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 import io.github.janvinas.trensminecat.signactions.*;
 import io.github.janvinas.trensminecat.trainTracker.TrackedStation;
 import io.github.janvinas.trensminecat.trainTracker.TrackedTrain;
@@ -31,10 +34,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
+import java.util.logging.Level;
 
 public class TrensMinecat extends JavaPlugin {
 
@@ -49,6 +56,8 @@ public class TrensMinecat extends JavaPlugin {
     static Font helvetica46JavaFont;
 
     public TrainTracker trainTracker = new TrainTracker();
+
+    int port = 8176;
 
 
     @Override
@@ -90,6 +99,18 @@ public class TrensMinecat extends JavaPlugin {
 
         trainTracker.loadTrains();
         getServer().getPluginManager().registerEvents(new EventListener(), this);
+
+        try {
+            HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+            server.createContext("/api", new RequestHandler());
+            server.setExecutor(null); // creates a default executor
+            server.start();
+            getLogger().log(Level.INFO, "Servidor web inicialitzat al port " + port);
+
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "Error inicialitzant el servidor web al port " + port);
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -373,6 +394,72 @@ public class TrensMinecat extends JavaPlugin {
         dontDestroyTag = getConfig().getString("no-destrueixis");
 
         trainTracker.registerAllStations();
+    }
+
+
+
+    static class RequestHandler implements HttpHandler {
+
+        public void handle(HttpExchange t) throws IOException {
+            byte [] response;
+            String path = t.getRequestURI().getPath();
+            if(path.equals("/api/gettrains")){
+                response = getTrains().getBytes();
+            }else if(path.equals("/api/registeredstations")) {
+                response = getPlugin(TrensMinecat.class).trainTracker.getRegisteredStations().getBytes();
+            }else if(path.matches("/api/departures/.*")){
+                String station = path.substring(path.lastIndexOf("/") + 1);
+                response = getDepartures(station).getBytes();
+            }else{
+                response = "ERR invalid query".getBytes();
+            }
+            t.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            t.sendResponseHeaders(200, response.length);
+            OutputStream os = t.getResponseBody();
+            os.write(response);
+            os.close();
+        }
+    }
+
+    private static String getTrains(){
+        String trains = "{";
+        for(MinecartGroup group : MinecartGroupStore.getGroups()){
+            String trainName = group.getProperties().getTrainName();
+            String trainWorld = group.getWorld().getName();
+            String coordX = String.valueOf(group.get(0).getBlock().getLocation().getX());
+            String coordY = String.valueOf(group.get(0).getBlock().getLocation().getY());
+            String coordZ = String.valueOf(group.get(0).getBlock().getLocation().getZ());
+            String coords = trainWorld + ":" + coordX + "," + coordY + "," + coordZ;
+            trains = trains.concat("\"" + trainName + "\": \"" + coords + "\",");
+        }
+        if(trains.length() > 10) trains = trains.substring(0, trains.length() - 1);
+        trains = trains.concat("}");
+        return trains;
+    }
+
+    private static String getDepartures(String station){
+        int length = 10;
+        final String[] result = {"{"}; //no es pot utilitzar la variable dins del forEach, però sí un arrray d'1 element??? wtf
+        TreeMap<LocalDateTime, Departure> departureBoardTrains = BoardUtils.fillDepartureBoard(LocalDateTime.now(), departureBoards.get(station).trainLines, length, station, false);
+        departureBoardTrains.forEach((time, departure) -> {
+            String departureString = "{";
+            departureString = departureString.concat("\"time\": \"" + time.toString() + "\",");
+            departureString = departureString.concat("\"delay\": \"" + departure.delay.getSeconds() + "\",");
+            departureString = departureString.concat("\"name\": \"" + departure.name + "\",");
+            departureString = departureString.concat("\"destination\": \"" + departure.destination + "\",");
+            departureString = departureString.concat("\"platform\": \"" + departure.platform + "\",");
+            departureString = departureString.concat("\"information\": \"" + departure.information + "\"");
+            departureString = departureString.concat("},");
+
+            result[0] = result[0] + departureString;
+        });
+
+        if(result[0].charAt(result[0].length() - 1) == ','){
+            result[0] = result[0].substring(0, result[0].length() - 1);
+        }
+
+        result[0] = result[0].concat("}");
+        return result[0];
     }
 
 }

@@ -150,4 +150,18 @@ public class TrainTracker {
         });
         return trains;
     }
+
+    public String getRegisteredStations(){
+        String result = "{";
+        for (TrackedLine trackedLine : lineList) {
+            for (TrackedStation trackedStation : trackedLine.trackedStations) {
+                result = result.concat("\"" + trackedStation.stationCode + "\",");
+            }
+        }
+        if(result.charAt(result.length() - 1) == ','){
+            result = result.substring(0, result.length() - 1);
+        }
+        result = result.concat("}");
+        return result;
+    }
 }
