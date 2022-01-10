@@ -93,6 +93,7 @@ public class TrensMinecat extends JavaPlugin {
         SignAction.register(new SignActionSenseParada());
         SignAction.register(new SignActionHorn());
         SignAction.register(new SignActionAudio());
+        SignAction.register(new SignActionAudio());
 
         minecraftiaJavaFont = new Font("minecraftia", Font.PLAIN, 8);
         helvetica46JavaFont = new Font("helvetica", Font.PLAIN, 46);
