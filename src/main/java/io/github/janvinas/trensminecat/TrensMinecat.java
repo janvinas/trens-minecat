@@ -142,6 +142,8 @@ public class TrensMinecat extends JavaPlugin {
                         display = MapDisplay.createMapItem(MapDisplays.DepartureBoard3.class);
                     }else if(args[2].equalsIgnoreCase("4")){
                         display = MapDisplay.createMapItem(MapDisplays.DepartureBoard4.class);
+                    }else if(args[2].equalsIgnoreCase("5")){
+                        display = MapDisplay.createMapItem(MapDisplays.DepartureBoard5.class);
                     }else{
                         sender.sendMessage("The display with ID " + args[2] + " does not exist");
                         return false;

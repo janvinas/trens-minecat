@@ -3,6 +3,11 @@ package io.github.janvinas.trensminecat;
 import com.bergerkiller.bukkit.common.map.MapColorPalette;
 import com.bergerkiller.bukkit.common.map.MapDisplay;
 import com.bergerkiller.bukkit.common.map.MapFont;
+import com.bergerkiller.bukkit.common.map.MapTexture;
+
+import java.awt.*;
+import java.awt.font.TextAttribute;
+import java.awt.image.BufferedImage;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -325,5 +330,81 @@ public class MapDisplays{
             super.onTick();
         }
 
+    }
+
+    public static class DepartureBoard5 extends MapDisplay {
+        int tickCount = 0;
+        final int maxAcceptableDelay = 20; //time in seconds
+
+        @Override
+        public void onAttached() {
+
+            getLayer(0).draw(loadTexture(imgDir + "DepartureBoard5.png"), 0, 0); //pantalla fgc, igual que la manualdisplay 3
+            super.onAttached();
+        }
+
+        @Override
+        public void onTick() {
+            super.onTick();
+            if(tickCount % updateTime == 0) {
+
+                getLayer(4).clear();
+                LocalDateTime now = LocalDateTime.now();
+                getLayer(4).setAlignment(MapFont.Alignment.MIDDLE);
+                getLayer(4).draw(MapFont.MINECRAFT, 28, 10, MapColorPalette.COLOR_WHITE,
+                        now.format(DateTimeFormatter.ofPattern("HH:mm")));
+
+                int secondsToDisplayOnBoard = TrensMinecat.secondsToDisplayOnBoard;
+                DepartureBoardTemplate template = TrensMinecat.departureBoards.get(properties.get("template", String.class));
+                String andana = properties.get("platform", String.class, "");
+                TreeMap<LocalDateTime, Departure> departureBoardTrains = BoardUtils.fillDepartureBoard(now, template.trainLines, template.length, properties.get("template", String.class), false);
+                if(!andana.equals("")){
+                    departureBoardTrains.forEach( (time, departure) ->{
+                        if(!departure.platform.equals(andana)) departureBoardTrains.remove(time);
+                    });
+                }
+
+                getLayer(2).clear();
+                getLayer(3).clear();
+                BufferedImage text = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g = text.createGraphics();
+                g.setFont(TrensMinecat.minecraftiaJavaFont);
+
+                int i = 0;
+                for(LocalDateTime departureTime : departureBoardTrains.keySet()) {
+                    if (i > 3) break;
+                    Departure departure = departureBoardTrains.get(departureTime);
+                    LocalDateTime departureWithDelay = departureTime.plus(departure.delay);
+                    Duration untilDeparture = Duration.between(now, departureWithDelay);
+                    boolean isDelayed = !departure.delay.minusSeconds(maxAcceptableDelay).isNegative();
+
+                    MapTexture lineIcon = loadTexture(imgDir + "11px/" + departure.name + ".png");
+                    if(!(lineIcon.getHeight() > 1)){
+                        lineIcon = loadTexture(imgDir + "11px/what.png");
+                    }
+
+                    getLayer(3).draw(lineIcon, 1, 47 + 15*i);
+                    g.setColor(Color.BLACK);
+                    g.drawString(departure.destination, 21, 47 + 15*i);
+                    if(!departure.platform.equals("_")) g.drawString(departure.platform, 105, 47);
+                    if(isDelayed) g.setColor(new Color(255, 0, 0));
+
+                    if(untilDeparture.minusSeconds(secondsToDisplayOnBoard).isNegative()) {
+                        g.drawString("immin.", 121, 47 + 15*i);
+                    }else if(untilDeparture.minusMinutes(5).isNegative()){
+                        g.drawString(untilDeparture.getSeconds()/60 + "min", 121, 47 + 15*i);
+                    }else{
+                        g.drawString(departureTime.format(DateTimeFormatter.ofPattern("HH:mm")), 121, 47 + 15*i);
+                    }
+
+                    i++;
+                }
+
+                g.dispose();
+                getLayer(2).draw(MapTexture.fromImage(text),6 , 12); //text offset
+
+            }
+            tickCount++;
+        }
     }
 }

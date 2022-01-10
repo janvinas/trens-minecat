@@ -42,9 +42,9 @@ public class BoardUtils {
                 if(trackedStation.stationCode.equals(stationCode)){
                     LocalDateTime arrivalTime = trackedTrain.departureTime.plus(trackedStation.timeFromSpawn);
                     departure.platform = trackedStation.platform;
-                    //if a departure exists with the same arrival time (without nanos) and destination, remove nanos from departure (will override the scheduled departure)
+                    //if a departure exists with the same arrival time (without nanos) and line, remove nanos from departure (will override the scheduled departure)
                     if(departures.containsKey(arrivalTime.withNano(0))) {
-                        if(departures.get(arrivalTime.withNano(0)).destination.equals(departure.destination)){
+                        if(departures.get(arrivalTime.withNano(0)).name.equals(departure.name)){
                             arrivalTime = arrivalTime.withNano(0);
                         }
                     }
