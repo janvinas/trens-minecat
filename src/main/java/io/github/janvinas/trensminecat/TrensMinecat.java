@@ -117,7 +117,6 @@ public class TrensMinecat extends JavaPlugin {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-        //TODO feedback dels comandaments
         if(command.getName().equalsIgnoreCase("trensminecat") && args.length == 5 && args[0].equalsIgnoreCase("spawn")){
             List<SpawnSign> signs = TrainCarts.plugin.getSpawnSignManager().getSigns();
             for (SpawnSign sign : signs){
@@ -188,6 +187,7 @@ public class TrensMinecat extends JavaPlugin {
                 }
             }else if(args.length == 1 && args[0].equalsIgnoreCase("recarregar")){
                 loadMainConfiguration();
+                sender.sendMessage(ChatColor.AQUA + "Configuració regarregada!");
                 return true;
             }else if(args.length == 1 && args[0].equalsIgnoreCase("horn")){
                 MinecartGroup group = CartProperties.getEditing( (Player) sender).getGroup();
@@ -208,12 +208,15 @@ public class TrensMinecat extends JavaPlugin {
 
                     if(args.length == 4 && args[2].equalsIgnoreCase("andana")){
                         ItemUtil.getMetaTag(heldItem).putValue("platform", args[3]);
+                        sender.sendMessage(ChatColor.AQUA + "S'ha configurat \"andana\" = " + args[3]);
                         return true;
                     }else if(args.length == 4 && args[2].equalsIgnoreCase("marca")) {
                         ItemUtil.getMetaTag(heldItem).putValue("brand", args[3]);
+                        sender.sendMessage(ChatColor.AQUA + "S'ha configurat \"marca\" = " + args[3]);
                         return true;
                     }else if(args.length == 4 && args[2].equalsIgnoreCase("plantilla")) {
                         ItemUtil.getMetaTag(heldItem).putValue("template", args[3].replaceAll("_", " "));
+                        sender.sendMessage(ChatColor.AQUA + "S'ha configurat \"plantilla\" = " + args[3]);
                         return true;
                     }else{
                         sender.sendMessage("Propietat desconeguda o argument incorrecte");
