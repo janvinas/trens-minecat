@@ -351,7 +351,7 @@ public class MapDisplays{
                 getLayer(4).clear();
                 LocalDateTime now = LocalDateTime.now();
                 getLayer(4).setAlignment(MapFont.Alignment.MIDDLE);
-                getLayer(4).draw(MapFont.MINECRAFT, 28, 10, MapColorPalette.COLOR_WHITE,
+                getLayer(4).draw(MapFont.MINECRAFT, 28, 12, MapColorPalette.COLOR_WHITE,
                         now.format(DateTimeFormatter.ofPattern("HH:mm")));
 
                 int secondsToDisplayOnBoard = TrensMinecat.secondsToDisplayOnBoard;
@@ -383,16 +383,16 @@ public class MapDisplays{
                         lineIcon = loadTexture(imgDir + "11px/what.png");
                     }
 
-                    getLayer(3).draw(lineIcon, 1, 47 + 15*i);
+                    getLayer(3).draw(lineIcon, 5, 47 + 15*i);
                     g.setColor(Color.BLACK);
-                    g.drawString(departure.destination, 21, 47 + 15*i);
-                    if(!departure.platform.equals("_")) g.drawString(departure.platform, 105, 47);
+                    g.drawString(departure.destination, 25, 47 + 15*i);
+                    if(!departure.platform.equals("_")) g.drawString(departure.platform, 120, 47);
                     if(isDelayed) g.setColor(new Color(255, 0, 0));
 
                     if(untilDeparture.minusSeconds(secondsToDisplayOnBoard).isNegative()) {
-                        g.drawString("immin.", 121, 47 + 15*i);
+                        g.drawString("immin.", 131, 47 + 15*i);
                     }else if(untilDeparture.minusMinutes(5).isNegative()){
-                        g.drawString(untilDeparture.getSeconds()/60 + "min", 121, 47 + 15*i);
+                        g.drawString(untilDeparture.getSeconds()/60 + "min", 131, 47 + 15*i);
                     }else{
                         g.drawString(departureTime.format(DateTimeFormatter.ofPattern("HH:mm")), 121, 47 + 15*i);
                     }
@@ -401,7 +401,7 @@ public class MapDisplays{
                 }
 
                 g.dispose();
-                getLayer(2).draw(MapTexture.fromImage(text),6 , 12); //text offset
+                getLayer(2).draw(MapTexture.fromImage(text),6 , 14); //text offset
 
             }
             tickCount++;
