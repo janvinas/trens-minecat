@@ -385,7 +385,7 @@ public class MapDisplays{
 
                     getLayer(3).draw(lineIcon, 5, 47 + 15*i);
                     g.setColor(Color.BLACK);
-                    g.drawString(departure.destination, 25, 47 + 15*i);
+                    g.drawString(departure.destination, 26, 47 + 15*i);
                     if(!departure.platform.equals("_")) g.drawString(departure.platform, 120, 47);
                     if(isDelayed) g.setColor(new Color(255, 0, 0));
 
