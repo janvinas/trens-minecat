@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.zip.GZIPInputStream;
@@ -104,10 +105,29 @@ public class TrainTracker {
         return trackedTrains;
     }
 
+    /**
+     * Registers a train to the system.
+     *
+     * @param minecartGroup Train to be registered.
+     */
     public void registerTrain(MinecartGroup minecartGroup){
         String destination = minecartGroup.getProperties().getDestination();
         String trainName = minecartGroup.getProperties().getTrainName();
         trackedTrains.add(new TrackedTrain(this, trainName, destination));
+    }
+
+    /**
+     * Registers a train, but pretends it spawned at another time. (useful if the train spawns at 15:01, but you still want it to be the 15:00 train)
+     *
+     * @param minecartGroup Train to be registered.
+     * @param spawnTime Time we have to pretend the train spawned.
+     */
+    public void registerTrain(MinecartGroup minecartGroup, LocalDateTime spawnTime){
+        String destination = minecartGroup.getProperties().getDestination();
+        String trainName = minecartGroup.getProperties().getTrainName();
+        TrackedTrain tt = new TrackedTrain(this, trainName, destination);
+        tt.departureTime = spawnTime;
+        trackedTrains.add(tt);
     }
 
     public boolean removeTrain(MinecartGroup minecartGroup){

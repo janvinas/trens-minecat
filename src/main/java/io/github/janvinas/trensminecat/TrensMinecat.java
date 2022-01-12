@@ -39,6 +39,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.List;
 import java.util.logging.Level;
@@ -224,7 +225,7 @@ public class TrensMinecat extends JavaPlugin {
                 return true;
 
             }else if(args.length == 1 && args[0].equalsIgnoreCase("info")){
-                sender.sendMessage("TrensMinecat versió " + getDescription().getVersion() + " programat per janitus1234 (janitus1234@gmail.com)");
+                sender.sendMessage("TrensMinecat versió " + getDescription().getVersion() + ". programat per janitus1234 (janitus1234@gmail.com)");
                 return true;
             }else if(args.length >= 6 && args[0].equalsIgnoreCase("spawntrain")){
                 SpawnableGroup spawnableGroup = SpawnableGroup.parse(args[1]);
@@ -238,13 +239,14 @@ public class TrensMinecat extends JavaPlugin {
                         );
                 spawnLocationList.loadChunks();
                 MinecartGroup minecartGroup = spawnableGroup.spawn(spawnLocationList);
+                LocalDateTime spawningTime = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES); //will ignore seconds and nanos on spawnTime.
                 if(args.length >= 7){
-                    LocalDateTime spawningTime = LocalDateTime.now();
                     String formattedSpawnTime = spawningTime.format(DateTimeFormatter.ofPattern("HHmmss"));
                     minecartGroup.getProperties().setTrainName(args[6] + "_" + formattedSpawnTime);
+                    minecartGroup.getProperties().setTrainName(args[6]);
                 }
                 if(args.length >= 8){ minecartGroup.getProperties().setDestination(args[7].replaceAll("_", " ")); }
-                if(args.length >= 9 && args[8].equalsIgnoreCase("register")){ trainTracker.registerTrain(minecartGroup); }
+                if(args.length >= 9 && args[8].equalsIgnoreCase("register")){ trainTracker.registerTrain(minecartGroup, spawningTime); }
                 return true;
             }else if(args.length == 1 && args[0].equalsIgnoreCase("gettrains")){
                 sender.sendMessage(trainTracker.getTrackedTrains().toString());
@@ -269,7 +271,7 @@ public class TrensMinecat extends JavaPlugin {
                 sender.sendMessage(ChatColor.AQUA + "Hora de sortida: " + trackedTrain.departureTime);
                 sender.sendMessage(ChatColor.AQUA + "Línia i destinació " + trackedTrain.linedest);
                 sender.sendMessage(ChatColor.AQUA + "Retard: " + trackedTrain.delay.toSeconds() + " segons");
-                sender.sendMessage(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "Pròximes estacions " + ChatColor.RESET + "" + ChatColor.AQUA + "(Nom, hora d'arribada programada, hora d'arribada prevista)");
+                sender.sendMessage(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "Pròximes estacions" + ChatColor.RESET + "" + ChatColor.AQUA + " (Nom, hora d'arribada programada, hora d'arribada prevista)");
                 for (TrackedStation station : trackedTrain.nextStations) {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
                     LocalDateTime arrivalTime = trackedTrain.departureTime.plus(station.timeFromSpawn);
