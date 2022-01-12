@@ -386,13 +386,13 @@ public class MapDisplays{
                     getLayer(3).draw(lineIcon, 5, 47 + 15*i);
                     g.setColor(Color.BLACK);
                     g.drawString(departure.destination, 26, 47 + 15*i);
-                    if(!departure.platform.equals("_")) g.drawString(departure.platform, 120, 47);
+                    if(!departure.platform.equals("_")) g.drawString(departure.platform, 120, 47 + 15*i);
                     if(isDelayed) g.setColor(new Color(255, 0, 0));
 
                     if(untilDeparture.minusSeconds(secondsToDisplayOnBoard).isNegative()) {
-                        g.drawString("immin.", 131, 47 + 15*i);
+                        g.drawString("immin.", 133, 47 + 15*i);
                     }else if(untilDeparture.minusMinutes(5).isNegative()){
-                        g.drawString(untilDeparture.getSeconds()/60 + "min", 131, 47 + 15*i);
+                        g.drawString(untilDeparture.getSeconds()/60 + "min", 133, 47 + 15*i);
                     }else{
                         g.drawString(departureTime.format(DateTimeFormatter.ofPattern("HH:mm")), 121, 47 + 15*i);
                     }

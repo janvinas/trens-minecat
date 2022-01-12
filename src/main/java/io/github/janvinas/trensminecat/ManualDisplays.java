@@ -3,20 +3,15 @@ package io.github.janvinas.trensminecat;
 import com.bergerkiller.bukkit.common.map.MapColorPalette;
 import com.bergerkiller.bukkit.common.map.MapFont;
 import com.bergerkiller.bukkit.common.map.MapTexture;
-import io.github.janvinas.trensminecat.trainTracker.TrackedTrain;
-import io.github.janvinas.trensminecat.trainTracker.TrainTracker;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.awt.*;
 import java.awt.font.TextAttribute;
 import java.awt.image.BufferedImage;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 
 public class ManualDisplays {
@@ -337,7 +332,10 @@ public class ManualDisplays {
             Graphics2D g = platformNumber.createGraphics();
             g.setColor(new Color(255, 255, 255));
             g.setFont(TrensMinecat.helvetica46JavaFont);
-            g.drawString(properties.get("platform", String.class), 159, 80); //platform number
+            String platform = properties.get("platform", String.class, "");
+            int x = 159;
+            if(platform.length() > 1) x = 145; //shift platform number slightly to the left
+            g.drawString(platform, x, 80); //platform number
             g.dispose();
             getLayer(4).draw(MapTexture.fromImage(platformNumber), 0, 0);
         }
