@@ -94,7 +94,7 @@ public class TrensMinecat extends JavaPlugin {
         SignAction.register(new SignActionSenseParada());
         SignAction.register(new SignActionHorn());
         SignAction.register(new SignActionAudio());
-        SignAction.register(new SignActionAudio());
+        SignAction.register(new SignActionUpdateService());
 
         minecraftiaJavaFont = new Font("minecraftia", Font.PLAIN, 8);
         helvetica46JavaFont = new Font("helvetica", Font.PLAIN, 46);
@@ -246,11 +246,11 @@ public class TrensMinecat extends JavaPlugin {
                 if(args.length >= 7){
                     String formattedSpawnTime = spawningTime.format(DateTimeFormatter.ofPattern("HHmmss"));
                     minecartGroup.getProperties().setTrainName(args[6] + "_" + formattedSpawnTime);
-                    minecartGroup.getProperties().setTrainName(args[6]);
                 }
                 if(args.length >= 8){ minecartGroup.getProperties().setDestination(args[7].replaceAll("_", " ")); }
                 if(args.length >= 9 && args[8].equalsIgnoreCase("register")){ trainTracker.registerTrain(minecartGroup, spawningTime); }
                 return true;
+
             }else if(args.length == 1 && args[0].equalsIgnoreCase("gettrains")){
                 sender.sendMessage(trainTracker.getTrackedTrains().toString());
                 return true;

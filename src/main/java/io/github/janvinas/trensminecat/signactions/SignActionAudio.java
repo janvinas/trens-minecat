@@ -49,7 +49,7 @@ public class SignActionAudio extends SignAction {
         String audioName = info.getLine(2);
         for(String tag : group.getProperties().getTags()) {
             if (tag.startsWith("tagaudio") && tag.matches(".*[|].*[|].*")) {
-                StringTokenizer t = new StringTokenizer(tag, "_");
+                StringTokenizer t = new StringTokenizer(tag, "|");
                 t.nextToken();
                 String alias = t.nextToken();
                 String name = t.nextToken();

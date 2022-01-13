@@ -130,6 +130,19 @@ public class TrainTracker {
         trackedTrains.add(tt);
     }
 
+    /**
+     * Altermative method to register train manually.
+     *
+     * @param trainName Name of the train.
+     * @param destination Destination of the train.
+     * @param spawnTime Time we have to pretend the train spawned.
+     */
+    public void registerTrain(String trainName, String destination, LocalDateTime spawnTime){
+        TrackedTrain tt = new TrackedTrain(this, trainName, destination);
+        tt.departureTime = spawnTime;
+        trackedTrains.add(tt);
+    }
+
     public boolean removeTrain(MinecartGroup minecartGroup){
         for(TrackedTrain train : trackedTrains) {
             if (train.trainName.equals(minecartGroup.getProperties().getTrainName())) {
