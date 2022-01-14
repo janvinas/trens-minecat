@@ -93,8 +93,10 @@ public class TrensMinecat extends JavaPlugin {
         SignAction.register(new SignActionClearDisplay());
         SignAction.register(new SignActionSenseParada());
         SignAction.register(new SignActionHorn());
-        SignAction.register(new SignActionAudio());
+        SignAction.register(new SignActionAudio(), true);
         SignAction.register(new SignActionUpdateService());
+
+
 
         minecraftiaJavaFont = new Font("minecraftia", Font.PLAIN, 8);
         helvetica46JavaFont = new Font("helvetica", Font.PLAIN, 46);
@@ -368,6 +370,13 @@ public class TrensMinecat extends JavaPlugin {
     @Override
     public void onDisable() {
         trainTracker.saveTrains();
+
+        SignAction.unregister(new SignActionDisplayManual());
+        SignAction.unregister(new SignActionClearDisplay());
+        SignAction.unregister(new SignActionSenseParada());
+        SignAction.unregister(new SignActionHorn());
+        SignAction.unregister(new SignActionAudio());
+        SignAction.unregister(new SignActionUpdateService());
     }
 
     public void loadMainConfiguration(){

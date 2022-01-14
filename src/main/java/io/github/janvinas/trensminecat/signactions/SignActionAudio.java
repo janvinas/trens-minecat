@@ -30,7 +30,7 @@ public class SignActionAudio extends SignAction {
 
         return SignBuildOptions.create()
                 .setName("tagaudio")
-                .setDescription("play an audio. The third line must match a name of a minecraft audio file in format name.of.audio or an alias defined in the train tags as audio_alias_real.audio.name")
+                .setDescription("play an audio. The third line must match a name of a minecraft audio file in format name.of.audio or an alias defined in the train tags as audio|alias|real.audio.name")
                 .handle(event.getPlayer());
     }
 
@@ -64,6 +64,7 @@ public class SignActionAudio extends SignAction {
         }
         JavaPlugin plugin = TrensMinecat.getPlugin(TrensMinecat.class);
         String finalAudioName = audioName;
+
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,
                 () -> group.getWorld().playSound(group.get(0).getBlock().getLocation(), finalAudioName, 1.0F, 1.0F),
                 delay * 20L);

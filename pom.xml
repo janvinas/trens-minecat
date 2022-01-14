@@ -6,7 +6,7 @@
 
     <groupId>io.github.janvinas</groupId>
     <artifactId>trens-minecat</artifactId>
-    <version>1.5.3</version>
+    <version>1.5.4</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

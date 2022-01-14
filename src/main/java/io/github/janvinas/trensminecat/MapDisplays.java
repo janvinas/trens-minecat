@@ -394,7 +394,7 @@ public class MapDisplays{
                     }else if(untilDeparture.minusMinutes(5).isNegative()){
                         g.drawString(untilDeparture.getSeconds()/60 + "min", 133, 47 + 15*i);
                     }else{
-                        g.drawString(departureTime.format(DateTimeFormatter.ofPattern("HH:mm")), 121, 47 + 15*i);
+                        g.drawString(departureTime.format(DateTimeFormatter.ofPattern("HH:mm")), 133, 47 + 15*i);
                     }
 
                     i++;
