@@ -22,6 +22,9 @@ _Els models 1 i 2 provenen de versions antigues i probablement desapareixeran en
 ###### 4:
 ![imatge](/imatges/4.png)
 
+###### 5:
+![imatge](/imatges/5.png)
+
 ## Pantalles Manuals
 
 Visualment són iguals que les pantalles normals però la informació no s'actualitza mitjançant un horari sinó amb cartells Traincarts personalitzats.
@@ -58,7 +61,7 @@ _És exactament igual visualment que el model 3 de pantalla normal, però no mos
 
 ![imatge](/imatges/3a.png)
 
-Es pot configurar la imatge que es mostrarà quan no hi ha cap tren amb `/tm configurar displaymanual marca <nom>`. Opcions pel <nom> son `rodalies` o `renfe`.
+Es pot configurar la imatge que es mostrarà quan no hi ha cap tren amb `/tm configurar displaymanual marca <nom>`. Opcions pel `<nom>` son `rodalies` o `renfe`.
 
 ###### 2:
 _Pròximament_
@@ -105,6 +108,8 @@ Per registrar un tren, i que les pantalles actualitzin la seva hora d'arribada t
 
 `/tm crear displaymanual <model> <nom>` Veure [Pantalles Manuals](#Pantalles-Manuals).
 
+`/tm configurar displaymanual <paràmetre> <valor>` Configura un paràmetre específic de la pantalla.
+
 `/tm recarregar` Recarregar la configuració.
 
 `/tm spawn <món> <x> <y> <z>` Genera un tren a les coordenades especificades. Aquestes coordenades han de ser les d'un cartell `spawner`, i no les de la via on ha d'aparèixer un tren.
@@ -117,15 +122,62 @@ Per registrar un tren, i que les pantalles actualitzin la seva hora d'arribada t
 
 `/tm spawntrain <tren> <mon> <x> <y> <z> <nom> <destinacio> [register]` Spawneja un tren en un bloc de rail qualsevol. Per registrar-lo s'ha d'afegir obligatòriament nom i destinació i "register" al final del comandament.
 
+_Nota: en la majoria de paràmetres, excepte els noms del tren, els caràcters `_` són substituits per une espai._
+
 ## Cartells Traincarts
 
 #### tagaudio
 ```
 [train]
-tagsound
+tagaudio
 <nom>
+<delay>
 ```
 Reprodueix un so quan el tren passa per sobre el cartell. `<nom>` pot ser el nom de so o un àlias que es pot relacionar amb un tag al tren amb la sintaxi `tagaudio|alias|nom.del.so.real`
+
+Es pot especificar, opcionalment, un delay que s'esperarà abans de reproduir el so.
+
+
+#### displaymananual
+
+```
+[train]
+displaymanual
+<nom del display>
+<delay>
+```
+
+Actualitza un `displaymanual` amb informació sobre el tren que executa el cartell. Es pot afegir, opcionalment, un retard passat el qual es reiniciarà la pantalla.
+
+#### reiniciardisplay
+
+```
+[train]
+reiniciardisplay
+<nom del display>
+```
+
+Reinicia un `displaymanual`, deixant de mostrar informació sobre el tren i passant a la visualització predeterminada.
+
+#### noparadisplay
+
+```
+[train]
+noparadisplay
+<nom del display>
+<delay>
+```
+
+Igual que el displaymanual, però mostra un missatge a la pantalla que indica que el tren no pararà en aquesta estació.
+
+#### updateservice
+
+```
+[train]
+updateservice
+```
+
+Actualitza el servei d'un tren registrat, tenint en compte el nou nom i destinació.
 
 ## Configuració
 
