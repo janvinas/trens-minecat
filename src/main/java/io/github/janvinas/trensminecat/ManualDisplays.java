@@ -41,8 +41,10 @@ public class ManualDisplays {
 
             getLayer(5).clear();
             getLayer(4).clear();
-            MapTexture lineIcon = loadTexture(imgDir + "28px/" + trainLine + ".png");
-            if(!(lineIcon.getHeight() > 1)){
+            MapTexture lineIcon;
+            try{
+                lineIcon = loadTexture(imgDir + "28px/" + trainLine + ".png");
+            }catch(MapTexture.TextureLoadException e){
                 dest = displayName;
                 lineIcon = loadTexture(imgDir + "28px/what.png");
             }
@@ -487,6 +489,103 @@ public class ManualDisplays {
             getLayer(0).draw(background, 0, 0);
         }
 
+    }
+
+    public static class ManualDisplay6 extends ManualDisplay{
+        boolean hasTrain = false;
+        String brand;
+
+        static final Font helvetica = new Font("Helvetica", Font.BOLD, 14);
+
+        @Override
+        public void onAttached() {
+            getLayer(1).draw(loadTexture(imgDir + "ManualDisplay6.png"), 0, 0);
+            brand = properties.get("brand", String.class, "rodalies"); //si no s'ha especificat una marca, retorna rodalies.
+            getLayer(3).draw(loadTexture(imgDir + "46px/" + brand + ".png"), 13, 41);
+
+            super.onAttached();
+        }
+
+        @Override
+        public void onDetached() {
+            super.onDetached();
+        }
+
+        @Override
+        public void onTick() {
+            super.onTick();
+
+            if(!hasTrain){
+                getLayer(2).clear();
+                LocalDateTime now = LocalDateTime.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+                BufferedImage time = new BufferedImage(40,20, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g = time.createGraphics();
+                g.setFont(helvetica);
+                g.setColor(new Color(255, 255, 255));
+                g.drawString(formatter.format(now), 0, 0);
+                g.dispose();
+                getLayer(2).draw(MapTexture.fromImage(time), 180, 70);
+            }
+        }
+
+        @Override
+        public boolean updateInformation(String displayID, String name, String displayName, String destination, int clearIn) {
+            if(! properties.get("ID", String.class).equals(displayID)) return false;
+
+            hasTrain = true;
+            brand = properties.get("brand", String.class, "rodalies"); //si no s'ha especificat una marca, retorna rodalies.
+
+            getLayer(2).clear();
+            getLayer(3).clear();
+
+            String trainLine;
+            String dest;
+            if(destination.equals("nopara")){
+                trainLine = "info";
+                dest = "Sense parada";
+            }else{
+                trainLine = BoardUtils.getTrainLine(name);
+                dest = destination;
+            }
+
+            BufferedImage text = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = text.createGraphics();
+            g.setFont(helvetica);
+            g.setColor(new Color(255, 255, 255));
+            g.drawString(dest.toUpperCase(), 65, 70);
+
+            MapTexture lineIcon;
+            try{
+                lineIcon = loadTexture(imgDir + "46px/" + trainLine + ".png");
+            }catch(MapTexture.TextureLoadException e){
+                lineIcon = loadTexture(imgDir + "46px/what.png");
+                dest = displayName;
+            }
+
+            g.dispose();
+            getLayer(3).draw(MapTexture.fromImage(text),0 , 0);
+            getLayer(3).draw(lineIcon, 13, 41);
+
+            if(clearIn != 0){
+                getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
+                    this.clearInformation(properties.get("ID", String.class));
+                }, clearIn * 20L);
+            }
+
+            return true;
+        }
+
+        @Override
+        public boolean clearInformation(String displayID) {
+            if(! properties.get("ID", String.class).equals(displayID)) return false;
+
+            hasTrain = false;
+            getLayer(3).clear();
+            getLayer(3).draw(loadTexture(imgDir + "46px/" + brand + ".png"), 13, 41);
+
+            return true;
+        }
     }
 
 }

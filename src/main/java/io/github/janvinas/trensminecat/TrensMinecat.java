@@ -53,8 +53,8 @@ public class TrensMinecat extends JavaPlugin {
     String dontDestroyTag;
     HashMap<String, Block> trainList = new HashMap<>();
 
-    static Font minecraftiaJavaFont;
-    static Font helvetica46JavaFont;
+    public static Font minecraftiaJavaFont;
+    public static Font helvetica46JavaFont;
 
     public TrainTracker trainTracker = new TrainTracker();
 
@@ -180,6 +180,18 @@ public class TrensMinecat extends JavaPlugin {
                         ItemUtil.getMetaTag(display).putValue("platform", "0");
                         ((Player) sender).getInventory().addItem(display);
                         return true;
+                    }else if(args[2].equalsIgnoreCase("6")){
+                        ItemStack display = MapDisplay.createMapItem(ManualDisplays.ManualDisplay6.class);
+                        ItemUtil.getMetaTag(display).putValue("ID", args[3]);
+                        ((Player) sender).getInventory().addItem(display);
+                        return true;
+                    }
+                }else if(args[1].equalsIgnoreCase("sldisplay") && args.length == 3){
+                    ItemStack display;
+                    if(args[2].equalsIgnoreCase("1")){
+                        display = MapDisplay.createMapItem(SignLinkDisplays.SignLinkDisplay1.class);
+                        ((Player) sender).getInventory().addItem(display);
+                        return true;
                     }
                 }else if(args[1].equalsIgnoreCase("estatdelservei") && args.length == 2){
                     ItemStack display = MapDisplay.createMapItem(ServiceStatusDisplay.class);
@@ -223,6 +235,26 @@ public class TrensMinecat extends JavaPlugin {
                     }else{
                         sender.sendMessage("Propietat desconeguda o argument incorrecte");
                     }
+                }else if(args[1].equalsIgnoreCase("sldisplay")){
+                    if(!heldItem.getType().equals(Material.FILLED_MAP)){
+                        sender.sendMessage("Agafa el mapa amb la mà dreta per configurar-lo");
+                        return false;
+                    }
+
+                    if(args.length == 4 && args[2].equalsIgnoreCase("destinacio")){
+                        ItemUtil.getMetaTag(heldItem).putValue("destination", args[3].replaceAll("_"," "));
+                        sender.sendMessage(ChatColor.AQUA + "S'ha configurat \"destinació\" = " + args[3]);
+                        return true;
+                    }else if(args.length == 4 && args[2].equalsIgnoreCase("variable")){
+                        ItemUtil.getMetaTag(heldItem).putValue("variable", args[3].replaceAll("_", " "));
+                        sender.sendMessage(ChatColor.AQUA + "S'ha configurat \"variable\" = " + args[3]);
+                        return true;
+                    }else{
+                        sender.sendMessage("Propietat desconeguda o argument incorrecte");
+                    }
+
+                    MapDisplay.getHeldDisplay((Player) sender).onDetached();
+                    MapDisplay.getHeldDisplay((Player) sender).onAttached();
                 }
 
             }else if(args.length == 1 && args[0].equalsIgnoreCase("actualitzarestat")){
@@ -306,6 +338,7 @@ public class TrensMinecat extends JavaPlugin {
                         if("display".startsWith(args[1])) options.add("display <tipus> <plantilla> <nom>");
                         if("displaymanual".startsWith(args[1])) options.add("displaymanual <tipus> <id>");
                         if("estatdelservei".startsWith(args[1])) options.add("estatdelservei");
+                        if("sldisplay".startsWith(args[1])) options.add("sldisplay <tipus>");
                     }
                 }
                 if("configurar".startsWith(args[0])){
@@ -319,6 +352,13 @@ public class TrensMinecat extends JavaPlugin {
                             if("marca".startsWith(args[2])) options.add("marca [marca]");
                         }
 
+                    }else if("sldisplay".startsWith(args[1])){
+                        if(args.length == 2){
+                            options.add("sldisplay");
+                        }else{
+                            if("destinacio".startsWith(args[2])) options.add("destinacio");
+                            if("variable".startsWith(args[2])) options.add("variable");
+                        }
                     }
                 }
                 if("spawn".startsWith(args[0])){

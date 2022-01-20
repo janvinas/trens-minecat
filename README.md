@@ -73,6 +73,11 @@ _Pròximament_
 
 ![imatge](/imatges/manual/4.png)
 
+###### 6:
+![imatge](/imatges/manual/6.png)
+
+Es pot configurar la imatge que es mostrarà quan no hi ha cap tren amb `/tm configurar displaymanual marca <nom>`. Opcions pel `<nom>` son `rodalies` o `renfe`.
+
 Atenció! Per utilitzar aquest display cal configurar el número d'andana. Per fer-ho, agafa l'ítem del mapa amb la mà dreta i executa el comandament `/tm configurar displaymanual andana <número d'andana>`.
 
 #### Pantalles dinàmiques
