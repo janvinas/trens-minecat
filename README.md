@@ -25,6 +25,9 @@ _Els models 1 i 2 provenen de versions antigues i probablement desapareixeran en
 ###### 5:
 ![imatge](/imatges/5.png)
 
+_Imatge 5: JCIBravo_
+
+
 ## Pantalles Manuals
 
 Visualment són iguals que les pantalles normals però la informació no s'actualitza mitjançant un horari sinó amb cartells Traincarts personalitzats.
@@ -107,6 +110,21 @@ lines:
 També cal crear les plantilles per les pantalles que es volen utilitzar (igual que en les pantalles automàtiques normals). Es pot trobar tota la informació a l'arxiu configuració.
 
 Per registrar un tren, i que les pantalles actualitzin la seva hora d'arribada tenint en compte la seva posició, cal crear-lo amb el comandament [`/spawntrain`](#Comandaments).
+
+## Pantalles SignLink
+
+Contenen una variable signlink configurable que s'actualitza cada tick.
+
+
+#### Models disponibles
+
+###### 1:
+
+![imatge](/imatges/signlink/1.png)
+
+Per actualitzar el nom de la variable: `/tm configurar sldisplay variable <nom>`
+Per actualitzar la destinació mostrada al cartell: `/tm configurar sldisplay destinacio <nom>`
+
 ## Comandaments
 
 `/tm crear pantalla <model> <plantilla> <nom>` Veure [Pantalles](#Pantalles).
@@ -126,6 +144,8 @@ Per registrar un tren, i que les pantalles actualitzin la seva hora d'arribada t
 `/tm actualitzarestat` Actualitza l'estat del servei quan s'ha modificat una variable.
 
 `/tm spawntrain <tren> <mon> <x> <y> <z> <nom> <destinacio> [register]` Spawneja un tren en un bloc de rail qualsevol. Per registrar-lo s'ha d'afegir obligatòriament nom i destinació i "register" al final del comandament.
+
+`/tm iteminfo` Obté informació de l'ítem agafat amb la mà (funciona només amb mapDisplays i ítems que tinguin tags).
 
 _Nota: en la majoria de paràmetres, excepte els noms del tren, els caràcters `_` són substituits per une espai._
 

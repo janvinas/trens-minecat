@@ -501,7 +501,7 @@ public class ManualDisplays {
         public void onAttached() {
             getLayer(1).draw(loadTexture(imgDir + "ManualDisplay6.png"), 0, 0);
             brand = properties.get("brand", String.class, "rodalies"); //si no s'ha especificat una marca, retorna rodalies.
-            getLayer(3).draw(loadTexture(imgDir + "46px/" + brand + ".png"), 13, 41);
+            getLayer(2).draw(loadTexture(imgDir + "46px/" + brand + ".png"), 13, 41);
 
             super.onAttached();
         }
@@ -516,16 +516,16 @@ public class ManualDisplays {
             super.onTick();
 
             if(!hasTrain){
-                getLayer(2).clear();
+                getLayer(3).clear();
                 LocalDateTime now = LocalDateTime.now();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-                BufferedImage time = new BufferedImage(40,20, BufferedImage.TYPE_INT_ARGB);
+                BufferedImage time = new BufferedImage(255,128, BufferedImage.TYPE_INT_ARGB);
                 Graphics2D g = time.createGraphics();
                 g.setFont(helvetica);
                 g.setColor(new Color(255, 255, 255));
-                g.drawString(formatter.format(now), 0, 0);
+                g.drawString(formatter.format(now), 200, 70);
                 g.dispose();
-                getLayer(2).draw(MapTexture.fromImage(time), 180, 70);
+                getLayer(3).draw(MapTexture.fromImage(time), 0, 0);
             }
         }
 
@@ -564,8 +564,8 @@ public class ManualDisplays {
             }
 
             g.dispose();
-            getLayer(3).draw(MapTexture.fromImage(text),0 , 0);
-            getLayer(3).draw(lineIcon, 13, 41);
+            getLayer(2).draw(MapTexture.fromImage(text),0 , 0);
+            getLayer(2).draw(lineIcon, 13, 41);
 
             if(clearIn != 0){
                 getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
@@ -581,8 +581,8 @@ public class ManualDisplays {
             if(! properties.get("ID", String.class).equals(displayID)) return false;
 
             hasTrain = false;
-            getLayer(3).clear();
-            getLayer(3).draw(loadTexture(imgDir + "46px/" + brand + ".png"), 13, 41);
+            getLayer(2).clear();
+            getLayer(2).draw(loadTexture(imgDir + "46px/" + brand + ".png"), 13, 41);
 
             return true;
         }

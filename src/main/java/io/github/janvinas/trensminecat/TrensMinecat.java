@@ -217,45 +217,53 @@ public class TrensMinecat extends JavaPlugin {
                 if(args[1].equalsIgnoreCase("displaymanual")){
 
                     if(!heldItem.getType().equals(Material.FILLED_MAP)){
-                        sender.sendMessage("Agafa el mapa amb la mà dreta per configurar-lo");
-                        return false;
+                        sender.sendMessage(ChatColor.RED + "Agafa el mapa amb la mà dreta per configurar-lo");
+                        return true;
+                    }
+                    MapDisplay mapDisplay = MapDisplay.getHeldDisplay((Player) sender);
+                    if(mapDisplay == null){
+                        sender.sendMessage(ChatColor.RED + "No hi ha cap pantalla vinculada a aquest mapa!");
+                        return true;
                     }
 
                     if(args.length == 4 && args[2].equalsIgnoreCase("andana")){
-                        ItemUtil.getMetaTag(heldItem).putValue("platform", args[3]);
+                        mapDisplay.properties.set("platform", args[3]);
                         sender.sendMessage(ChatColor.AQUA + "S'ha configurat \"andana\" = " + args[3]);
-                        return true;
                     }else if(args.length == 4 && args[2].equalsIgnoreCase("marca")) {
-                        ItemUtil.getMetaTag(heldItem).putValue("brand", args[3]);
+                        mapDisplay.properties.set("brand", args[3]);
                         sender.sendMessage(ChatColor.AQUA + "S'ha configurat \"marca\" = " + args[3]);
-                        return true;
                     }else if(args.length == 4 && args[2].equalsIgnoreCase("plantilla")) {
-                        ItemUtil.getMetaTag(heldItem).putValue("template", args[3].replaceAll("_", " "));
+                        mapDisplay.properties.set("template", args[3].replaceAll("_", " "));
                         sender.sendMessage(ChatColor.AQUA + "S'ha configurat \"plantilla\" = " + args[3]);
-                        return true;
                     }else{
-                        sender.sendMessage("Propietat desconeguda o argument incorrecte");
+                        sender.sendMessage(ChatColor.AQUA + "Propietat desconeguda o argument incorrecte");
                     }
+
+                    mapDisplay.restartDisplay();
+                    return true;
                 }else if(args[1].equalsIgnoreCase("sldisplay")){
                     if(!heldItem.getType().equals(Material.FILLED_MAP)){
-                        sender.sendMessage("Agafa el mapa amb la mà dreta per configurar-lo");
-                        return false;
+                        sender.sendMessage(ChatColor.RED + "Agafa el mapa amb la mà dreta per configurar-lo");
+                        return true;
+                    }
+                    MapDisplay mapDisplay = MapDisplay.getHeldDisplay((Player) sender);
+                    if(mapDisplay == null){
+                        sender.sendMessage(ChatColor.RED + "No hi ha cap pantalla vinculada a aquest mapa!");
+                        return true;
                     }
 
                     if(args.length == 4 && args[2].equalsIgnoreCase("destinacio")){
-                        ItemUtil.getMetaTag(heldItem).putValue("destination", args[3].replaceAll("_"," "));
+                        mapDisplay.properties.set("destination", args[3].replaceAll("_"," "));
                         sender.sendMessage(ChatColor.AQUA + "S'ha configurat \"destinació\" = " + args[3]);
-                        return true;
                     }else if(args.length == 4 && args[2].equalsIgnoreCase("variable")){
-                        ItemUtil.getMetaTag(heldItem).putValue("variable", args[3].replaceAll("_", " "));
+                        mapDisplay.properties.set("variable", args[3].replaceAll("_", " "));
                         sender.sendMessage(ChatColor.AQUA + "S'ha configurat \"variable\" = " + args[3]);
-                        return true;
                     }else{
                         sender.sendMessage("Propietat desconeguda o argument incorrecte");
                     }
 
-                    MapDisplay.getHeldDisplay((Player) sender).onDetached();
-                    MapDisplay.getHeldDisplay((Player) sender).onAttached();
+                    mapDisplay.restartDisplay();
+                    return true;
                 }
 
             }else if(args.length == 1 && args[0].equalsIgnoreCase("actualitzarestat")){
@@ -323,7 +331,9 @@ public class TrensMinecat extends JavaPlugin {
                 try{
                     ItemStack heldItem = ((Player) sender).getInventory().getItemInMainHand();
                     Map<String, CommonTag> data = ItemUtil.getMetaTag(heldItem).getData();
-                    data.forEach((key, value) -> sender.sendMessage(ChatColor.AQUA + key + "=" + value.toString()) );
+                    sender.sendMessage(ChatColor.AQUA + "" + ChatColor.UNDERLINE + "iteminfo");
+                    data.forEach((key, value) ->
+                            sender.sendMessage(ChatColor.AQUA + key + ChatColor.RESET + " = " + ChatColor.GRAY + value.toString()) );
                 }catch(Exception e){
                     sender.sendMessage(ChatColor.RED + "Error obtenint la informació!");
                 }
@@ -355,20 +365,23 @@ public class TrensMinecat extends JavaPlugin {
                 if("configurar".startsWith(args[0])){
                     if(args.length == 1){
                         options.add("configurar");
-                    }else if("displaymanual".startsWith(args[1])){
-                        if(args.length == 2) {
-                            options.add("displaymanual");
-                        }else{
-                            if("andana".startsWith(args[2])) options.add("andana [número]");
-                            if("marca".startsWith(args[2])) options.add("marca [marca]");
-                        }
+                    }else{
+                        if("displaymanual".startsWith(args[1])){
+                            if(args.length == 2) {
+                                options.add("displaymanual");
+                            }else{
+                                if("andana".startsWith(args[2])) options.add("andana [número]");
+                                if("marca".startsWith(args[2])) options.add("marca [marca]");
+                            }
 
-                    }else if("sldisplay".startsWith(args[1])){
-                        if(args.length == 2){
-                            options.add("sldisplay");
-                        }else{
-                            if("destinacio".startsWith(args[2])) options.add("destinacio");
-                            if("variable".startsWith(args[2])) options.add("variable");
+                        }
+                        if("sldisplay".startsWith(args[1])){
+                            if(args.length == 2){
+                                options.add("sldisplay");
+                            }else{
+                                if("destinacio".startsWith(args[2])) options.add("destinacio");
+                                if("variable".startsWith(args[2])) options.add("variable");
+                            }
                         }
                     }
                 }
@@ -409,6 +422,9 @@ public class TrensMinecat extends JavaPlugin {
                 }
                 if("traininfo".startsWith(args[0]) && args.length == 1){
                     options.add("traininfo");
+                }
+                if("iteminfo".startsWith(args[0]) && args.length == 1){
+                    options.add("iteminfo");
                 }
             }
 
