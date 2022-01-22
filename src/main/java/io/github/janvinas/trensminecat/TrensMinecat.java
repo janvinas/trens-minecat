@@ -2,6 +2,7 @@ package io.github.janvinas.trensminecat;
 
 import com.bergerkiller.bukkit.common.BlockLocation;
 import com.bergerkiller.bukkit.common.map.MapDisplay;
+import com.bergerkiller.bukkit.common.nbt.CommonTag;
 import com.bergerkiller.bukkit.common.utils.ItemUtil;
 import com.bergerkiller.bukkit.tc.TrainCarts;
 import com.bergerkiller.bukkit.tc.controller.MinecartGroup;
@@ -316,6 +317,16 @@ public class TrensMinecat extends JavaPlugin {
                     sender.sendMessage(ChatColor.AQUA + " - " + station.stationCode + ", " + arrivalTime.format(formatter) + ", " + realArrivalTime.format(formatter));
                 }
 
+                return true;
+            }else if(args.length == 1 && args[0].equalsIgnoreCase("iteminfo")){
+
+                try{
+                    ItemStack heldItem = ((Player) sender).getInventory().getItemInMainHand();
+                    Map<String, CommonTag> data = ItemUtil.getMetaTag(heldItem).getData();
+                    data.forEach((key, value) -> sender.sendMessage(ChatColor.AQUA + key + "=" + value.toString()) );
+                }catch(Exception e){
+                    sender.sendMessage(ChatColor.RED + "Error obtenint la informació!");
+                }
                 return true;
             }
         }
