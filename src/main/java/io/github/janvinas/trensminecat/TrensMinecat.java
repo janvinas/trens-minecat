@@ -478,6 +478,7 @@ public class TrensMinecat extends JavaPlugin {
         dontDestroyTag = getConfig().getString("no-destrueixis");
 
         trainTracker.registerAllStations();
+        Assets.loadAllAssets();
     }
 
 
@@ -486,19 +487,30 @@ public class TrensMinecat extends JavaPlugin {
 
         public void handle(HttpExchange t) throws IOException {
             byte [] response;
+            int rCode;
             String path = t.getRequestURI().getPath();
             if(path.equals("/api/gettrains")){
                 response = getTrains().getBytes();
+                rCode = 200;
             }else if(path.equals("/api/registeredstations")) {
                 response = getPlugin(TrensMinecat.class).trainTracker.getRegisteredStations().getBytes();
+                rCode = 200;
             }else if(path.matches("/api/departures/.*")){
                 String station = path.substring(path.lastIndexOf("/") + 1);
-                response = getDepartures(station).getBytes();
+                String departureList = getDepartures(station);
+                if(departureList == null){
+                    response = "ERR station not registered".getBytes();
+                    rCode = 404;
+                }else{
+                    response = departureList.getBytes();
+                    rCode = 200;
+                }
             }else{
                 response = "ERR invalid query".getBytes();
+                rCode = 400;
             }
             t.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-            t.sendResponseHeaders(200, response.length);
+            t.sendResponseHeaders(rCode, response.length);
             OutputStream os = t.getResponseBody();
             os.write(response);
             os.close();
@@ -522,8 +534,10 @@ public class TrensMinecat extends JavaPlugin {
     }
 
     private static String getDepartures(String station){
+        if(departureBoards.get(station) == null) return null;
+
         int length = 10;
-        final String[] result = {"{"}; //no es pot utilitzar la variable dins del forEach, però sí un arrray d'1 element??? wtf
+        final String[] result = {"["}; //no es pot utilitzar la variable dins del forEach, però sí un arrray d'1 element??? wtf
         TreeMap<LocalDateTime, Departure> departureBoardTrains = BoardUtils.fillDepartureBoard(LocalDateTime.now(), departureBoards.get(station).trainLines, length, station, false);
         departureBoardTrains.forEach((time, departure) -> {
             String departureString = "{";
@@ -542,7 +556,7 @@ public class TrensMinecat extends JavaPlugin {
             result[0] = result[0].substring(0, result[0].length() - 1);
         }
 
-        result[0] = result[0].concat("}");
+        result[0] = result[0].concat("]");
         return result[0];
     }
 

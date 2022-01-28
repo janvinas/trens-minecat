@@ -185,11 +185,15 @@ public class TrainTracker {
     }
 
     public String getRegisteredStations(){
-        String result = "{";
-        for (TrackedLine trackedLine : lineList) {
-            for (TrackedStation trackedStation : trackedLine.trackedStations) {
-                result = result.concat("\"" + trackedStation.stationCode + "\",");
+        HashSet<String> stationList = new HashSet<>();
+        for(TrackedLine trackedLine : lineList){
+            for(TrackedStation trackedStation : trackedLine.trackedStations){
+                stationList.add(trackedStation.stationCode);
             }
+        }
+        String result = "{";
+        for (String station : stationList) {
+            result = result.concat("\"" + station + "\",");
         }
         if(result.charAt(result.length() - 1) == ','){
             result = result.substring(0, result.length() - 1);

@@ -7,6 +7,8 @@ import com.bergerkiller.bukkit.tc.signactions.SignAction;
 import com.bergerkiller.bukkit.tc.signactions.SignActionType;
 import com.bergerkiller.bukkit.tc.utils.SignBuildOptions;
 import io.github.janvinas.trensminecat.TrensMinecat;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.StringTokenizer;
@@ -64,9 +66,10 @@ public class SignActionAudio extends SignAction {
         }
         JavaPlugin plugin = TrensMinecat.getPlugin(TrensMinecat.class);
         String finalAudioName = audioName;
-
+        World world = group.getWorld();
+        Location location = group.get(0).getBlock().getLocation();
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,
-                () -> group.getWorld().playSound(group.get(0).getBlock().getLocation(), finalAudioName, 1.0F, 1.0F),
+                () -> world.playSound(location, finalAudioName, 1.0F, 1.0F),
                 delay * 20L);
     }
 

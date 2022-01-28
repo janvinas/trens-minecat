@@ -16,7 +16,6 @@ import java.util.*;
 public class MapDisplays{
     static String imgDir = "img/";
     static int updateTime = 100; //time in ticks between sign updates
-    //TODO canviar hora UTC per hora local (i/o fer-ho configurable)
     //TODO afegir cartell rodalies antic (leds vermells)
     public static class DepartureBoard1 extends MapDisplay{
         int tickCount = 0;
@@ -125,7 +124,7 @@ public class MapDisplays{
         @Override
         public void onAttached() {
             getLayer(2).clear();
-            getLayer(2).draw(loadTexture(imgDir + "DepartureBoard2.png"), 0, 0);
+            getLayer(2).draw(Assets.getMapTexture(imgDir + "DepartureBoard2.png"), 0, 0);
             getLayer(0).clear();
             getLayer(0).fillRectangle(0, 30, 128, 67, MapColorPalette.getColor(0, 0, 0));
 
@@ -188,7 +187,7 @@ public class MapDisplays{
             getLayer(1).clear();
             getLayer(1).fillRectangle(5, 14, 118, 28, MapColorPalette.getColor(40, 40, 40));
             getLayer(3).clear();
-            getLayer(3).draw(loadTexture(imgDir + "DepartureBoard3.png"), 0, 0);
+            getLayer(3).draw(Assets.getMapTexture(imgDir + "DepartureBoard3.png"), 0, 0);
 
             super.onAttached();
         }
@@ -210,7 +209,7 @@ public class MapDisplays{
 
                 if(untilDeparture.minusSeconds(secondsToDisplayOnBoard).isNegative()){
                     //imprimeix el nom del tren gran
-                    getLayer(4).draw(loadTexture(imgDir + "28px/" +
+                    getLayer(4).draw(Assets.getMapTexture(imgDir + "28px/" +
                             departureBoardTrains.get(departureTime).name + ".png"), 5, 14);
                     getLayer(4).setAlignment(MapFont.Alignment.MIDDLE);
                     getLayer(4).draw(MapFont.MINECRAFT, 74, 23,
@@ -219,7 +218,7 @@ public class MapDisplays{
 
                 }else if(untilDeparture.minusMinutes(5).isNegative()){
                     //imprimeix informació
-                    getLayer(4).draw(loadTexture(imgDir + "28px/" +
+                    getLayer(4).draw(Assets.getMapTexture(imgDir + "28px/" +
                             departureBoardTrains.get(departureTime).name + ".png"), 5, 14);
                     getLayer(4).draw(MapFont.TINY, 97, 15,
                             MapColorPalette.getColor(255, 255, 255),
@@ -234,7 +233,7 @@ public class MapDisplays{
                             String.valueOf(untilDeparture.getSeconds()/60));
                 }else{
                     //imprimeix logo i hora
-                    getLayer(4).draw(loadTexture(imgDir + "28px/rodalies.png"), 5, 14);
+                    getLayer(4).draw(Assets.getMapTexture(imgDir + "28px/rodalies.png"), 5, 14);
                     getLayer(4).setAlignment(MapFont.Alignment.RIGHT);
                     getLayer(4).draw(MapFont.MINECRAFT, 119, 24, MapColorPalette.COLOR_WHITE,
                             now.format(DateTimeFormatter.ofPattern("HH:mm")));
@@ -253,7 +252,7 @@ public class MapDisplays{
         @Override
         public void onAttached() {
 
-            getLayer(0).draw(loadTexture(imgDir + "DepartureBoard4.png"), 0, 0);
+            getLayer(0).draw(Assets.getMapTexture(imgDir + "DepartureBoard4.png"), 0, 0);
             super.onAttached();
         }
 
@@ -299,7 +298,7 @@ public class MapDisplays{
                                 MapColorPalette.getColor(0, 0, 0),
                                 departureTime.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
                     }
-                    getLayer(1).draw(loadTexture(imgDir + "11px/" +
+                    getLayer(1).draw(Assets.getMapTexture(imgDir + "11px/" +
                             departure.name + ".png"), 1, 33 + i*14);
 
                     String destination = departure.destination;
@@ -339,7 +338,7 @@ public class MapDisplays{
         @Override
         public void onAttached() {
 
-            getLayer(0).draw(loadTexture(imgDir + "DepartureBoard5.png"), 0, 0); //pantalla fgc, igual que la manualdisplay 3
+            getLayer(0).draw(Assets.getMapTexture(imgDir + "DepartureBoard5.png"), 0, 0); //pantalla fgc, igual que la manualdisplay 3
             super.onAttached();
         }
 
@@ -378,9 +377,9 @@ public class MapDisplays{
                     Duration untilDeparture = Duration.between(now, departureWithDelay);
                     boolean isDelayed = !departure.delay.minusSeconds(maxAcceptableDelay).isNegative();
 
-                    MapTexture lineIcon = loadTexture(imgDir + "11px/" + departure.name + ".png");
+                    MapTexture lineIcon = Assets.getMapTexture(imgDir + "11px/" + departure.name + ".png");
                     if(!(lineIcon.getHeight() > 1)){
-                        lineIcon = loadTexture(imgDir + "11px/what.png");
+                        lineIcon = Assets.getMapTexture(imgDir + "11px/what.png");
                     }
 
                     getLayer(3).draw(lineIcon, 5, 47 + 15*i);

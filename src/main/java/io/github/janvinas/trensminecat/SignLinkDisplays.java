@@ -24,7 +24,7 @@ public class SignLinkDisplays {
             signLinkVariable = properties.get("variable", String.class, "");
             destination = properties.get("destination", String.class, "");
 
-            getLayer(1).draw(loadTexture(imgDir + "SLDisplay1.png"), 0, 0);
+            getLayer(1).draw(Assets.getMapTexture(imgDir + "SLDisplay1.png"), 0, 0);
 
             super.onAttached();
         }
@@ -38,12 +38,12 @@ public class SignLinkDisplays {
             Graphics2D g = variables.createGraphics();
             g.setFont(TrensMinecat.minecraftiaJavaFont);
             g.setColor(new Color(143, 255, 53));
-            g.drawString(LocalDateTime.now().format(formatter), 24, 40);
-            g.drawString("PROPER", 95, 40);
-            g.drawString("TREN", 95, 50);
-            g.drawString("DIRECCIÓ: " + destination.toUpperCase(), 24, 82);
+            g.drawString(LocalDateTime.now().format(formatter), 24, 67);
+            g.drawString("PROPER", 95, 67);
+            g.drawString("TREN", 95, 77);
+            g.drawString("DIRECCIÓ: " + destination.toUpperCase(), 24, 109);
             g.setFont(TrensMinecat.minecraftiaJavaFont.deriveFont(16F));
-            g.drawString(Variables.get(signLinkVariable).getDefault(), 140, 52);
+            g.drawString(Variables.get(signLinkVariable).getDefault(), 140, 79);
             g.dispose();
 
             getLayer(2).draw(MapTexture.fromImage(variables), 0, 12); //global offset

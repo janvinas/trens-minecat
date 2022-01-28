@@ -43,10 +43,10 @@ public class ManualDisplays {
             getLayer(4).clear();
             MapTexture lineIcon;
             try{
-                lineIcon = loadTexture(imgDir + "28px/" + trainLine + ".png");
+                lineIcon = Assets.getMapTexture(imgDir + "28px/" + trainLine + ".png");
             }catch(MapTexture.TextureLoadException e){
                 dest = displayName;
-                lineIcon = loadTexture(imgDir + "28px/what.png");
+                lineIcon = Assets.getMapTexture(imgDir + "28px/what.png");
             }
             getLayer(4).draw(lineIcon, 5, 14);
 
@@ -100,7 +100,7 @@ public class ManualDisplays {
             if(! properties.get("ID", String.class).equals(displayID)) return false;
 
             getLayer(4).clear();
-            getLayer(4).draw(loadTexture(imgDir + "28px/" + brand + ".png"), 5, 14);
+            getLayer(4).draw(Assets.getMapTexture(imgDir + "28px/" + brand + ".png"), 5, 14);
             getLayer(5).clear();
 
             updateTime = true;
@@ -114,9 +114,9 @@ public class ManualDisplays {
             getLayer(1).clear();
             getLayer(1).fillRectangle(5, 14, 118, 28, MapColorPalette.getColor(40, 40, 40));
             getLayer(3).clear();
-            getLayer(3).draw(loadTexture(imgDir + "DepartureBoard3.png"), 0, 0);
+            getLayer(3).draw(Assets.getMapTexture(imgDir + "DepartureBoard3.png"), 0, 0);
             getLayer(4).clear();
-            getLayer(4).draw(loadTexture(imgDir + "28px/" + brand + ".png"), 5, 14);
+            getLayer(4).draw(Assets.getMapTexture(imgDir + "28px/" + brand + ".png"), 5, 14);
 
         }
 
@@ -238,7 +238,7 @@ public class ManualDisplays {
         public void onAttached() {
             super.onAttached();
             getLayer(0).clear();
-            getLayer(0).draw(loadTexture(imgDir + "ManualDisplay3.png"), 0, 0);
+            getLayer(0).draw(Assets.getMapTexture(imgDir + "ManualDisplay3.png"), 0, 0);
         }
 
         @Override
@@ -280,10 +280,10 @@ public class ManualDisplays {
                 dest = destination;
             }
 
-            MapTexture lineIcon = loadTexture(imgDir + "11px/" + trainLine + ".png");
+            MapTexture lineIcon = Assets.getMapTexture(imgDir + "11px/" + trainLine + ".png");
             if(!(lineIcon.getHeight() > 1)){
                 dest = displayName;
-                lineIcon = loadTexture(imgDir + "11px/what.png");
+                lineIcon = Assets.getMapTexture(imgDir + "11px/what.png");
             }
 
             getLayer(3).draw(minecraftia, 51, 49, MapColorPalette.COLOR_BLACK, dest);
@@ -499,9 +499,9 @@ public class ManualDisplays {
 
         @Override
         public void onAttached() {
-            getLayer(1).draw(loadTexture(imgDir + "ManualDisplay6.png"), 0, 0);
+            getLayer(1).draw(Assets.getMapTexture(imgDir + "ManualDisplay6.png"), 0, 0);
             brand = properties.get("brand", String.class, "rodalies"); //si no s'ha especificat una marca, retorna rodalies.
-            getLayer(2).draw(loadTexture(imgDir + "46px/" + brand + ".png"), 13, 41);
+            getLayer(2).draw(Assets.getMapTexture(imgDir + "46px/" + brand + ".png"), 13, 41);
 
             super.onAttached();
         }
@@ -557,9 +557,9 @@ public class ManualDisplays {
 
             MapTexture lineIcon;
             try{
-                lineIcon = loadTexture(imgDir + "46px/" + trainLine + ".png");
+                lineIcon = Assets.getMapTexture(imgDir + "46px/" + trainLine + ".png");
             }catch(MapTexture.TextureLoadException e){
-                lineIcon = loadTexture(imgDir + "46px/what.png");
+                lineIcon = Assets.getMapTexture(imgDir + "46px/what.png");
                 dest = displayName;
             }
 
@@ -582,7 +582,7 @@ public class ManualDisplays {
 
             hasTrain = false;
             getLayer(2).clear();
-            getLayer(2).draw(loadTexture(imgDir + "46px/" + brand + ".png"), 13, 41);
+            getLayer(2).draw(Assets.getMapTexture(imgDir + "46px/" + brand + ".png"), 13, 41);
 
             return true;
         }
