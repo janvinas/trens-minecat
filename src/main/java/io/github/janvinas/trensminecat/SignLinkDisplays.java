@@ -25,7 +25,7 @@ public class SignLinkDisplays {
             destination = properties.get("destination", String.class, "");
 
             getLayer(1).draw(Assets.getMapTexture(imgDir + "SLDisplay1.png"), 0, 0);
-
+            setUpdateWithoutViewers(false);
             super.onAttached();
         }
 

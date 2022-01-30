@@ -227,8 +227,14 @@ public class TrensMinecat extends JavaPlugin {
                     }
 
                     if(args.length == 4 && args[2].equalsIgnoreCase("andana")){
-                        mapDisplay.properties.set("platform", args[3]);
-                        sender.sendMessage(ChatColor.AQUA + "S'ha configurat \"andana\" = " + args[3]);
+                        if(args[3].equalsIgnoreCase("reset")){
+                            mapDisplay.properties.set("platform", "");
+                            sender.sendMessage(ChatColor.AQUA + "S'ha reiniciat el número d'andana.");
+                        }else{
+                            mapDisplay.properties.set("platform", args[3]);
+                            sender.sendMessage(ChatColor.AQUA + "S'ha configurat \"andana\" = " + args[3]);
+                        }
+
                     }else if(args.length == 4 && args[2].equalsIgnoreCase("marca")) {
                         mapDisplay.properties.set("brand", args[3]);
                         sender.sendMessage(ChatColor.AQUA + "S'ha configurat \"marca\" = " + args[3]);
@@ -370,7 +376,7 @@ public class TrensMinecat extends JavaPlugin {
                             if(args.length == 2) {
                                 options.add("displaymanual");
                             }else{
-                                if("andana".startsWith(args[2])) options.add("andana [número]");
+                                if("andana".startsWith(args[2])) options.add("andana [número|reset]");
                                 if("marca".startsWith(args[2])) options.add("marca [marca]");
                             }
 
