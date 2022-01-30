@@ -158,7 +158,7 @@ tagaudio
 <nom>
 <delay>
 ```
-Reprodueix un so quan el tren passa per sobre el cartell. `<nom>` pot ser el nom de so o un àlias que es pot relacionar amb un tag al tren amb la sintaxi `tagaudio|alias|nom.del.so.real`
+Reprodueix un so quan el tren passa per sobre el cartell. `<nom>` pot ser el nom de so o un àlias que es pot relacionar amb un tag al tren amb la sintaxi `tagaudio|alias|nom.del.so.real`. Substituint `tagaudio` per `tagadio in` el so només es reprodueix dins el tren.
 
 Es pot especificar, opcionalment, un delay que s'esperarà abans de reproduir el so.
 
@@ -214,6 +214,9 @@ destruir-trens-en: 0
 
 #Els trens que tinguin aquest tag no seran afectats per la configuració anterior i, per tant, no es destruiran mai.
 no-destrueixis: nodestrueixis
+
+#Els trens que tinguin aquest tag no es mostraran a l'api (/gettrains).
+no-api: noapi
 
 #Temps mínim (en segons) que es mostrarà a les pantalles. Si el temps fins al proper tren és menor que això es mostrarà
 #un missatge personalitzable a cada pantalla, com "ara" o "imminent"

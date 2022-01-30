@@ -277,6 +277,8 @@ public class MapDisplays{
                     departureBoardTrains.forEach( (time, departure) ->{
                         if(!departure.platform.equals(andana)) departures.put(time, departure);
                     });
+                }else{
+                    departures.putAll(departureBoardTrains);
                 }
 
                 //print train lines on screen
@@ -366,6 +368,8 @@ public class MapDisplays{
                     departureBoardTrains.forEach( (time, departure) ->{
                         if(departure.platform.equals(andana)) departures.put(time, departure);
                     });
+                }else{
+                    departures.putAll(departureBoardTrains);
                 }
 
                 getLayer(2).clear();

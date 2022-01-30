@@ -52,6 +52,7 @@ public class TrensMinecat extends JavaPlugin {
 
     int trainDestroyDelay;
     String dontDestroyTag;
+    String dontReportTag = "";
     HashMap<String, Block> trainList = new HashMap<>();
 
     public static Font minecraftiaJavaFont;
@@ -455,9 +456,8 @@ public class TrensMinecat extends JavaPlugin {
     public void loadMainConfiguration(){
         reloadConfig();
         ConfigurationSection displays = getConfig().getConfigurationSection("pantalles");
-        ConsoleCommandSender console = getServer().getConsoleSender();
         if(displays == null){
-            console.sendMessage("No s'ha trobat cap pantalla per carregar");
+            getLogger().log(Level.WARNING, "No s'ha trobat cap pantalla per carregar");
             return;
         }
         for(String boardName : Objects.requireNonNull(displays).getKeys(false)){
@@ -482,6 +482,7 @@ public class TrensMinecat extends JavaPlugin {
         secondsToDisplayOnBoard = getConfig().getInt("temps-minim-en-pantalla");
         trainDestroyDelay = getConfig().getInt("destruir-trens-en");
         dontDestroyTag = getConfig().getString("no-destrueixis");
+        dontReportTag = getConfig().getString("no-api");
 
         trainTracker.registerAllStations();
         Assets.loadAllAssets();
@@ -526,6 +527,7 @@ public class TrensMinecat extends JavaPlugin {
     private static String getTrains(){
         String trains = "{";
         for(MinecartGroup group : MinecartGroupStore.getGroups()){
+            if(group.getProperties().matchTag(getPlugin(TrensMinecat.class).dontReportTag)) continue;
             String trainName = group.getProperties().getTrainName();
             String trainWorld = group.getWorld().getName();
             String coordX = String.valueOf(group.get(0).getBlock().getLocation().getX());

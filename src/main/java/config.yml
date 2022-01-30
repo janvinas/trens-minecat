@@ -4,6 +4,9 @@ destruir-trens-en: 0
 #Els trens que tinguin aquest tag no seran afectats per la configuració anterior i, per tant, no es destruiran mai.
 no-destrueixis: nodestrueixis
 
+#Els trens que tinguin aquest tag no es mostraran a l'api (/gettrains).
+no-api: noapi
+
 #Temps mínim (en segons) que es mostrarà a les pantalles. Si el temps fins al proper tren és menor que això es mostrarà
 #un missatge personalitzable a cada pantalla, com "ara" o "imminent"
 temps-minim-en-pantalla: 20

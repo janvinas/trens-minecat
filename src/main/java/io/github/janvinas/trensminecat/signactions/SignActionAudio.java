@@ -1,5 +1,6 @@
 package io.github.janvinas.trensminecat.signactions;
 
+import com.bergerkiller.bukkit.common.utils.PlayerUtil;
 import com.bergerkiller.bukkit.tc.controller.MinecartGroup;
 import com.bergerkiller.bukkit.tc.events.SignActionEvent;
 import com.bergerkiller.bukkit.tc.events.SignChangeActionEvent;
@@ -64,13 +65,30 @@ public class SignActionAudio extends SignAction {
         }catch(NullPointerException|NumberFormatException e) {
             delay = 0;
         }
+
         JavaPlugin plugin = TrensMinecat.getPlugin(TrensMinecat.class);
         String finalAudioName = audioName;
-        World world = group.getWorld();
-        Location location = group.get(0).getBlock().getLocation();
-        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,
-                () -> world.playSound(location, finalAudioName, 1.0F, 1.0F),
-                delay * 20L);
+
+        if(info.getLine(1).equals("tagaudio in")){
+
+            plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,() -> {
+                group.forEach(minecartMember -> {
+                   minecartMember.getEntity().getPlayerPassengers().forEach(player -> {
+                       player.playSound(player.getEyeLocation(), finalAudioName, 1, 1);
+                   });
+                });
+            }, delay * 20L);
+
+        }else{
+
+            World world = group.getWorld();
+            Location location = group.get(0).getBlock().getLocation();
+            plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,
+                    () -> world.playSound(location, finalAudioName, 1.0F, 1.0F),
+                    delay * 20L);
+
+        }
+
     }
 
 }
