@@ -110,6 +110,7 @@ public class ManualDisplays {
         @Override
         public void onAttached() {
             super.onAttached();
+            setUpdateWithoutViewers(false);
             brand = properties.get("brand", String.class, "rodalies"); //si no s'ha especificat una marca, retorna rodalies.
             getLayer(1).clear();
             getLayer(1).fillRectangle(5, 14, 118, 28, MapColorPalette.getColor(40, 40, 40));
@@ -237,6 +238,7 @@ public class ManualDisplays {
         @Override
         public void onAttached() {
             super.onAttached();
+            setUpdateWithoutViewers(false);
             getLayer(0).clear();
             getLayer(0).draw(Assets.getMapTexture(imgDir + "ManualDisplay3.png"), 0, 0);
         }
@@ -326,7 +328,7 @@ public class ManualDisplays {
             getLayer(0).fillRectangle(0, 10, 256, 85, MapColorPalette.getColor(0x2E, 0x2E, 0X2E));
             getLayer(2).draw(background, 0, 0);
             updatePlatformNumber();
-
+            setUpdateWithoutViewers(false);
             super.onAttached();
         }
         private void updatePlatformNumber(){
@@ -502,7 +504,7 @@ public class ManualDisplays {
             getLayer(1).draw(Assets.getMapTexture(imgDir + "ManualDisplay6.png"), 0, 0);
             brand = properties.get("brand", String.class, "rodalies"); //si no s'ha especificat una marca, retorna rodalies.
             getLayer(2).draw(Assets.getMapTexture(imgDir + "46px/" + brand + ".png"), 13, 41);
-
+            setUpdateWithoutViewers(false);
             super.onAttached();
         }
 
@@ -549,12 +551,6 @@ public class ManualDisplays {
                 dest = destination;
             }
 
-            BufferedImage text = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g = text.createGraphics();
-            g.setFont(helvetica);
-            g.setColor(new Color(255, 255, 255));
-            g.drawString(dest.toUpperCase(), 65, 70);
-
             MapTexture lineIcon;
             try{
                 lineIcon = Assets.getMapTexture(imgDir + "46px/" + trainLine + ".png");
@@ -562,6 +558,12 @@ public class ManualDisplays {
                 lineIcon = Assets.getMapTexture(imgDir + "46px/what.png");
                 dest = displayName;
             }
+
+            BufferedImage text = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = text.createGraphics();
+            g.setFont(helvetica);
+            g.setColor(new Color(255, 255, 255));
+            g.drawString(dest.toUpperCase(), 65, 70);
 
             g.dispose();
             getLayer(2).draw(MapTexture.fromImage(text),0 , 0);

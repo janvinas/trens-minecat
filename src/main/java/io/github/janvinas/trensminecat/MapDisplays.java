@@ -12,6 +12,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.logging.Level;
 
 public class MapDisplays{
     static String imgDir = "img/";
@@ -251,9 +252,9 @@ public class MapDisplays{
 
         @Override
         public void onAttached() {
-
-            getLayer(0).draw(Assets.getMapTexture(imgDir + "DepartureBoard4.png"), 0, 0);
             super.onAttached();
+            setUpdateWithoutViewers(false);
+            getLayer(0).draw(Assets.getMapTexture(imgDir + "DepartureBoard4.png"), 0, 0);
         }
 
         @Override
@@ -270,9 +271,11 @@ public class MapDisplays{
                 DepartureBoardTemplate template = TrensMinecat.departureBoards.get(properties.get("template", String.class));
                 String andana = properties.get("platform", String.class, "");
                 TreeMap<LocalDateTime, Departure> departureBoardTrains = BoardUtils.fillDepartureBoard(now, template.trainLines, template.length, properties.get("template", String.class), false);
+                TreeMap<LocalDateTime, Departure> departures = new TreeMap<>();
+
                 if(!andana.equals("")){
                     departureBoardTrains.forEach( (time, departure) ->{
-                        if(!departure.platform.equals(andana)) departureBoardTrains.remove(time);
+                        if(!departure.platform.equals(andana)) departures.put(time, departure);
                     });
                 }
 
@@ -280,10 +283,10 @@ public class MapDisplays{
                 getLayer(1).clear();
                 getLayer(1).setAlignment(MapFont.Alignment.LEFT);
                 int i = 0;
-                for(LocalDateTime departureTime : departureBoardTrains.keySet()){
+                for(LocalDateTime departureTime : departures.keySet()){
                     if(i > template.length) break;
                     Duration untilDeparture = Duration.between(now, departureTime);
-                    Departure departure = departureBoardTrains.get(departureTime);
+                    Departure departure = departures.get(departureTime);
                     boolean isDelayed = !departure.delay.minusSeconds(maxAcceptableDelay).isNegative();
 
                     if(untilDeparture.minusSeconds(secondsToDisplayOnBoard).isNegative()) {
@@ -337,9 +340,9 @@ public class MapDisplays{
 
         @Override
         public void onAttached() {
-
-            getLayer(0).draw(Assets.getMapTexture(imgDir + "DepartureBoard5.png"), 0, 0); //pantalla fgc, igual que la manualdisplay 3
             super.onAttached();
+            setUpdateWithoutViewers(false);
+            getLayer(0).draw(Assets.getMapTexture(imgDir + "DepartureBoard5.png"), 0, 0); //pantalla fgc, igual que la manualdisplay 3
         }
 
         @Override
@@ -357,9 +360,11 @@ public class MapDisplays{
                 DepartureBoardTemplate template = TrensMinecat.departureBoards.get(properties.get("template", String.class));
                 String andana = properties.get("platform", String.class, "");
                 TreeMap<LocalDateTime, Departure> departureBoardTrains = BoardUtils.fillDepartureBoard(now, template.trainLines, template.length, properties.get("template", String.class), false);
+                TreeMap<LocalDateTime, Departure> departures = new TreeMap<>();
+
                 if(!andana.equals("")){
                     departureBoardTrains.forEach( (time, departure) ->{
-                        if(!departure.platform.equals(andana)) departureBoardTrains.remove(time);
+                        if(departure.platform.equals(andana)) departures.put(time, departure);
                     });
                 }
 
@@ -370,9 +375,9 @@ public class MapDisplays{
                 g.setFont(TrensMinecat.minecraftiaJavaFont);
 
                 int i = 0;
-                for(LocalDateTime departureTime : departureBoardTrains.keySet()) {
+                for(LocalDateTime departureTime : departures.keySet()) {
                     if (i > 3) break;
-                    Departure departure = departureBoardTrains.get(departureTime);
+                    Departure departure = departures.get(departureTime);
                     LocalDateTime departureWithDelay = departureTime.plus(departure.delay);
                     Duration untilDeparture = Duration.between(now, departureWithDelay);
                     boolean isDelayed = !departure.delay.minusSeconds(maxAcceptableDelay).isNegative();
