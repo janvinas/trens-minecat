@@ -70,6 +70,7 @@ public class TrensMinecat extends JavaPlugin {
 
         if(trainDestroyDelay != 0){
             getServer().getScheduler().scheduleSyncRepeatingTask(this,() ->{
+                //check for trains that have not moved:
                 for(String train : trainList.keySet()){
                     Collection<MinecartGroup> trainMatches = MinecartGroupStore.matchAll(train);
                     for(MinecartGroup matchingTrain : trainMatches){
@@ -78,9 +79,20 @@ public class TrensMinecat extends JavaPlugin {
                             if(!matchingTrain.getProperties().matchTag(dontDestroyTag)){
                                 BlockLocation loc = matchingTrain.getProperties().getLocation();
                                 matchingTrain.destroy();
-                                getLogger().info("El tren " + train + " a " + loc.x + "," + loc.y + "," + loc.z + " ha estat destruït");
+                                getLogger().info("El tren " + train + " a [" + loc.x + "," + loc.y + "," + loc.z + "] ha estat destruït per inactivitat");
                             }
                         }
+                    }
+                }
+
+                //check for trains very far from spawn:
+                //TODO make this configurable
+                for(MinecartGroup group : MinecartGroupStore.getGroups()){
+                    BlockLocation location = group.get(0).getProperties().getLocation();
+                    double distance = Math.sqrt( (location.x)^2 + (location.y - 1500)^2 ); //border center is offset by 1500 on y axis.
+                    if(distance > 5500 && group.getWorld().getName().equals("world")){    //border radius is 5500
+                        getLogger().info("El tren " + group.getProperties().getTrainName() + " a [" + location.x + "," + location.y + "," + location.z + "] ha estat destruït per estar massa lluny");
+                        group.destroy();
                     }
                 }
 
@@ -184,6 +196,11 @@ public class TrensMinecat extends JavaPlugin {
                         return true;
                     }else if(args[2].equalsIgnoreCase("6")){
                         ItemStack display = MapDisplay.createMapItem(ManualDisplays.ManualDisplay6.class);
+                        ItemUtil.getMetaTag(display).putValue("ID", args[3]);
+                        ((Player) sender).getInventory().addItem(display);
+                        return true;
+                    }else if(args[2].equalsIgnoreCase("7")){
+                        ItemStack display = MapDisplay.createMapItem(ManualDisplays.ManualDisplay7.class);
                         ItemUtil.getMetaTag(display).putValue("ID", args[3]);
                         ((Player) sender).getInventory().addItem(display);
                         return true;

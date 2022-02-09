@@ -83,6 +83,10 @@ Es pot configurar la imatge que es mostrarà quan no hi ha cap tren amb `/tm con
 
 Atenció! Per utilitzar aquest display cal configurar el número d'andana. Per fer-ho, agafa l'ítem del mapa amb la mà dreta i executa el comandament `/tm configurar displaymanual andana <número d'andana>`.
 
+###### 7:
+![imatge](/imatges/manual/7.png)
+
+
 #### Pantalles dinàmiques
 
 Des de la versió 1.4, les pantalles es poden actualitzar amb informació en temps real proporcionada pels cartells `displaymanual` (encara que la informació no es mostri a cap pantalla manual).

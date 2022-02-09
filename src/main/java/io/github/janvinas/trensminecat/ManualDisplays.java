@@ -88,9 +88,8 @@ public class ManualDisplays {
             updateTime = false;
 
             if(clearIn != 0){
-                getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
-                    this.clearInformation(properties.get("ID", String.class));
-                }, clearIn * 20L);
+                getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () ->
+                        this.clearInformation(properties.get("ID", String.class)), clearIn * 20L);
             }
 
             return true;
@@ -292,9 +291,7 @@ public class ManualDisplays {
             getLayer(3).draw(lineIcon, 22, 49);
 
             if(clearIn != 0){
-                getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
-                    this.clearInformation(properties.get("ID", String.class));
-                }, clearIn * 20L);
+                getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> this.clearInformation(properties.get("ID", String.class)), clearIn * 20L);
             }
 
             return true;
@@ -420,9 +417,8 @@ public class ManualDisplays {
             getLayer(1).draw(MapTexture.fromImage(layer1), 0, 5); //global offset because the text is off (idk why)
 
             if(clearIn != 0){
-                getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
-                    this.clearInformation(properties.get("ID", String.class));
-                }, clearIn * 20L);
+                getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () ->
+                        this.clearInformation(properties.get("ID", String.class)), clearIn * 20L);
             }
 
             return true;
@@ -468,9 +464,8 @@ public class ManualDisplays {
             getLayer(1).draw(MapTexture.fromImage(layer1),0 , 0);
 
             if(clearIn != 0){
-                getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
-                    this.clearInformation(properties.get("ID", String.class));
-                }, clearIn * 20L);
+                getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () ->
+                        this.clearInformation(properties.get("ID", String.class)), clearIn * 20L);
             }
 
             return true;
@@ -497,7 +492,7 @@ public class ManualDisplays {
         boolean hasTrain = false;
         String brand;
 
-        static final Font helvetica = new Font("Helvetica", Font.BOLD, 14);
+        static final Font helvetica = TrensMinecat.helvetica46JavaFont.deriveFont(Font.BOLD, 14);
 
         @Override
         public void onAttached() {
@@ -570,9 +565,8 @@ public class ManualDisplays {
             getLayer(2).draw(lineIcon, 13, 41);
 
             if(clearIn != 0){
-                getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
-                    this.clearInformation(properties.get("ID", String.class));
-                }, clearIn * 20L);
+                getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () ->
+                        this.clearInformation(properties.get("ID", String.class)), clearIn * 20L);
             }
 
             return true;
@@ -586,6 +580,56 @@ public class ManualDisplays {
             getLayer(2).clear();
             getLayer(2).draw(Assets.getMapTexture(imgDir + "46px/" + brand + ".png"), 13, 41);
 
+            return true;
+        }
+    }
+
+    public static class ManualDisplay7 extends ManualDisplay{
+        static final Font helvetica19 = TrensMinecat.helvetica46JavaFont.deriveFont(Font.BOLD, 19);
+        static final Font helvetica12 = TrensMinecat.helvetica46JavaFont.deriveFont(Font.BOLD, 12);
+        @Override
+        public void onAttached() {
+            getLayer(1).draw(Assets.getMapTexture(imgDir + "ManualDisplay7.png"), 0, 0);
+            this.clearInformation(properties.get("ID", String.class));
+            setUpdateWithoutViewers(false);
+            super.onAttached();
+        }
+
+        @Override
+        public boolean updateInformation(String displayID, String name, String displayName, String destination, int clearIn) {
+            if(! properties.get("ID", String.class).equals(displayID)) return false;
+
+            getLayer(2).clear();
+            BufferedImage departure = new BufferedImage(230,46, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = departure.createGraphics();
+            g.setFont(helvetica12);
+            g.setColor(new Color(255, 0, 0));
+            g.drawString(destination.toUpperCase(), 4, 13);
+            g.drawString(displayName.toUpperCase(), 4, 28);
+            g.drawString("", 4, 34); //observacions (no en tenim)
+            g.dispose();
+            getLayer(2).draw(MapTexture.fromImage(departure),13 , 55);
+
+            if(clearIn != 0){
+                getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () ->
+                        this.clearInformation(properties.get("ID", String.class)), clearIn * 20L);
+            }
+            return true;
+        }
+
+        @Override
+        public boolean clearInformation(String displayID) {
+            if(! properties.get("ID", String.class).equals(displayID)) return false;
+
+            getLayer(2).clear();
+            BufferedImage renfeRodalies = new BufferedImage(230,46, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = renfeRodalies.createGraphics();
+            g.setFont(helvetica19);
+            g.setColor(new Color(255, 0, 0));
+            g.drawString("RENFE", 84, 20);
+            g.drawString("RODALIES", 68, 40);
+            g.dispose();
+            getLayer(2).draw(MapTexture.fromImage(renfeRodalies),13 , 55);
             return true;
         }
     }
