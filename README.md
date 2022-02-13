@@ -147,7 +147,16 @@ Per actualitzar la destinació mostrada al cartell: `/tm configurar sldisplay de
 
 `/tm actualitzarestat` Actualitza l'estat del servei quan s'ha modificat una variable.
 
-`/tm spawntrain <tren> <mon> <x> <y> <z> <nom> <destinacio> [register]` Spawneja un tren en un bloc de rail qualsevol. Per registrar-lo s'ha d'afegir obligatòriament nom i destinació i "register" al final del comandament.
+`/tm spawntrain -n [nom] -d [dest] -s [defaults] -h [n|s|w|e] [-o] [-l] [-r] <tren> <mon> <x> <y> <z>` Spawneja un tren en un bloc de rail qualsevol. 
+```
+-d,--destination <destination>   destinació del tren
+-h,--heading <heading>           intenta fer aparèixer el tren cap a una direcció (n/s/e/w)
+-l,--launch                      intenta accelerar el tren en la direcció -h
+-n,--name <name>                 nom del tren
+-o,--dontround                   no arrodoneixis el temps de spawneig. Obligatori -d -n -r
+-r,--register                    registra el tren al TrainTracker. Obligatori -d -n
+-s,--setdefaults <defaults>      defaults del tren
+```
 
 `/tm iteminfo` Obté informació de l'ítem agafat amb la mà (funciona només amb mapDisplays i ítems que tinguin tags).
 

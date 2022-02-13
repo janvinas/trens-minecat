@@ -25,7 +25,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -33,6 +32,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import picocli.CommandLine;
 
 import java.awt.*;
 import java.io.IOException;
@@ -43,6 +43,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
 public class TrensMinecat extends JavaPlugin {
@@ -297,27 +298,14 @@ public class TrensMinecat extends JavaPlugin {
             }else if(args.length == 1 && args[0].equalsIgnoreCase("info")){
                 sender.sendMessage("TrensMinecat versió " + getDescription().getVersion() + ". programat per janitus1234 (janitus1234@gmail.com)");
                 return true;
-            }else if(args.length >= 6 && args[0].equalsIgnoreCase("spawntrain")){
-                SpawnableGroup spawnableGroup = SpawnableGroup.parse(args[1]);
-                SpawnableGroup.SpawnLocationList spawnLocationList = spawnableGroup.findSpawnLocations(
-                        new Location(getServer().getWorld(args[2]),
-                                Integer.parseInt(args[3]),
-                                Integer.parseInt(args[4]),
-                                Integer.parseInt(args[5])),
-                        new Vector(0, 0, 0), //hauria de spawnejar el tren en qualsevol direcció random
-                        SpawnableGroup.SpawnMode.DEFAULT
-                        );
-                spawnLocationList.loadChunks();
-                MinecartGroup minecartGroup = spawnableGroup.spawn(spawnLocationList);
-                LocalDateTime spawningTime = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES); //will ignore seconds and nanos on spawnTime.
-                if(args.length >= 7){
-                    String formattedSpawnTime = spawningTime.format(DateTimeFormatter.ofPattern("HHmmss"));
-                    minecartGroup.getProperties().setTrainName(args[6] + "_" + formattedSpawnTime);
+            }else if(args[0].equalsIgnoreCase("spawntrain")){
+                CommandLine commandLine = new CommandLine(new SpawnTrainCommand());
+                commandLine.setUnmatchedOptionsArePositionalParams(true);
+                int returnCode = commandLine.execute(args);
+                if (returnCode != 0) {
+                    sender.sendMessage(ChatColor.RED + "Error parsing command. For more information see console.");
                 }
-                if(args.length >= 8){ minecartGroup.getProperties().setDestination(args[7].replaceAll("_", " ")); }
-                if(args.length >= 9 && args[8].equalsIgnoreCase("register")){ trainTracker.registerTrain(minecartGroup, spawningTime); }
                 return true;
-
             }else if(args.length == 1 && args[0].equalsIgnoreCase("gettrains")){
                 sender.sendMessage(trainTracker.getTrackedTrains().toString());
                 return true;
@@ -416,6 +404,7 @@ public class TrensMinecat extends JavaPlugin {
                     else if(args.length == 4) options.add ("<y>");
                     else if(args.length == 5) options.add ("<z>");
                 }
+                /*
                 if("spawntrain".startsWith(args[0])){
                     if(args.length == 1) options.add("spawntrain");
                     if(args[0].equals("spawntrain")) {
@@ -428,6 +417,10 @@ public class TrensMinecat extends JavaPlugin {
                         else if (args.length == 8) options.add("[destination]");
                         else if (args.length == 9) options.add("register");
                     }
+                }
+                */
+                if("spawntrain".startsWith(args[0]) && args.length == 1){
+                    options.add("spawntrain");
                 }
                 if("horn".startsWith(args[0]) && args.length == 1){
                     options.add("horn");
@@ -583,6 +576,115 @@ public class TrensMinecat extends JavaPlugin {
 
         result[0] = result[0].concat("]");
         return result[0];
+    }
+
+    @picocli.CommandLine.Command(name="spawntrain", description="spawns a train on a given coordinates")
+    static class SpawnTrainCommand implements Callable<Integer> {
+
+        @picocli.CommandLine.Parameters(index="0", type=String.class, paramLabel = "spawntrain", hidden=true)
+        String subcommand;
+        @picocli.CommandLine.Parameters(index="1", type=String.class, paramLabel = "train", description = "tren a spawnejar")
+        String train;
+        @picocli.CommandLine.Parameters(index="2", type=String.class, paramLabel = "world", description = "mon on spawnejar el tren")
+        String world;
+        @picocli.CommandLine.Parameters(index="3", type=int.class, paramLabel = "x", description = "coordenada x")
+        int x;
+        @picocli.CommandLine.Parameters(index="4", type=int.class, paramLabel = "y", description = "coordenada y")
+        int y;
+        @picocli.CommandLine.Parameters(index="5", type=int.class, paramLabel = "z", description = "coordenada z")
+        int z;
+        @Deprecated
+        @picocli.CommandLine.Parameters(index="6", type=String.class, paramLabel = "trainName", hidden=true, defaultValue = "")
+        String oldTrainName;
+        @Deprecated
+        @picocli.CommandLine.Parameters(index="7", type=String.class, paramLabel = "destination", hidden=true, defaultValue = "")
+        String oldDestination;
+        @Deprecated
+        @picocli.CommandLine.Parameters(index="8", type=String.class, paramLabel = "register", hidden=true, defaultValue ="")
+        String oldRegister;
+
+        @picocli.CommandLine.Option(names = {"-n", "--trainname"}, paramLabel="NAME", description="nom del tren")
+        String trainName;
+        @picocli.CommandLine.Option(names={"-d", "--destination"}, paramLabel="DEST", description="destinació del tren")
+        String destination;
+        @picocli.CommandLine.Option(names={"-s", "--setdefaults"}, paramLabel="DEF", description="inclou setdefaults al tren")
+        String defaults;
+        @picocli.CommandLine.Option(names={"-h", "--heading"}, paramLabel="H", description="intenta spawnejar el tren en aquesta direcció (n/s/e/w)")
+        String heading;
+        @picocli.CommandLine.Option(names={"-l", "--launch"}, description = "intenta donar energia al tren en la direcció -h")
+        boolean launch;
+        @picocli.CommandLine.Option(names={"-r", "--register"}, description ="registra el tren al TrainTracker. Requereix -n i -d")
+        boolean register;
+        @picocli.CommandLine.Option(names={"-o", "--dontround"}, description ="no arrodoneix la hora de spawn")
+        boolean dontRound;
+
+        @Override
+        public Integer call() throws Exception{
+
+            TrensMinecat plugin = TrensMinecat.getPlugin(TrensMinecat.class);
+
+            SpawnableGroup spawnableGroup = SpawnableGroup.parse(train);
+
+            Vector h;
+            if(heading == null){
+                h = new Vector (0, 0, 0);
+            }else{
+                switch (heading) {
+                    case "n":
+                        h = new Vector(0, 0, -1);
+                        break;
+                    case "s":
+                        h = new Vector(0, 0, 1);
+                        break;
+                    case "e":
+                        h = new Vector(1, 0, 0);
+                        break;
+                    case "w":
+                        h = new Vector(-1, 0, 0);
+                        break;
+                    default:
+                        h = new Vector(0, 0, 0);
+                        break;
+                }
+            }
+
+            SpawnableGroup.SpawnLocationList spawnLocationList = spawnableGroup.findSpawnLocations(
+                    new Location(plugin.getServer().getWorld(world), x, y, z), h, SpawnableGroup.SpawnMode.DEFAULT
+            );
+            spawnLocationList.loadChunks();
+            MinecartGroup minecartGroup = spawnableGroup.spawn(spawnLocationList);
+            if(launch){ //launch train if the user has specified to do so
+                minecartGroup.setForwardForce(10);
+            }
+
+            /////this code is kept for backwards compatibility: (it will ignore new flags)
+            if(oldTrainName != null && !oldTrainName.equals("")){
+                LocalDateTime spawningTime = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES); //will ignore seconds and nanos on spawnTime.
+                String formattedSpawnTime = spawningTime.format(DateTimeFormatter.ofPattern("HHmmss"));
+                minecartGroup.getProperties().setTrainName(oldTrainName + "_" + formattedSpawnTime);
+                if(oldDestination != null && !oldDestination.equals("")){ minecartGroup.getProperties().setDestination(oldDestination.replaceAll("_", " ")); }
+                if(oldRegister.equalsIgnoreCase("register")){ plugin.trainTracker.registerTrain(minecartGroup, spawningTime); }
+                return 0;
+            }
+            /////
+
+
+            if(destination != null){
+                minecartGroup.getProperties().setDestination(destination.replaceAll("_", " "));
+            }
+            if(trainName != null){
+                LocalDateTime spawningTime = LocalDateTime.now();
+                if(!dontRound) spawningTime = spawningTime.truncatedTo(ChronoUnit.MINUTES);
+                String formattedSpawnTime = spawningTime.format(DateTimeFormatter.ofPattern("HHmmss"));
+                minecartGroup.getProperties().setTrainName(trainName + "_" + formattedSpawnTime);
+
+                if(destination != null && register){ plugin.trainTracker.registerTrain(minecartGroup, spawningTime); }
+            }
+            if(defaults != null){ minecartGroup.getProperties().setDefault(defaults); }
+
+            return 0;
+
+        }
     }
 
 }
