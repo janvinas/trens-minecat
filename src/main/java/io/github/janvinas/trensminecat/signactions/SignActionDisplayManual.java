@@ -27,11 +27,22 @@ public class SignActionDisplayManual extends SignAction {
 
     @Override
     public void execute(SignActionEvent info) {
+        String idDisplay = null;
+        String via = null;
         String displayId = info.getLine(2);
+        String[] line3 = displayId.split(" ", 2);
+        idDisplay = line3[0];
+        try {
+            via = line3[1];
+        } catch (Exception e){
+            via = null;
+        }
+
         int clearIn;
+
         if(info.getLine(3).length() > 0) {
             clearIn = Integer.parseInt(info.getLine(3));
-        }else{
+        } else {
             clearIn = 0;
         }
 
@@ -39,15 +50,13 @@ public class SignActionDisplayManual extends SignAction {
 
         if (info.isTrainSign() && info.isAction(SignActionType.GROUP_ENTER)) {
             if (!info.isPowered()) return;
-            String displayName = info.getGroup().getProperties().getDisplayName();
-            String destination = info.getGroup().getProperties().getDestination();
-            String name = info.getGroup().getProperties().getTrainName();
-            updateDisplay(displayId, name, displayName, destination, clearIn);
+            MinecartGroup train = info.getGroup();
+            updateDisplay(idDisplay, via, train, clearIn);
             updateTrackedTrain(info.getGroup(), displayId);
         }
     }
 
-    private boolean updateDisplay(String displayId, String name, String trainDisplayName, String destination, int clearIn){
+    private boolean updateDisplay(String displayId, String via, MinecartGroup train, int clearIn){
 
         Class<?>[] classes = ManualDisplays.class.getDeclaredClasses();
 
@@ -56,7 +65,7 @@ public class SignActionDisplayManual extends SignAction {
             Collection<? extends ManualDisplay> displays = MapDisplay.getAllDisplays( (Class<ManualDisplay>) c);
 
             displays.forEach(display -> {
-                display.updateInformation(displayId, name, trainDisplayName, destination, clearIn);
+                display.updateInformation(displayId, via, train, clearIn);
 
             });
 

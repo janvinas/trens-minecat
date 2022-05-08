@@ -388,7 +388,7 @@ public class MapDisplays{
 
                     MapTexture lineIcon = Assets.getMapTexture(imgDir + "11px/" + departure.name + ".png");
                     if(!(lineIcon.getHeight() > 1)){
-                        lineIcon = Assets.getMapTexture(imgDir + "11px/what.png");
+                        lineIcon = Assets.getMapTexture(imgDir + "11px/info.png");
                     }
 
                     getLayer(3).draw(lineIcon, 5, 47 + 15*i);

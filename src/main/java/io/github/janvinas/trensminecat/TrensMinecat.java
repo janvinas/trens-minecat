@@ -2,6 +2,7 @@ package io.github.janvinas.trensminecat;
 
 import com.bergerkiller.bukkit.common.BlockLocation;
 import com.bergerkiller.bukkit.common.map.MapDisplay;
+import com.bergerkiller.bukkit.common.map.MapTexture;
 import com.bergerkiller.bukkit.common.nbt.CommonTag;
 import com.bergerkiller.bukkit.common.utils.ItemUtil;
 import com.bergerkiller.bukkit.tc.TrainCarts;
@@ -28,6 +29,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -205,6 +207,20 @@ public class TrensMinecat extends JavaPlugin {
                         ItemUtil.getMetaTag(display).putValue("ID", args[3]);
                         ((Player) sender).getInventory().addItem(display);
                         return true;
+                    }else if(args[2].equalsIgnoreCase("8")){
+                        sender.sendMessage(ChatColor.AQUA + "Aquest display conté dos subtipus\n" +
+                                                                   "Si us plau, especifiqui el tipus (8A o 8B)");
+                        return true;
+                    }else if(args[2].equalsIgnoreCase("8A")){
+                        ItemStack display = MapDisplay.createMapItem(ManualDisplays.ManualDisplay8A.class);
+                        ItemUtil.getMetaTag(display).putValue("ID", args[3]);
+                        ((Player) sender).getInventory().addItem(display);
+                        return true;
+                    }else if(args[2].equalsIgnoreCase("8B")) {
+                        ItemStack display = MapDisplay.createMapItem(ManualDisplays.ManualDisplay8B.class);
+                        ItemUtil.getMetaTag(display).putValue("ID", args[3]);
+                        ((Player) sender).getInventory().addItem(display);
+                        return true;
                     }
                 }else if(args[1].equalsIgnoreCase("sldisplay") && args.length == 3){
                     ItemStack display;
@@ -220,14 +236,15 @@ public class TrensMinecat extends JavaPlugin {
                     return true;
                 }
             }else if(args.length == 1 && args[0].equalsIgnoreCase("recarregar")){
+                sender.sendMessage(ChatColor.GOLD + "AVÍS PELS QUE UTILITZEU PAPERMC: " + ChatColor.AQUA + "Si surt per consola un thread dump, ignoreu-lo. A vegades el plugin pot tardar una mica en recàrregar.");
                 loadMainConfiguration();
                 sender.sendMessage(ChatColor.AQUA + "Configuració regarregada!");
                 return true;
             }else if(args.length == 1 && args[0].equalsIgnoreCase("horn")){
                 MinecartGroup group = CartProperties.getEditing( (Player) sender).getGroup();
-                if(group == null){
-                    sender.sendMessage("No estàs editant cap tren!");
-                    return false;
+                if (group == null) {
+                    sender.sendMessage(ChatColor.RED + "No estàs editant cap tren!");
+                    return true;
                 }
                 SignActionHorn.playSound(group);
                 return true;
@@ -239,22 +256,34 @@ public class TrensMinecat extends JavaPlugin {
                         sender.sendMessage(ChatColor.RED + "Agafa el mapa amb la mà dreta per configurar-lo");
                         return true;
                     }
+
                     MapDisplay mapDisplay = MapDisplay.getHeldDisplay((Player) sender);
                     if(mapDisplay == null){
                         sender.sendMessage(ChatColor.RED + "No hi ha cap pantalla vinculada a aquest mapa!");
                         return true;
                     }
 
-                    if(args.length == 4 && args[2].equalsIgnoreCase("andana")){
-                        if(args[3].equalsIgnoreCase("reset")){
+                    if(args.length == 4 && args[2].equalsIgnoreCase("andana")) {
+                        if (args[3].equalsIgnoreCase("reset")) {
                             mapDisplay.properties.set("platform", "");
                             sender.sendMessage(ChatColor.AQUA + "S'ha reiniciat el número d'andana.");
-                        }else{
+                        } else {
                             mapDisplay.properties.set("platform", args[3]);
                             sender.sendMessage(ChatColor.AQUA + "S'ha configurat \"andana\" = " + args[3]);
                         }
-
-                    }else if(args.length == 4 && args[2].equalsIgnoreCase("marca")) {
+                    }
+//                    if(args.length == 4 && args[2].equalsIgnoreCase("idioma")){
+//                        if(args[3].equalsIgnoreCase("catala") || args[3].equalsIgnoreCase("reinicia")){
+//                            mapDisplay.properties.set("background", MapTexture.loadPluginResource(JavaPlugin.getPlugin(TrensMinecat.class), "img/ManualDisplay4.png"));
+//                            sender.sendMessage(ChatColor.AQUA + "S'ha cambiat l'idioma del display a català.");
+//                        }else if(args[3].equalsIgnoreCase("castella")){
+//                            mapDisplay.properties.set("background", MapTexture.loadPluginResource(JavaPlugin.getPlugin(TrensMinecat.class), "img/ManualDisplay4B.png"));
+//                            sender.sendMessage(ChatColor.AQUA + "S'ha cambiat l'idioma del display a castellà.");
+//                        }else{
+//                            sender.sendMessage(ChatColor.AQUA + "Especifiqui el llenguatge (catala/castella)");
+//                        }
+//                    }
+                    else if(args.length == 4 && args[2].equalsIgnoreCase("marca")) {
                         mapDisplay.properties.set("brand", args[3]);
                         sender.sendMessage(ChatColor.AQUA + "S'ha configurat \"marca\" = " + args[3]);
                     }else if(args.length == 4 && args[2].equalsIgnoreCase("plantilla")) {
@@ -315,7 +344,7 @@ public class TrensMinecat extends JavaPlugin {
             }else if(args.length == 1 && args[0].equalsIgnoreCase("traininfo")){
                 MinecartGroup group = CartProperties.getEditing( (Player) sender).getGroup();
                 if(group == null){
-                    sender.sendMessage("No estàs editant cap tren!");
+                    sender.sendMessage(ChatColor.RED + "No estàs editant cap tren!");
                     return true;
                 }
                 TrackedTrain trackedTrain = trainTracker.searchTrain(group);
@@ -348,6 +377,39 @@ public class TrensMinecat extends JavaPlugin {
                             sender.sendMessage(ChatColor.AQUA + key + ChatColor.RESET + " = " + ChatColor.GRAY + value.toString()) );
                 }catch(Exception e){
                     sender.sendMessage(ChatColor.RED + "Error obtenint la informació!");
+                }
+                return true;
+            }else if(args.length == 4 && args[0].equalsIgnoreCase("justificant")){
+                String playerName = args[1];
+                String nomBitllet = args[2];
+                String quantitatBitllets = args[3];
+                Player target = sender.getServer().getPlayerExact(playerName);
+                if (target == null) {
+                    sender.sendMessage("Jugador " + playerName + " no es en línia.");
+                    return true;
+                }
+                else{
+                    if (nomBitllet == null || quantitatBitllets == null) {
+                        sender.sendMessage("Propietat desconeguda o argument incorrecte");
+                    } else {
+                        //obtenir temps
+                        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                        LocalDateTime now = LocalDateTime.now();
+
+                        //Crear llibre justificant
+                        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+                        BookMeta meta = (BookMeta) book.getItemMeta();
+                        assert meta != null;
+                        meta.setTitle("Rebut / Recibo / Receipt");
+                        meta.setAuthor("MineCat Trànsit");
+                        List<String> pages = new ArrayList<String>();
+                        pages.add("Usuari §l" + playerName + "§r ha comprat el/s bitllet/s " + nomBitllet + " (x" + quantitatBitllets + ") " + "a les " + dtf.format(now) + "\n\n§o§4No llençi aquest llibre fins que acabi el viatge. Aquest llibre serveix de justificant de pagament.§r");
+                        pages.add("Usuario §l" + playerName + "§r ha comprado el/los billete/s " + nomBitllet + " (x" + quantitatBitllets + ") " + "a las " + dtf.format(now) + "\n\n§o§4No tire este libro hasta que acabe el viaje. Este libro sirve como justificante de pago.§r");
+                        pages.add("User §l" + playerName + "§r has bought ticket named " + nomBitllet + " (x" + quantitatBitllets + ") " + "at " + dtf.format(now) + "\n\n§o§4Do not throw this book until you end your trip. This book serves as a proof of payment.§r");
+                        meta.setPages(pages);
+                        book.setItemMeta(meta);
+                        target.getInventory().addItem(book);
+                    }
                 }
                 return true;
             }
@@ -384,6 +446,7 @@ public class TrensMinecat extends JavaPlugin {
                             }else{
                                 if("andana".startsWith(args[2])) options.add("andana [número|reset]");
                                 if("marca".startsWith(args[2])) options.add("marca [marca]");
+                                if("idioma".startsWith(args[2])) options.add("idioma [catala/castella] (sense accents)");
                             }
 
                         }
@@ -442,6 +505,9 @@ public class TrensMinecat extends JavaPlugin {
                 }
                 if("iteminfo".startsWith(args[0]) && args.length == 1){
                     options.add("iteminfo");
+                }
+                if("justificant".startsWith(args[0]) && args.length == 1){
+                    options.add("justificant");
                 }
             }
 
