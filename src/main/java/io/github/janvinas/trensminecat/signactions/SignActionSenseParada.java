@@ -1,6 +1,7 @@
 package io.github.janvinas.trensminecat.signactions;
 
 import com.bergerkiller.bukkit.common.map.MapDisplay;
+import com.bergerkiller.bukkit.tc.controller.MinecartGroup;
 import com.bergerkiller.bukkit.tc.events.SignActionEvent;
 import com.bergerkiller.bukkit.tc.events.SignChangeActionEvent;
 import com.bergerkiller.bukkit.tc.signactions.SignAction;
@@ -36,11 +37,18 @@ public class SignActionSenseParada extends SignAction {
 
     @Override
     public void execute(SignActionEvent info) {
+        String via = null;
         String displayId = info.getLine(2);
+        String[] line3 = displayId.split(" ", 2);
+        for(String numVia: line3) {
+            via = numVia;
+        }
+
         int clearIn;
+
         if(info.getLine(3).length() > 0) {
             clearIn = Integer.parseInt(info.getLine(3));
-        }else{
+        } else {
             clearIn = 0;
         }
 
@@ -48,20 +56,19 @@ public class SignActionSenseParada extends SignAction {
 
         if (info.isTrainSign() && info.isAction(SignActionType.GROUP_ENTER, SignActionType.REDSTONE_ON)) {
             if (!info.isPowered()) return;
-            String displayName = info.getGroup().getProperties().getDisplayName();
-            String name = info.getGroup().getProperties().getTrainName();
-            noStopDisplay(displayId, name, displayName, clearIn);
+            MinecartGroup train = info.getGroup();
+            noStopDisplay(displayId, via, train, clearIn);
         }
     }
 
-    private void noStopDisplay(String displayId, String name, String displayName, int clearIn){
+    private void noStopDisplay(String displayId, String via, MinecartGroup train, int clearIn){
         Class<?>[] classes = ManualDisplays.class.getDeclaredClasses();
         for (Class<?> c : classes) {
             @SuppressWarnings("unchecked")
             Collection<? extends ManualDisplay> displays = MapDisplay.getAllDisplays( (Class<ManualDisplay>) c);
 
             displays.forEach(display -> {
-                display.updateInformation(displayId, name, displayName, "nopara", clearIn);
+                display.updateInformation(displayId, via, train, clearIn);
 
             });
         }

@@ -3,6 +3,8 @@ package io.github.janvinas.trensminecat;
 import com.bergerkiller.bukkit.common.map.MapColorPalette;
 import com.bergerkiller.bukkit.common.map.MapFont;
 import com.bergerkiller.bukkit.common.map.MapTexture;
+import com.bergerkiller.bukkit.tc.controller.MinecartGroup;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.awt.*;
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class ManualDisplays {
@@ -19,34 +22,46 @@ public class ManualDisplays {
     static String imgDir = "img/";
 
     public static class ManualDisplay1 extends ManualDisplay {
+        String type = "/";
         boolean updateTime = true;
         String brand;
 
-        public boolean updateInformation(String displayID, String name, String displayName, String destination, int clearIn){
+        public boolean updateInformation(String displayID, String via, MinecartGroup dadesTren, Integer clearIn){
+            if (via != null) {
+                displayID = displayID + via;
+            }
+
+            String codiParada = displayID.replaceAll("[0-9]","");
+
             if(! properties.get("ID", String.class).equals(displayID)) return false;
 
             brand = properties.get("brand", String.class, "rodalies"); //si no s'ha especificat una marca, retorna rodalies.
 
+            if (Objects.equals(brand, "rodalies")){
+                type = "_orange/";
+            } else if (Objects.equals(brand, "renfe")){
+                type = "_white/";
+            }
+
             String trainLine;
             String dest;
-            if(destination.equals("nopara")){
+            if(!dadesTren.getProperties().matchTag(codiParada)){
                 trainLine = "info";
-                dest = "sense parada";
-            }else{
-
-                trainLine = BoardUtils.getTrainLine(name);
-                dest = destination.toUpperCase();
-                if(dest.length() == 0) dest = "DEST. DESCONEG.";
+                dest = "TREN SENSE PARADA";
+            } else {
+                trainLine = BoardUtils.getTrainLine(dadesTren.getProperties().getTrainName());
+                dest = dadesTren.getProperties().getDestination().toUpperCase();
+                if(dest.length() == 0) dest = dadesTren.getProperties().getDisplayName();
             }
 
             getLayer(5).clear();
             getLayer(4).clear();
             MapTexture lineIcon;
             try{
-                lineIcon = Assets.getMapTexture(imgDir + "28px/" + trainLine + ".png");
-            }catch(MapTexture.TextureLoadException e){
-                dest = displayName;
-                lineIcon = Assets.getMapTexture(imgDir + "28px/what.png");
+                lineIcon = Assets.getMapTexture(imgDir + "28px" + type + trainLine + ".png");
+            } catch(MapTexture.TextureLoadException e) {
+                dest = dadesTren.getProperties().getDisplayName();
+                lineIcon = Assets.getMapTexture(imgDir + "28px" + type + "what.png");
             }
             getLayer(4).draw(lineIcon, 5, 14);
 
@@ -76,9 +91,14 @@ public class ManualDisplays {
             g.dispose();
             getLayer(4).draw(MapTexture.fromImage(destinationText), 0, 0);
             */
+
             BufferedImage destinationText = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g = destinationText.createGraphics();
-            g.setColor(new Color(255, 255, 255));
+            if (Objects.equals(brand, "rodalies")) {
+                g.setColor(new Color(252, 76, 0));
+            } else {
+                g.setColor(new Color(255, 255, 255));
+            }
             g.setFont(TrensMinecat.minecraftiaJavaFont);
             int offset = g.getFontMetrics().stringWidth(dest) / 2;
             g.drawString(dest, 77 - offset, 37);
@@ -99,7 +119,7 @@ public class ManualDisplays {
             if(! properties.get("ID", String.class).equals(displayID)) return false;
 
             getLayer(4).clear();
-            getLayer(4).draw(Assets.getMapTexture(imgDir + "28px/" + brand + ".png"), 5, 14);
+            getLayer(4).draw(Assets.getMapTexture(imgDir + "28px" + type + brand + ".png"), 5, 14);
             getLayer(5).clear();
 
             updateTime = true;
@@ -116,7 +136,7 @@ public class ManualDisplays {
             getLayer(3).clear();
             getLayer(3).draw(Assets.getMapTexture(imgDir + "DepartureBoard3.png"), 0, 0);
             getLayer(4).clear();
-            getLayer(4).draw(Assets.getMapTexture(imgDir + "28px/" + brand + ".png"), 5, 14);
+            getLayer(4).draw(Assets.getMapTexture(imgDir + "28px" + type + brand + ".png"), 5, 14);
 
         }
 
@@ -127,11 +147,15 @@ public class ManualDisplays {
                 getLayer(5).clear();
                 getLayer(5).setAlignment(MapFont.Alignment.RIGHT);
                 LocalDateTime now = LocalDateTime.now();
-                getLayer(5).draw(MapFont.MINECRAFT, 119, 24, MapColorPalette.COLOR_WHITE,
-                        now.format(DateTimeFormatter.ofPattern("HH:mm")));
+                if (Objects.equals(brand, "rodalies")) {
+                    getLayer(5).draw(MapFont.MINECRAFT, 119, 24, MapColorPalette.getColor(252, 76, 0), now.format(DateTimeFormatter.ofPattern("HH:mm")));
+                } else if (Objects.equals(brand, "renfe")){
+                    getLayer(5).draw(MapFont.MINECRAFT, 119, 24, MapColorPalette.COLOR_WHITE, now.format(DateTimeFormatter.ofPattern("HH:mm")));
+                }
             }
         }
     }
+
     /*
     public static class ManualDisplay2 extends MapDisplay{
         TreeMap<String, LocalDateTime> lastTrains = new TreeMap<>();
@@ -139,6 +163,10 @@ public class ManualDisplays {
         int tickCount = 0;
 
         public boolean updateInformation(String displayID, String displayName, String destination){
+            if (via != null) {
+                displayID = displayID + via;
+            }
+            String codiParada = displayID.replaceAll("[0-9]","");
             if(! properties.get("ID", String.class).equals(displayID)) return false;
             LocalDateTime now = LocalDateTime.now();
             lastTrains.put(destination, now);
@@ -259,7 +287,11 @@ public class ManualDisplays {
                     now.format(DateTimeFormatter.ofPattern("HH:mm")));
         }
 
-        public boolean updateInformation(String displayID, String name, String displayName, String destination, int clearIn){
+        public boolean updateInformation(String displayID, String via, MinecartGroup dadesTren, Integer clearIn){
+            if (via != null) {
+                displayID = displayID + via;
+            }
+            String codiParada = displayID.replaceAll("[0-9]","");
             if(! properties.get("ID", String.class).equals(displayID)) return false;
 
             getLayer(2).clear();
@@ -273,17 +305,17 @@ public class ManualDisplays {
 
             String trainLine;
             String dest;
-            if(destination.equals("nopara")){
+            if(!dadesTren.getProperties().matchTag(codiParada)){
                 trainLine = "info";
-                dest = "Sense parada";
+                dest = "Sense parada / Sin parada";
             }else{
-                trainLine = BoardUtils.getTrainLine(name);
-                dest = destination;
+                trainLine = BoardUtils.getTrainLine(dadesTren.getProperties().getTrainName());
+                dest = dadesTren.getProperties().getDestination();
             }
 
             MapTexture lineIcon = Assets.getMapTexture(imgDir + "11px/" + trainLine + ".png");
             if(!(lineIcon.getHeight() > 1)){
-                dest = displayName;
+                dest = dadesTren.getProperties().getDestination();
                 lineIcon = Assets.getMapTexture(imgDir + "11px/what.png");
             }
 
@@ -306,9 +338,13 @@ public class ManualDisplays {
     }
 
     public static class ManualDisplay4 extends ManualDisplay{  //pantalla ADIF pròxima sortida. 2*1 blocs.
-
+        Integer retard = 0;
         int tickCount = 0;
+        LocalDateTime horaActual;
+        boolean textInSpanish = false;
+        boolean senseParada = false;
         boolean sortidaImmediata = false;
+        boolean sortidaAmbRetard = false;
         static MapTexture background = MapTexture.loadPluginResource(JavaPlugin.getPlugin(TrensMinecat.class), "img/ManualDisplay4.png");
 
 
@@ -321,13 +357,13 @@ public class ManualDisplays {
 
         @Override
         public void onAttached() {
-
             getLayer(0).fillRectangle(0, 10, 256, 85, MapColorPalette.getColor(0x2E, 0x2E, 0X2E));
             getLayer(2).draw(background, 0, 0);
             updatePlatformNumber();
             setUpdateWithoutViewers(false);
             super.onAttached();
         }
+
         private void updatePlatformNumber(){
             BufferedImage platformNumber = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g = platformNumber.createGraphics();
@@ -343,6 +379,7 @@ public class ManualDisplays {
 
         @Override
         public void onTick() {
+
             super.onTick();
 
             LocalDateTime now = LocalDateTime.now();
@@ -364,13 +401,32 @@ public class ManualDisplays {
                     MapColorPalette.getColor(0, 0, 0)
             );
 
-            if(sortidaImmediata){
 
+            if (tickCount % 100 == 0){
+                textInSpanish = !textInSpanish;
+            }
+
+            if(senseParada && !sortidaImmediata && !sortidaAmbRetard){ //TREN SENSE PARADA
+                Color c = new Color(255, 75, 75);
+                getLayer(3).clear();
+                BufferedImage layer3 = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g = layer3.createGraphics();
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                g.setColor(c);
+                g.setFont(TrensMinecat.minecraftiaJavaFont);
+                if (!textInSpanish) {
+                    g.drawString("NO SE ACERQUEN A LA VÍA", 6, 88); //ANOTACIONES
+                } else g.drawString("NO S'APROPIN A LA VIA", 6, 88); //ANOTACIONES
+                g.dispose();
+                getLayer(3).draw(MapTexture.fromImage(layer3),0 , 5);
+            }
+
+            if(!senseParada && sortidaImmediata && !sortidaAmbRetard){ //TREN AMB SORTIDA INMEDIATA
                 int n = tickCount % 20;
-                Color c = new Color(255, 242, 0);
+                Color c = new Color(255, 196, 0);
 
-                if(n ==0) c = new Color(255, 242, 49);
-                if(n == 10) c = new Color(255, 0, 0);
+                if(n == 0) c = new Color(255, 196, 0);
+                if(n == 10) c = new Color(255, 75, 75);
 
                 if(n == 0 || n == 10){
                     getLayer(3).clear();
@@ -379,24 +435,41 @@ public class ManualDisplays {
                     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
                     g.setColor(c);
                     g.setFont(TrensMinecat.minecraftiaJavaFont);
-                    g.drawString("SORTIDA IMMEDIATA", 6, 88);
+                    if (!textInSpanish) {
+                        g.drawString("SORTIDA IMMEDIATA", 6, 88); //ANOTACIONES
+                    } else g.drawString("SALIDA INMEDIATA", 6, 88); //ANOTACIONES
                     g.dispose();
                     getLayer(3).draw(MapTexture.fromImage(layer3),0 , 5);
                 }
+            }
 
+            if(!senseParada && !sortidaImmediata && sortidaAmbRetard){ //TREN AMB RETARD
+                Color c = new Color(255, 75, 75);
+                getLayer(3).clear();
+                BufferedImage layer3 = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g = layer3.createGraphics();
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                g.setColor(c);
+                g.setFont(TrensMinecat.minecraftiaJavaFont);
+                g.drawString("ESTIMAT / ESTIMADO: " + horaActual.plusSeconds(retard).format(DateTimeFormatter.ofPattern("HH:mm")), 6, 88); //ANOTACIONES
+                g.dispose();
+                getLayer(3).draw(MapTexture.fromImage(layer3),0 , 5);
             }
 
             tickCount++;
         }
 
-        public boolean updateInformation(String displayID, String name, String displayName, String destination, int clearIn) {
-            if(! properties.get("ID", String.class).equals(displayID)) return false;
+        public boolean updateInformation(String displayID, String via, MinecartGroup dadesTren, Integer clearIn) {
+            if (via != null) {
+                displayID = displayID + via;
+            }
+            String codiParada = displayID.replaceAll("[0-9]","");
+            if(!properties.get("ID", String.class).equals(displayID)) return false;
 
-            String dest;
-            if(destination.equals("nopara")){
-                dest = "sense parada";
-            }else{
-                dest = destination.toUpperCase();
+            if(!dadesTren.getProperties().matchTag(codiParada)){
+                senseParada = true;
+                sortidaImmediata = false;
+                sortidaAmbRetard = false;
             }
 
             getLayer(1).clear();
@@ -406,10 +479,27 @@ public class ManualDisplays {
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
             g.setColor(new Color(255, 242, 0));
             g.setFont(TrensMinecat.minecraftiaJavaFont);
-            g.drawString(name, 6, 41); //tren
-            g.drawString(displayName, 78, 41); //servei
-            g.drawString(dest, 6, 73); //destinació
-            sortidaImmediata = true;
+            horaActual = LocalDateTime.now();
+
+            if (!senseParada) {
+                g.drawString(horaActual.plusSeconds(clearIn).format(DateTimeFormatter.ofPattern("HH:mm")), 6, 41); //HORA
+                g.drawString(dadesTren.getProperties().getDisplayName().toUpperCase(), 78, 41); //SERVEI
+                g.drawString(dadesTren.getProperties().getDestination().toUpperCase(), 6, 73); //DESTINACIÓ
+
+                if (clearIn >= 120){
+                    retard = clearIn;
+                    sortidaAmbRetard = true;
+                    sortidaImmediata = false;
+                } else {
+                    sortidaAmbRetard = false;
+                    sortidaImmediata = true;
+                }
+            } else {
+                g.drawString("00:10", 6, 41); //HORA
+                g.drawString("NO S'ATURA", 78, 41); //SERVEI
+                g.drawString("TREN SIN PARADA", 6, 73); //DESTINACIÓ
+            }
+
             g.dispose();
 
             updatePlatformNumber();
@@ -427,11 +517,15 @@ public class ManualDisplays {
 
         public boolean clearInformation(String displayID) {
             if(! properties.get("ID", String.class).equals(displayID)) return false;
+            retard = 0;
+            textInSpanish = false;
+            senseParada = false;
+            sortidaImmediata = false;
+            sortidaAmbRetard = false;
             getLayer(1).clear();
             getLayer(4).clear();
             updatePlatformNumber();
             getLayer(3).clear();
-            sortidaImmediata = false;
             return true;
         }
 
@@ -450,16 +544,19 @@ public class ManualDisplays {
         static MapTexture background = MapTexture.loadPluginResource(JavaPlugin.getPlugin(TrensMinecat.class), "img/ManualDisplay5.png");
 
         @Override
-        public boolean updateInformation(String displayID, String name, String displayName, String destination, int clearIn) {
+        public boolean updateInformation(String displayID, String via, MinecartGroup dadesTren, Integer clearIn) {
             if(! properties.get("ID", String.class).equals(displayID)) return false;
-
             getLayer(1).clear();
             BufferedImage layer1 = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g = layer1.createGraphics();
-            g.setColor(new Color(255, 242, 0));
+            g.setColor(new Color(58, 93, 57));
             g.setFont(TrensMinecat.minecraftiaJavaFont);
-            g.drawString(destination, 22, 71);
-            g.drawString(displayName, 22, 94);
+            g.drawString(dadesTren.getProperties().getDestination(), 22, 67); //Destino
+            if (via != null) {
+                g.drawString(via, 120, 67); //Vía
+            }
+            g.drawString(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm")), 210, 67); //Hora
+            g.drawString("SERVICIO: " + dadesTren.getProperties().getDisplayName(), 22, 90); //Servicio (va debajo de "Destino")
             g.dispose();
             getLayer(1).draw(MapTexture.fromImage(layer1),0 , 0);
 
@@ -467,7 +564,6 @@ public class ManualDisplays {
                 getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () ->
                         this.clearInformation(properties.get("ID", String.class)), clearIn * 20L);
             }
-
             return true;
         }
 
@@ -489,6 +585,10 @@ public class ManualDisplays {
     }
 
     public static class ManualDisplay6 extends ManualDisplay{
+        int animationLength = 1;
+        String trainDataDest;
+        String trainDataName;
+        boolean PMR = false;
         boolean hasTrain = false;
         String brand;
 
@@ -513,7 +613,9 @@ public class ManualDisplays {
             super.onTick();
 
             if(!hasTrain){
+                animationLength = 1;
                 getLayer(3).clear();
+                getLayer(5).clear();
                 LocalDateTime now = LocalDateTime.now();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
                 BufferedImage time = new BufferedImage(255,128, BufferedImage.TYPE_INT_ARGB);
@@ -524,10 +626,135 @@ public class ManualDisplays {
                 g.dispose();
                 getLayer(3).draw(MapTexture.fromImage(time), 0, 0);
             }
+
+            else {
+                if (PMR) { getLayer(5).draw(Assets.getMapTexture(imgDir + "PMR20px.png"), 222, 66); }
+                try {
+                    if (trainDataName.toLowerCase().contains("r1_serveia") && trainDataDest.equalsIgnoreCase("Hospitalet de Llobregat") && animationLength > 0 && animationLength < 602) {
+                        if (animationLength != 601) {
+                            getLayer(2).draw(Assets.getMapTexture(imgDir + "46px_animated/Rodalies/R1/A/HospitaletDeLlobregat/fotograma" + animationLength + ".png"), 13, 41);
+                            animationLength++;
+                        }
+                        else {
+                            animationLength = 0;
+                        }
+                    }
+                    if (trainDataName.toLowerCase().contains("r1_serveia") && trainDataDest.equalsIgnoreCase("Maçanet Massanes") && animationLength > 0 && animationLength < 602) {
+                        if (animationLength != 601) {
+                            getLayer(2).draw(Assets.getMapTexture(imgDir + "46px_animated/Rodalies/R1/A/MaçanetMassanes/fotograma" + animationLength + ".png"), 13, 41);
+                            animationLength++;
+                        }
+                        else {
+                            animationLength = 0;
+                        }
+                    }
+                    if (trainDataName.toLowerCase().contains("r1_serveib") && trainDataDest.equalsIgnoreCase("Molins de Rei") && animationLength > 0 && animationLength < 602) {
+                        if (animationLength != 601) {
+                            getLayer(2).draw(Assets.getMapTexture(imgDir + "46px_animated/Rodalies/R1/B/MolinsDeRei/fotograma" + animationLength + ".png"), 13, 41);
+                            animationLength++;
+                        }
+                        else {
+                            animationLength = 0;
+                        }
+                    }
+                    if (trainDataName.toLowerCase().contains("r1_serveib") && trainDataDest.equalsIgnoreCase("Arenys de Mar") && animationLength > 0 && animationLength < 602) {
+                        if (animationLength != 601) {
+                            getLayer(2).draw(Assets.getMapTexture(imgDir + "46px_animated/Rodalies/R1/B/ArenysDeMar/fotograma" + animationLength + ".png"), 13, 41);
+                            animationLength++;
+                        }
+                        else {
+                            animationLength = 0;
+                        }
+                    }
+                    if (trainDataName.toLowerCase().contains("r2s_serveia") && trainDataDest.equalsIgnoreCase("Barcelona - Estació de França") && animationLength > 0 && animationLength < 602) {
+                        if (animationLength != 601) {
+                            getLayer(2).draw(Assets.getMapTexture(imgDir + "46px_animated/Rodalies/R2/A/Barcelona-EstacióDeFrança/fotograma" + animationLength + ".png"), 13, 41);
+                            animationLength++;
+                        }
+                        else {
+                            animationLength = 0;
+                        }
+                    }
+                    if (trainDataName.toLowerCase().contains("r2s_serveia") && trainDataDest.equalsIgnoreCase("Sant Vicenç de Calders") && animationLength > 0 && animationLength < 602) {
+                        if (animationLength != 601) {
+                            getLayer(2).draw(Assets.getMapTexture(imgDir + "46px_animated/Rodalies/R2/A/SantVicençDeCalders/fotograma" + animationLength + ".png"), 13, 41);
+                            animationLength++;
+                        }
+                        else {
+                            animationLength = 0;
+                        }
+                    }
+                    if (trainDataName.toLowerCase().contains("r2s_serveib") && trainDataDest.equalsIgnoreCase("Barcelona - Estació de França") && animationLength > 0 && animationLength < 602) {
+                        if (animationLength != 601) {
+                            getLayer(2).draw(Assets.getMapTexture(imgDir + "46px_animated/Rodalies/R2/B/Barcelona-EstacióDeFrança/fotograma" + animationLength + ".png"), 13, 41);
+                            animationLength++;
+                        }
+                        else {
+                            animationLength = 0;
+                        }
+                    }
+                    if (trainDataName.toLowerCase().contains("r2s_serveib") && trainDataDest.equalsIgnoreCase("Vilanova i la Geltrú") && animationLength > 0 && animationLength < 602) {
+                        if (animationLength != 601) {
+                            getLayer(2).draw(Assets.getMapTexture(imgDir + "46px_animated/Rodalies/R2/B/VilanovaILaGeltrú/fotograma" + animationLength + ".png"), 13, 41);
+                            animationLength++;
+                        }
+                        else {
+                            animationLength = 0;
+                        }
+                    }
+                    if (trainDataName.toLowerCase().contains("r8") && trainDataDest.equalsIgnoreCase("Martorell") && animationLength > 0 && animationLength < 602) {
+                        if (animationLength != 601) {
+                            getLayer(2).draw(Assets.getMapTexture(imgDir + "46px_animated/Rodalies/R8/Martorell/fotograma" + animationLength + ".png"), 13, 41);
+                            animationLength++;
+                        }
+                        else {
+                            animationLength = 0;
+                        }
+                    }
+                    if (trainDataName.toLowerCase().contains("r8") && trainDataDest.equalsIgnoreCase("Granollers Centre") && animationLength > 0 && animationLength < 602) {
+                        if (animationLength != 601) {
+                            getLayer(2).draw(Assets.getMapTexture(imgDir + "46px_animated/Rodalies/R8/GranollersCentre/fotograma" + animationLength + ".png"), 13, 41);
+                            animationLength++;
+                        }
+                        else {
+                            animationLength = 0;
+                        }
+                    }
+                    if (trainDataName.toLowerCase().contains("r10") && trainDataDest.equalsIgnoreCase("Aeroport del Prat") && animationLength > 0 && animationLength < 602) {
+                        if (animationLength != 601) {
+                            getLayer(2).draw(Assets.getMapTexture(imgDir + "46px_animated/Rodalies/R10/AeroportDelPrat/fotograma" + animationLength + ".png"), 13, 41);
+                            animationLength++;
+                        }
+                        else {
+                            animationLength = 0;
+                        }
+                    }
+                    if (trainDataName.toLowerCase().contains("r10") && trainDataDest.equalsIgnoreCase("Barcelona - Estació de França") && animationLength > 0 && animationLength < 602) {
+                        if (animationLength != 601) {
+                            getLayer(2).draw(Assets.getMapTexture(imgDir + "46px_animated/Rodalies/R10/Barcelona-EstacióDeFrança/fotograma" + animationLength + ".png"), 13, 41);
+                            animationLength++;
+                        }
+                        else {
+                            animationLength = 0;
+                        }
+                    }
+                } catch (MapTexture.TextureLoadException e){
+                    Bukkit.getServer().getConsoleSender().sendMessage("Oops! Errada al carregar animació pel tren [\" + trainDataName + \" amb destinació \" + trainDataDest + \"] (pot ser d'un tren que no tingui cap animació codificada?");
+                }
+            }
         }
 
         @Override
-        public boolean updateInformation(String displayID, String name, String displayName, String destination, int clearIn) {
+        public boolean updateInformation(String displayID, String via, MinecartGroup dadesTren, Integer clearIn) {
+            if (via != null) {
+                displayID = displayID + via;
+            }
+
+            if (dadesTren.getProperties().matchTag("-PMR-")){
+                PMR = true;
+            }
+
+            String codiParada = displayID.replaceAll("[0-9]","");
             if(! properties.get("ID", String.class).equals(displayID)) return false;
 
             hasTrain = true;
@@ -538,20 +765,21 @@ public class ManualDisplays {
 
             String trainLine;
             String dest;
-            if(destination.equals("nopara")){
+            if (!dadesTren.getProperties().matchTag(codiParada)){
                 trainLine = "info";
-                dest = "Sense parada";
-            }else{
-                trainLine = BoardUtils.getTrainLine(name);
-                dest = destination;
+                dest = "Sense parada / Sin parada";
+            }
+            else {
+                trainLine = BoardUtils.getTrainLine(dadesTren.getProperties().getTrainName());
+                dest = dadesTren.getProperties().getDestination();
             }
 
             MapTexture lineIcon;
-            try{
+            try {
                 lineIcon = Assets.getMapTexture(imgDir + "46px/" + trainLine + ".png");
-            }catch(MapTexture.TextureLoadException e){
-                lineIcon = Assets.getMapTexture(imgDir + "46px/what.png");
-                dest = displayName;
+            } catch (MapTexture.TextureLoadException e) {
+                lineIcon = Assets.getMapTexture(imgDir + "46px/info.png");
+                dest = dadesTren.getProperties().getDestination();
             }
 
             BufferedImage text = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
@@ -563,6 +791,8 @@ public class ManualDisplays {
             g.dispose();
             getLayer(2).draw(MapTexture.fromImage(text),0 , 0);
             getLayer(2).draw(lineIcon, 13, 41);
+            trainDataDest = dadesTren.getProperties().getDestination();
+            trainDataName = dadesTren.getProperties().getTrainName();
 
             if(clearIn != 0){
                 getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () ->
@@ -577,9 +807,10 @@ public class ManualDisplays {
             if(! properties.get("ID", String.class).equals(displayID)) return false;
 
             hasTrain = false;
+            PMR = false;
             getLayer(2).clear();
             getLayer(2).draw(Assets.getMapTexture(imgDir + "46px/" + brand + ".png"), 13, 41);
-
+            getLayer(5).clear();
             return true;
         }
     }
@@ -596,7 +827,10 @@ public class ManualDisplays {
         }
 
         @Override
-        public boolean updateInformation(String displayID, String name, String displayName, String destination, int clearIn) {
+        public boolean updateInformation(String displayID, String via, MinecartGroup dadesTren, Integer clearIn) {
+            if (via != null) {
+                displayID = displayID + via;
+            }
             if(! properties.get("ID", String.class).equals(displayID)) return false;
 
             getLayer(2).clear();
@@ -604,8 +838,8 @@ public class ManualDisplays {
             Graphics2D g = departure.createGraphics();
             g.setFont(helvetica12);
             g.setColor(new Color(255, 0, 0));
-            g.drawString(destination.toUpperCase(), 4, 13);
-            g.drawString(displayName.toUpperCase(), 4, 28);
+            g.drawString(dadesTren.getProperties().getDestination().toUpperCase(), 4, 13);
+            g.drawString(dadesTren.getProperties().getDisplayName().toUpperCase(), 4, 28);
             g.drawString("", 4, 34); //observacions (no en tenim)
             g.dispose();
             getLayer(2).draw(MapTexture.fromImage(departure),13 , 55);
@@ -631,6 +865,408 @@ public class ManualDisplays {
             g.dispose();
             getLayer(2).draw(MapTexture.fromImage(renfeRodalies),13 , 55);
             return true;
+        }
+    }
+
+    public static class ManualDisplay8A extends ManualDisplay{  //pantalla ADIF 2 pròxima sortida. 2*1 blocs. (rellotge a la dreta)
+        Integer retard = 0;
+        int tickCount = 0;
+        LocalDateTime horaActual;
+        boolean textInSpanish = false;
+        boolean senseParada = false;
+        boolean sortidaImmediata = false;
+        boolean sortidaAmbRetard = false;
+        static MapTexture background = MapTexture.loadPluginResource(JavaPlugin.getPlugin(TrensMinecat.class), "img/ManualDisplay8A.png");
+
+
+        //layer0: black background (onAttached)
+        //layer1: static text
+        //layer2: image (onAttached)
+        //layer3: dynamic text (every tick)
+        //layer4: platform number
+        //layer5: clock handles (onTick)
+
+        @Override
+        public void onAttached() {
+            getLayer(0).fillRectangle(0, 10, 256, 85, MapColorPalette.getColor(0x2E, 0x2E, 0X2E));
+            getLayer(2).draw(background, 0, 0);
+            updatePlatformNumber();
+            setUpdateWithoutViewers(false);
+            super.onAttached();
+        }
+
+        private void updatePlatformNumber(){
+            BufferedImage platformNumber = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = platformNumber.createGraphics();
+            g.setColor(new Color(255, 255, 255));
+            g.setFont(TrensMinecat.helvetica46JavaFont);
+            String platform = properties.get("platform", String.class, "");
+            int x = 30;
+            if(platform.length() > 1) x = 16; //shift platform number slightly to the left
+            g.drawString(platform, x, 85); //platform number
+            g.dispose();
+            getLayer(4).draw(MapTexture.fromImage(platformNumber), 0, 0);
+        }
+
+        @Override
+        public void onTick() {
+
+            super.onTick();
+
+            LocalDateTime now = LocalDateTime.now();
+            getLayer(5).clear();
+
+            getLayer(5).drawLine(224, 52,
+                    224 + getX(now.getSecond(), 60, 20),
+                    52 + getY(now.getSecond(), 60, 20),
+                    MapColorPalette.getColor(0x76, 0x76, 0x76)
+            );
+            getLayer(5).drawLine(224, 52,
+                    224 + getX(now.getMinute(), 60, 18),
+                    52 + getY(now.getMinute(), 60, 18),
+                    MapColorPalette.getColor(0x3b, 0x3b, 0x3b)
+            );
+            getLayer(5).drawLine(224, 52,
+                    224 + getX(now.getHour() + now.getMinute() / 60F, 12, 12),
+                    52 + getY(now.getHour() + now.getMinute() / 60F, 12, 12),
+                    MapColorPalette.getColor(0, 0, 0)
+            );
+
+
+            if (tickCount % 100 == 0){
+                textInSpanish = !textInSpanish;
+            }
+
+            if(senseParada && !sortidaImmediata && !sortidaAmbRetard){ //TREN SENSE PARADA
+                Color c = new Color(255, 75, 75);
+                getLayer(3).clear();
+                BufferedImage layer3 = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g = layer3.createGraphics();
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                g.setColor(c);
+                g.setFont(TrensMinecat.minecraftiaJavaFont);
+                if (!textInSpanish) {
+                    g.drawString("NO SE ACERQUEN A LA VÍA", 68, 85); //ANOTACIONES
+                } else g.drawString("NO S'APROPIN A LA VIA", 68, 85); //ANOTACIONES
+                g.dispose();
+                getLayer(3).draw(MapTexture.fromImage(layer3),0 , 5);
+            }
+
+            if(!senseParada && sortidaImmediata && !sortidaAmbRetard){ //TREN AMB SORTIDA INMEDIATA
+                int n = tickCount % 20;
+                Color c = new Color(255, 196, 0);
+
+                if(n == 0) c = new Color(255, 196, 0);
+                if(n == 10) c = new Color(255, 75, 75);
+
+                if(n == 0 || n == 10){
+                    getLayer(3).clear();
+                    BufferedImage layer3 = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+                    Graphics2D g = layer3.createGraphics();
+                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                    g.setColor(c);
+                    g.setFont(TrensMinecat.minecraftiaJavaFont);
+                    if (!textInSpanish) {
+                        g.drawString("SORTIDA IMMEDIATA", 68, 85); //ANOTACIONES
+                    } else g.drawString("SALIDA INMEDIATA", 68, 85); //ANOTACIONES
+                    g.dispose();
+                    getLayer(3).draw(MapTexture.fromImage(layer3),0 , 5);
+                }
+            }
+
+            if(!senseParada && !sortidaImmediata && sortidaAmbRetard){ //TREN AMB RETARD
+                Color c = new Color(255, 75, 75);
+                getLayer(3).clear();
+                BufferedImage layer3 = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g = layer3.createGraphics();
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                g.setColor(c);
+                g.setFont(TrensMinecat.minecraftiaJavaFont);
+                g.drawString("ESTIMAT / ESTIMADO: " + horaActual.plusSeconds(retard).format(DateTimeFormatter.ofPattern("HH:mm")), 68, 85); //ANOTACIONES
+                g.dispose();
+                getLayer(3).draw(MapTexture.fromImage(layer3),0 , 5);
+            }
+
+            tickCount++;
+        }
+
+        public boolean updateInformation(String displayID, String via, MinecartGroup dadesTren, Integer clearIn) {
+            if (via != null) {
+                displayID = displayID + via;
+            }
+            String codiParada = displayID.replaceAll("[0-9]","");
+            if(!properties.get("ID", String.class).equals(displayID)) return false;
+
+            if(!dadesTren.getProperties().matchTag(codiParada)){
+                senseParada = true;
+                sortidaImmediata = false;
+                sortidaAmbRetard = false;
+            }
+
+            getLayer(1).clear();
+            BufferedImage layer1 = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = layer1.createGraphics();
+
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+            g.setColor(new Color(255, 242, 0));
+            g.setFont(TrensMinecat.minecraftiaJavaFont);
+            horaActual = LocalDateTime.now();
+
+            if (!senseParada) {
+                g.drawString(horaActual.plusSeconds(clearIn).format(DateTimeFormatter.ofPattern("HH:mm")), 68, 38); //HORA
+                g.drawString(dadesTren.getProperties().getDisplayName().toUpperCase(), 107, 38); //SERVEI
+                g.drawString(dadesTren.getProperties().getDestination().toUpperCase(), 68, 70); //DESTINACIÓ
+
+                if (clearIn >= 120){
+                    retard = clearIn;
+                    sortidaAmbRetard = true;
+                    sortidaImmediata = false;
+                } else {
+                    sortidaAmbRetard = false;
+                    sortidaImmediata = true;
+                }
+            } else {
+                g.drawString("00:10", 68, 38); //HORA
+                g.drawString("NO S'ATURA", 107, 38); //SERVEI
+                g.drawString("TREN SIN PARADA", 68, 70); //DESTINACIÓ
+            }
+
+            g.dispose();
+
+            updatePlatformNumber();
+
+            getLayer(1).draw(MapTexture.fromImage(layer1), 0, 5); //global offset because the text is off (idk why)
+
+            if(clearIn != 0){
+                getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () ->
+                        this.clearInformation(properties.get("ID", String.class)), clearIn * 20L);
+            }
+
+            return true;
+
+        }
+
+        public boolean clearInformation(String displayID) {
+            if(! properties.get("ID", String.class).equals(displayID)) return false;
+            retard = 0;
+            textInSpanish = false;
+            senseParada = false;
+            sortidaImmediata = false;
+            sortidaAmbRetard = false;
+            getLayer(1).clear();
+            getLayer(4).clear();
+            updatePlatformNumber();
+            getLayer(3).clear();
+            return true;
+        }
+
+        private int getX(float angle, float divideBy, float length){
+            return (int) Math.round(Math.sin(angle * 2 * Math.PI / divideBy) * length);
+        }
+
+        private int getY(float angle, int divideBy, float length){
+            return - (int) Math.round(Math.cos(angle * 2 * Math.PI / divideBy) * length);
+        }
+    }
+
+    public static class ManualDisplay8B extends ManualDisplay{  //pantalla ADIF 2 pròxima sortida. 2*1 blocs. (rellotge a la esquerra)
+        Integer retard = 0;
+        int tickCount = 0;
+        LocalDateTime horaActual;
+        boolean textInSpanish = false;
+        boolean senseParada = false;
+        boolean sortidaImmediata = false;
+        boolean sortidaAmbRetard = false;
+        static MapTexture background = MapTexture.loadPluginResource(JavaPlugin.getPlugin(TrensMinecat.class), "img/ManualDisplay8B.png");
+
+
+        //layer0: black background (onAttached)
+        //layer1: static text
+        //layer2: image (onAttached)
+        //layer3: dynamic text (every tick)
+        //layer4: platform number
+        //layer5: clock handles (onTick)
+
+        @Override
+        public void onAttached() {
+            getLayer(0).fillRectangle(0, 10, 256, 85, MapColorPalette.getColor(0x2E, 0x2E, 0X2E));
+            getLayer(2).draw(background, 0, 0);
+            updatePlatformNumber();
+            setUpdateWithoutViewers(false);
+            super.onAttached();
+        }
+
+        private void updatePlatformNumber(){
+            BufferedImage platformNumber = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = platformNumber.createGraphics();
+            g.setColor(new Color(255, 255, 255));
+            g.setFont(TrensMinecat.helvetica46JavaFont);
+            String platform = properties.get("platform", String.class, "");
+            int x = 194;
+            if(platform.length() > 1) x = 202; //shift platform number slightly to the left
+            g.drawString(platform, x, 85); //platform number
+            g.dispose();
+            getLayer(4).draw(MapTexture.fromImage(platformNumber), 0, 0);
+        }
+
+        @Override
+        public void onTick() {
+
+            super.onTick();
+
+            LocalDateTime now = LocalDateTime.now();
+            getLayer(5).clear();
+
+            getLayer(5).drawLine(31, 52,
+                    31 + getX(now.getSecond(), 60, 20),
+                    52 + getY(now.getSecond(), 60, 20),
+                    MapColorPalette.getColor(0x76, 0x76, 0x76)
+            );
+            getLayer(5).drawLine(31, 52,
+                    31 + getX(now.getMinute(), 60, 18),
+                    52 + getY(now.getMinute(), 60, 18),
+                    MapColorPalette.getColor(0x3b, 0x3b, 0x3b)
+            );
+            getLayer(5).drawLine(31, 52,
+                    31 + getX(now.getHour() + now.getMinute() / 60F, 12, 12),
+                    52 + getY(now.getHour() + now.getMinute() / 60F, 12, 12),
+                    MapColorPalette.getColor(0, 0, 0)
+            );
+
+
+            if (tickCount % 100 == 0){
+                textInSpanish = !textInSpanish;
+            }
+
+            if(senseParada && !sortidaImmediata && !sortidaAmbRetard){ //TREN SENSE PARADA
+                Color c = new Color(255, 75, 75);
+                getLayer(3).clear();
+                BufferedImage layer3 = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g = layer3.createGraphics();
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                g.setColor(c);
+                g.setFont(TrensMinecat.minecraftiaJavaFont);
+                if (!textInSpanish) {
+                    g.drawString("NO SE ACERQUEN A LA VÍA", 63, 85); //ANOTACIONES
+                } else g.drawString("NO S'APROPIN A LA VIA", 63, 85); //ANOTACIONES
+                g.dispose();
+                getLayer(3).draw(MapTexture.fromImage(layer3),0 , 5);
+            }
+
+            if(!senseParada && sortidaImmediata && !sortidaAmbRetard){ //TREN AMB SORTIDA INMEDIATA
+                int n = tickCount % 20;
+                Color c = new Color(255, 196, 0);
+
+                if(n == 0) c = new Color(255, 196, 0);
+                if(n == 10) c = new Color(255, 75, 75);
+
+                if(n == 0 || n == 10){
+                    getLayer(3).clear();
+                    BufferedImage layer3 = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+                    Graphics2D g = layer3.createGraphics();
+                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                    g.setColor(c);
+                    g.setFont(TrensMinecat.minecraftiaJavaFont);
+                    if (!textInSpanish) {
+                        g.drawString("SORTIDA IMMEDIATA", 63, 85); //ANOTACIONES
+                    } else g.drawString("SALIDA INMEDIATA", 63, 85); //ANOTACIONES
+                    g.dispose();
+                    getLayer(3).draw(MapTexture.fromImage(layer3),0 , 5);
+                }
+            }
+
+            if(!senseParada && !sortidaImmediata && sortidaAmbRetard){ //TREN AMB RETARD
+                Color c = new Color(255, 75, 75);
+                getLayer(3).clear();
+                BufferedImage layer3 = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g = layer3.createGraphics();
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                g.setColor(c);
+                g.setFont(TrensMinecat.minecraftiaJavaFont);
+                g.drawString("ESTIMAT / ESTIMADO: " + horaActual.plusSeconds(retard).format(DateTimeFormatter.ofPattern("HH:mm")), 63, 85); //ANOTACIONES
+                g.dispose();
+                getLayer(3).draw(MapTexture.fromImage(layer3),0 , 5);
+            }
+
+            tickCount++;
+        }
+
+        public boolean updateInformation(String displayID, String via, MinecartGroup dadesTren, Integer clearIn) {
+            if (via != null) {
+                displayID = displayID + via;
+            }
+            String codiParada = displayID.replaceAll("[0-9]","");
+            if(!properties.get("ID", String.class).equals(displayID)) return false;
+
+            if(!dadesTren.getProperties().matchTag(codiParada)){
+                senseParada = true;
+                sortidaImmediata = false;
+                sortidaAmbRetard = false;
+            }
+
+            getLayer(1).clear();
+            BufferedImage layer1 = new BufferedImage(256, 128, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = layer1.createGraphics();
+
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+            g.setColor(new Color(255, 242, 0));
+            g.setFont(TrensMinecat.minecraftiaJavaFont);
+            horaActual = LocalDateTime.now();
+
+            if (!senseParada) {
+                g.drawString(horaActual.plusSeconds(clearIn).format(DateTimeFormatter.ofPattern("HH:mm")), 63, 38); //HORA
+                g.drawString(dadesTren.getProperties().getDisplayName().toUpperCase(), 102, 38); //SERVEI
+                g.drawString(dadesTren.getProperties().getDestination().toUpperCase(), 63, 70); //DESTINACIÓ
+
+                if (clearIn >= 120){
+                    retard = clearIn;
+                    sortidaAmbRetard = true;
+                    sortidaImmediata = false;
+                } else {
+                    sortidaAmbRetard = false;
+                    sortidaImmediata = true;
+                }
+            } else {
+                g.drawString("00:10", 63, 38); //HORA
+                g.drawString("NO S'ATURA", 102, 38); //SERVEI
+                g.drawString("TREN SIN PARADA", 63, 70); //DESTINACIÓ
+            }
+
+            g.dispose();
+
+            updatePlatformNumber();
+
+            getLayer(1).draw(MapTexture.fromImage(layer1), 0, 5); //global offset because the text is off (idk why)
+
+            if(clearIn != 0){
+                getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), () ->
+                        this.clearInformation(properties.get("ID", String.class)), clearIn * 20L);
+            }
+
+            return true;
+
+        }
+
+        public boolean clearInformation(String displayID) {
+            if(! properties.get("ID", String.class).equals(displayID)) return false;
+            retard = 0;
+            textInSpanish = false;
+            senseParada = false;
+            sortidaImmediata = false;
+            sortidaAmbRetard = false;
+            getLayer(1).clear();
+            getLayer(4).clear();
+            updatePlatformNumber();
+            getLayer(3).clear();
+            return true;
+        }
+
+        private int getX(float angle, float divideBy, float length){
+            return (int) Math.round(Math.sin(angle * 2 * Math.PI / divideBy) * length);
+        }
+
+        private int getY(float angle, int divideBy, float length){
+            return - (int) Math.round(Math.cos(angle * 2 * Math.PI / divideBy) * length);
         }
     }
 
